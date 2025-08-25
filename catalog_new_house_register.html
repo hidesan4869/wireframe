@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新築戸建てカタログ登録 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        .btn-success {
+            background: #6a6a6a;
+            color: white;
+        }
+
+        /* フォーム */
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a4a4a;
+        }
+
+        .required {
+            color: #d32f2f;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6a6a6a;
+            box-shadow: 0 0 0 2px rgba(106, 106, 106, 0.25);
+        }
+
+        .form-textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ファイルアップロード */
+        .file-upload {
+            border: 2px dashed #c0c0c0;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background: #fafafa;
+            transition: border-color 0.2s;
+        }
+
+        .file-upload:hover {
+            border-color: #6a6a6a;
+        }
+
+        .file-upload-icon {
+            font-size: 48px;
+            color: #c0c0c0;
+            margin-bottom: 15px;
+        }
+
+        .file-upload-text {
+            color: #6a6a6a;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-input {
+            display: none;
+        }
+
+        .file-upload-btn {
+            background: #6a6a6a;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* プレビューエリア */
+        .preview-area {
+            background: #f8f8f8;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7a7a7a;
+        }
+
+        /* フォームアクション */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            margin-top: 40px;
+        }
+
+        .form-actions-left {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-actions-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* バリデーション */
+        .form-error {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .form-input.error {
+            border-color: #d32f2f;
+        }
+
+        .form-input.error:focus {
+            box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.25);
+        }
+
+        /* プログレス */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4a4a4a;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* タブ */
+        .tab-nav {
+            display: flex;
+            gap: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 30px;
+        }
+
+        .tab-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            color: #6a6a6a;
+        }
+
+        .tab-item:hover {
+            color: #4a4a4a;
+        }
+
+        .tab-item.active {
+            color: #2c2c2c;
+            border-bottom-color: #4a4a4a;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 
+                カタログ請求管理 > 新築戸建て > 
+                <a href="catalog_new_house_list.html" style="color: #6a6a6a; text-decoration: none;">カタログ一覧</a> > 
+                カタログ登録
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">🏠 新築戸建てカタログ登録</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="saveDraft()">下書き保存</button>
+                    <button class="btn btn-secondary" onclick="previewCatalog()">プレビュー</button>
+                </div>
+            </div>
+
+            <!-- プログレスバー -->
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 25%;"></div>
+            </div>
+
+            <!-- タブナビゲーション -->
+            <div class="tab-nav">
+                <div class="tab-item active" onclick="switchTab('basic')">基本情報</div>
+                <div class="tab-item" onclick="switchTab('content')">コンテンツ</div>
+                <div class="tab-item" onclick="switchTab('images')">画像・資料</div>
+                <div class="tab-item" onclick="switchTab('settings')">公開設定</div>
+            </div>
+
+            <form id="catalogForm" class="form-container">
+                <!-- 基本情報タブ -->
+                <div id="basicTab" class="tab-content active">
+                    <div class="form-section">
+                        <h3 class="section-title">基本情報</h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    カタログ名 <span class="required">*</span>
+                                </label>
+                                <input type="text" class="form-input" id="catalogName" required 
+                                       placeholder="例: モダンハウスカタログ2025">
+                                <div class="form-error" id="catalogNameError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    企業 <span class="required">*</span>
+                                </label>
+                                <select class="form-select" id="company" required>
+                                    <option value="">企業を選択してください</option>
+                                    <option value="C001">株式会社山田建設</option>
+                                    <option value="C002">田中不動産株式会社</option>
+                                    <option value="C003">佐藤ハウジング</option>
+                                    <option value="C004">鈴木工務店有限会社</option>
+                                </select>
+                                <div class="form-error" id="companyError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    カテゴリー <span class="required">*</span>
+                                </label>
+                                <select class="form-select" id="category" required>
+                                    <option value="">カテゴリーを選択してください</option>
+                                    <option value="modern">モダン住宅</option>
+                                    <option value="eco">エコハウス</option>
+                                    <option value="japanese">和風・和モダン</option>
+                                    <option value="compact">コンパクト住宅</option>
+                                    <option value="luxury">高級住宅</option>
+                                    <option value="smart">スマートハウス</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">価格帯</label>
+                                <select class="form-select" id="priceRange">
+                                    <option value="">価格帯を選択</option>
+                                    <option value="low">2000万円未満</option>
+                                    <option value="mid-low">2000-3000万円</option>
+                                    <option value="mid">3000-4000万円</option>
+                                    <option value="mid-high">4000-5000万円</option>
+                                    <option value="high">5000万円以上</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                カタログ概要 <span class="required">*</span>
+                            </label>
+                            <textarea class="form-input form-textarea" id="description" required 
+                                      placeholder="カタログの内容や特徴を簡潔に説明してください..."></textarea>
+                            <div class="form-error" id="descriptionError"></div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">対象エリア</label>
+                                <input type="text" class="form-input" id="targetArea" 
+                                       placeholder="例: 東京都、関東圏">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">想定顧客</label>
+                                <select class="form-select" id="targetCustomer">
+                                    <option value="">想定顧客を選択</option>
+                                    <option value="newlywed">新婚夫婦</option>
+                                    <option value="family">子育て世代</option>
+                                    <option value="senior">シニア世代</option>
+                                    <option value="single">単身者</option>
+                                    <option value="investor">投資家</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- コンテンツタブ -->
+                <div id="contentTab" class="tab-content">
+                    <div class="form-section">
+                        <h3 class="section-title">カタログコンテンツ</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                詳細説明 <span class="required">*</span>
+                            </label>
+                            <textarea class="form-input" id="detailedDescription" rows="8" required 
+                                      placeholder="カタログの詳細な内容、特徴、セールスポイントなどを記述してください..."></textarea>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">主な特徴（1）</label>
+                                <input type="text" class="form-input" id="feature1" 
+                                       placeholder="例: 高断熱・高気密設計">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">主な特徴（2）</label>
+                                <input type="text" class="form-input" id="feature2" 
+                                       placeholder="例: 自然素材使用">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">主な特徴（3）</label>
+                                <input type="text" class="form-input" id="feature3" 
+                                       placeholder="例: IoT対応">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">想定工期</label>
+                                <input type="text" class="form-input" id="constructionPeriod" 
+                                       placeholder="例: 4-6ヶ月">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">間取りタイプ</label>
+                            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
+                                <div class="form-checkbox">
+                                    <input type="checkbox" id="layout1LDK" value="1LDK">
+                                    <label for="layout1LDK">1LDK</label>
+                                </div>
+                                <div class="form-checkbox">
+                                    <input type="checkbox" id="layout2LDK" value="2LDK">
+                                    <label for="layout2LDK">2LDK</label>
+                                </div>
+                                <div class="form-checkbox">
+                                    <input type="checkbox" id="layout3LDK" value="3LDK">
+                                    <label for="layout3LDK">3LDK</label>
+                                </div>
+                                <div class="form-checkbox">
+                                    <input type="checkbox" id="layout4LDK" value="4LDK">
+                                    <label for="layout4LDK">4LDK以上</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 画像・資料タブ -->
+                <div id="imagesTab" class="tab-content">
+                    <div class="form-section">
+                        <h3 class="section-title">メイン画像</h3>
+                        
+                        <div class="file-upload">
+                            <div class="file-upload-icon">📷</div>
+                            <div class="file-upload-text">
+                                カタログのメイン画像をアップロードしてください<br>
+                                <small>推奨サイズ: 800x600px、最大5MB</small>
+                            </div>
+                            <button type="button" class="file-upload-btn" onclick="document.getElementById('mainImageInput').click()">
+                                ファイルを選択
+                            </button>
+                            <input type="file" id="mainImageInput" class="file-upload-input" accept="image/*" onchange="handleFileUpload(this, 'mainImageList')">
+                            <div id="mainImageList" class="file-list"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">追加画像</h3>
+                        
+                        <div class="file-upload">
+                            <div class="file-upload-icon">🖼️</div>
+                            <div class="file-upload-text">
+                                カタログの追加画像をアップロードしてください（最大10枚）<br>
+                                <small>推奨サイズ: 800x600px、最大5MB/枚</small>
+                            </div>
+                            <button type="button" class="file-upload-btn" onclick="document.getElementById('additionalImagesInput').click()">
+                                ファイルを選択
+                            </button>
+                            <input type="file" id="additionalImagesInput" class="file-upload-input" accept="image/*" multiple onchange="handleFileUpload(this, 'additionalImagesList')">
+                            <div id="additionalImagesList" class="file-list"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">PDFカタログ</h3>
+                        
+                        <div class="file-upload">
+                            <div class="file-upload-icon">📄</div>
+                            <div class="file-upload-text">
+                                PDFカタログファイルをアップロードしてください<br>
+                                <small>最大20MB</small>
+                            </div>
+                            <button type="button" class="file-upload-btn" onclick="document.getElementById('pdfInput').click()">
+                                PDFを選択
+                            </button>
+                            <input type="file" id="pdfInput" class="file-upload-input" accept=".pdf" onchange="handleFileUpload(this, 'pdfList')">
+                            <div id="pdfList" class="file-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 公開設定タブ -->
+                <div id="settingsTab" class="tab-content">
+                    <div class="form-section">
+                        <h3 class="section-title">公開設定</h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    公開ステータス <span class="required">*</span>
+                                </label>
+                                <select class="form-select" id="publishStatus" required>
+                                    <option value="draft">下書き</option>
+                                    <option value="active">公開中</option>
+                                    <option value="inactive">非公開</option>
+                                    <option value="scheduled">予約公開</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">公開開始日</label>
+                                <input type="datetime-local" class="form-input" id="publishStartDate">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">公開終了日</label>
+                                <input type="datetime-local" class="form-input" id="publishEndDate">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">表示順序</label>
+                                <input type="number" class="form-input" id="displayOrder" min="1" value="1">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-checkbox">
+                                <input type="checkbox" id="allowDownload">
+                                <label for="allowDownload">PDFダウンロードを許可する</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-checkbox">
+                                <input type="checkbox" id="featuredCatalog">
+                                <label for="featuredCatalog">おすすめカタログとして表示する</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">SEO設定</label>
+                            <input type="text" class="form-input" id="metaKeywords" 
+                                   placeholder="検索キーワード（カンマ区切り）">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">プレビュー</h3>
+                        <div class="preview-area" id="previewArea">
+                            カタログのプレビューがここに表示されます
+                        </div>
+                    </div>
+                </div>
+
+                <!-- フォームアクション -->
+                <div class="form-actions">
+                    <div class="form-actions-left">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='catalog_new_house_list.html'">
+                            キャンセル
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                            リセット
+                        </button>
+                    </div>
+                    <div class="form-actions-right">
+                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">
+                            下書き保存
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            公開する
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        // タブ切り替え
+        function switchTab(tabName) {
+            // タブボタンのアクティブ状態を更新
+            const tabItems = document.querySelectorAll('.tab-item');
+            tabItems.forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // タブコンテンツの表示を切り替え
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            // プログレスバーを更新
+            updateProgress(tabName);
+        }
+
+        // プログレスバー更新
+        function updateProgress(tabName) {
+            const progressBar = document.getElementById('progressBar');
+            const progress = {
+                'basic': '25%',
+                'content': '50%',
+                'images': '75%',
+                'settings': '100%'
+            };
+            progressBar.style.width = progress[tabName] || '25%';
+        }
+
+        // ファイルアップロード処理
+        function handleFileUpload(input, listId) {
+            const fileList = document.getElementById(listId);
+            fileList.innerHTML = '';
+
+            Array.from(input.files).forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <span>📎</span>
+                        <span>${file.name}</span>
+                        <small>(${(file.size / 1024 / 1024).toFixed(2)}MB)</small>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="removeFile(${index}, '${listId}')">削除</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        // ファイル削除
+        function removeFile(index, listId) {
+            // 実際の実装では、ファイル配列から該当項目を削除
+            console.log('Removing file at index:', index);
+        }
+
+        // 下書き保存
+        function saveDraft() {
+            console.log('Saving draft...');
+            alert('下書きを保存しました');
+        }
+
+        // プレビュー
+        function previewCatalog() {
+            const previewArea = document.getElementById('previewArea');
+            const catalogName = document.getElementById('catalogName').value || 'カタログ名未入力';
+            const description = document.getElementById('description').value || '概要未入力';
+            
+            previewArea.innerHTML = `
+                <div style="text-align: left; width: 100%;">
+                    <h4 style="color: #2c2c2c; margin-bottom: 10px;">${catalogName}</h4>
+                    <p style="color: #6a6a6a; line-height: 1.5;">${description}</p>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+                        <small style="color: #7a7a7a;">※ これは簡易プレビューです。実際の表示とは異なる場合があります。</small>
+                    </div>
+                </div>
+            `;
+        }
+
+        // フォームリセット
+        function resetForm() {
+            if (confirm('入力内容をすべてリセットしますか？')) {
+                document.getElementById('catalogForm').reset();
+                document.querySelectorAll('.file-list').forEach(list => list.innerHTML = '');
+            }
+        }
+
+        // フォーム送信
+        document.getElementById('catalogForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // バリデーション
+            if (validateForm()) {
+                if (confirm('カタログを公開しますか？')) {
+                    console.log('Publishing catalog...');
+                    alert('カタログを公開しました');
+                    // 成功時は一覧ページに戻る
+                    window.location.href = 'catalog_new_house_list.html';
+                }
+            }
+        });
+
+        // バリデーション
+        function validateForm() {
+            let isValid = true;
+            const required = ['catalogName', 'company', 'category', 'description'];
+            
+            required.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const errorElement = document.getElementById(fieldId + 'Error');
+                
+                if (!field.value.trim()) {
+                    field.classList.add('error');
+                    if (errorElement) {
+                        errorElement.textContent = 'この項目は必須です';
+                    }
+                    isValid = false;
+                } else {
+                    field.classList.remove('error');
+                    if (errorElement) {
+                        errorElement.textContent = '';
+                    }
+                }
+            });
+
+            return isValid;
+        }
+
+        // リアルタイムバリデーション
+        document.addEventListener('DOMContentLoaded', function() {
+            const requiredFields = ['catalogName', 'company', 'category', 'description'];
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('blur', function() {
+                        validateForm();
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

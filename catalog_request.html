@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カタログ請求管理 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        .btn-success {
+            background: #6a6a6a;
+            color: white;
+        }
+
+        /* 統計カード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7a7a7a;
+            font-size: 14px;
+        }
+
+        /* フィルター */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        /* テーブル */
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 14px;
+        }
+
+        tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-new {
+            background: #f0f0f0;
+            color: #5a5a5a;
+        }
+
+        .status-processing {
+            background: #e5e5e5;
+            color: #4a4a4a;
+        }
+
+        .status-completed {
+            background: #e0e0e0;
+            color: #3a3a3a;
+        }
+
+        .status-hold {
+            background: #e8e8e8;
+            color: #6a6a6a;
+        }
+
+        .checkbox-cell {
+            width: 40px;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 15px 25px;
+            background: #fafafa;
+            border-top: 1px solid #d0d0d0;
+        }
+
+        .selected-count {
+            color: #6a6a6a;
+            font-size: 14px;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6a6a6a;
+        }
+
+        .detail-value {
+            color: #2c2c2c;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-change {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* タブナビゲーション */
+        .tab-nav {
+            display: flex;
+            gap: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .tab-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            color: #6a6a6a;
+        }
+
+        .tab-item:hover {
+            color: #4a4a4a;
+        }
+
+        .tab-item.active {
+            color: #2c2c2c;
+            border-bottom-color: #4a4a4a;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > カタログ請求管理 > カタログ請求者一覧
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">カタログ請求者一覧</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="exportCSV()">CSVエクスポート</button>
+                    <button class="btn btn-primary" onclick="openNewRequestModal()">新規請求登録</button>
+                </div>
+            </div>
+
+            <!-- 統計カード -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">152</div>
+                    <div class="stat-label">今月の請求数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">28</div>
+                    <div class="stat-label">未対応</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">45</div>
+                    <div class="stat-label">処理中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">79</div>
+                    <div class="stat-label">発送済み</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3.2日</div>
+                    <div class="stat-label">平均処理時間</div>
+                </div>
+            </div>
+
+            <!-- タブナビゲーション -->
+            <div class="tab-nav">
+                <div class="tab-item active" onclick="switchTab('all')">全て (152)</div>
+                <div class="tab-item" onclick="switchTab('custom-home')">注文住宅 (68)</div>
+                <div class="tab-item" onclick="switchTab('land')">土地 (42)</div>
+                <div class="tab-item" onclick="switchTab('new-house')">新築戸建て (42)</div>
+            </div>
+
+            <!-- フィルター -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">ステータス</label>
+                        <select class="filter-select" id="statusFilter" onchange="filterTable()">
+                            <option value="">全て</option>
+                            <option value="new">未対応</option>
+                            <option value="processing">処理中</option>
+                            <option value="completed">発送済み</option>
+                            <option value="hold">保留</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">請求期間</label>
+                        <select class="filter-select" id="periodFilter" onchange="filterTable()">
+                            <option value="">全期間</option>
+                            <option value="today">今日</option>
+                            <option value="week">今週</option>
+                            <option value="month">今月</option>
+                            <option value="3months">過去3ヶ月</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">物件種別</label>
+                        <select class="filter-select" id="typeFilter" onchange="filterTable()">
+                            <option value="">全て</option>
+                            <option value="custom-home">注文住宅</option>
+                            <option value="land">土地</option>
+                            <option value="new-house">新築戸建て</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">企業</label>
+                        <select class="filter-select" id="companyFilter" onchange="filterTable()">
+                            <option value="">全企業</option>
+                            <option value="C001">株式会社山田建設</option>
+                            <option value="C002">田中不動産株式会社</option>
+                            <option value="C003">佐藤ハウジング</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-group" style="grid-column: span 3;">
+                        <label class="filter-label">キーワード検索</label>
+                        <input type="text" class="filter-input" id="searchBox" placeholder="氏名、メールアドレス、電話番号、カタログ名で検索..." onkeyup="searchRequests()">
+                    </div>
+                    <div class="search-controls">
+                        <button class="btn btn-secondary" onclick="clearFilters()">フィルタークリア</button>
+                        <button class="btn btn-primary" onclick="applyFilters()">検索</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- データテーブル -->
+            <div class="data-table">
+                <div class="table-header">
+                    <h3 class="table-title">請求リスト</h3>
+                    <div class="table-controls">
+                        <span class="selected-count">0件選択中</span>
+                    </div>
+                </div>
+                
+                <table id="requestTable">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-cell">
+                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                            </th>
+                            <th>請求ID</th>
+                            <th>請求日時</th>
+                            <th>氏名</th>
+                            <th>メールアドレス</th>
+                            <th>電話番号</th>
+                            <th>物件種別</th>
+                            <th>カタログ名</th>
+                            <th>企業名</th>
+                            <th>ステータス</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>CR2025001</td>
+                            <td>2025-08-25 10:30</td>
+                            <td>山田 太郎</td>
+                            <td>yamada@example.com</td>
+                            <td>090-1234-5678</td>
+                            <td>注文住宅</td>
+                            <td>モダンハウスカタログ2025</td>
+                            <td>株式会社山田建設</td>
+                            <td><span class="status-badge status-new">未対応</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025001')">詳細</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>CR2025002</td>
+                            <td>2025-08-25 11:15</td>
+                            <td>佐藤 花子</td>
+                            <td>sato@example.com</td>
+                            <td>080-9876-5432</td>
+                            <td>土地</td>
+                            <td>都心エリア土地情報</td>
+                            <td>田中不動産株式会社</td>
+                            <td><span class="status-badge status-processing">処理中</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025002')">詳細</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>CR2025003</td>
+                            <td>2025-08-25 12:00</td>
+                            <td>鈴木 一郎</td>
+                            <td>suzuki@example.com</td>
+                            <td>070-1111-2222</td>
+                            <td>新築戸建て</td>
+                            <td>ファミリー向け新築特集</td>
+                            <td>佐藤ハウジング</td>
+                            <td><span class="status-badge status-completed">発送済み</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025003')">詳細</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>CR2025004</td>
+                            <td>2025-08-25 13:45</td>
+                            <td>田中 美咲</td>
+                            <td>tanaka@example.com</td>
+                            <td>090-3333-4444</td>
+                            <td>注文住宅</td>
+                            <td>エコハウスコレクション</td>
+                            <td>株式会社山田建設</td>
+                            <td><span class="status-badge status-new">未対応</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025004')">詳細</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>CR2025005</td>
+                            <td>2025-08-25 14:20</td>
+                            <td>高橋 健太</td>
+                            <td>takahashi@example.com</td>
+                            <td>080-5555-6666</td>
+                            <td>土地</td>
+                            <td>郊外土地活用ガイド</td>
+                            <td>田中不動産株式会社</td>
+                            <td><span class="status-badge status-hold">保留</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025005')">詳細</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>CR2025006</td>
+                            <td>2025-08-25 15:00</td>
+                            <td>伊藤 真由美</td>
+                            <td>ito@example.com</td>
+                            <td>070-7777-8888</td>
+                            <td>新築戸建て</td>
+                            <td>スマートホーム最新情報</td>
+                            <td>佐藤ハウジング</td>
+                            <td><span class="status-badge status-processing">処理中</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025006')">詳細</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- 一括操作 -->
+                <div class="bulk-actions">
+                    <span class="selected-count">0件選択中</span>
+                    <button class="btn btn-secondary" onclick="bulkUpdateStatus('processing')">処理中に変更</button>
+                    <button class="btn btn-success" onclick="bulkUpdateStatus('completed')">発送済みに変更</button>
+                    <button class="btn btn-secondary" onclick="bulkExport()">選択をエクスポート</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 詳細モーダル -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">カタログ請求詳細</h3>
+                <button class="close" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4 style="margin-bottom: 15px; color: #4a4a4a;">請求情報</h4>
+                <div class="detail-grid">
+                    <div class="detail-label">請求ID:</div>
+                    <div class="detail-value" id="detailRequestId">CR2025001</div>
+                    
+                    <div class="detail-label">請求日時:</div>
+                    <div class="detail-value" id="detailRequestDate">2025-08-25 10:30</div>
+                    
+                    <div class="detail-label">ステータス:</div>
+                    <div class="detail-value" id="detailStatus">
+                        <span class="status-badge status-new">未対応</span>
+                    </div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">お客様情報</h4>
+                <div class="detail-grid">
+                    <div class="detail-label">氏名:</div>
+                    <div class="detail-value" id="detailName">山田 太郎</div>
+                    
+                    <div class="detail-label">フリガナ:</div>
+                    <div class="detail-value" id="detailKana">ヤマダ タロウ</div>
+                    
+                    <div class="detail-label">メールアドレス:</div>
+                    <div class="detail-value" id="detailEmail">yamada@example.com</div>
+                    
+                    <div class="detail-label">電話番号:</div>
+                    <div class="detail-value" id="detailPhone">090-1234-5678</div>
+                    
+                    <div class="detail-label">郵便番号:</div>
+                    <div class="detail-value" id="detailZip">100-0001</div>
+                    
+                    <div class="detail-label">住所:</div>
+                    <div class="detail-value" id="detailAddress">東京都千代田区千代田1-1-1</div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">カタログ情報</h4>
+                <div class="detail-grid">
+                    <div class="detail-label">物件種別:</div>
+                    <div class="detail-value" id="detailPropertyType">注文住宅</div>
+                    
+                    <div class="detail-label">カタログ名:</div>
+                    <div class="detail-value" id="detailCatalogName">モダンハウスカタログ2025</div>
+                    
+                    <div class="detail-label">企業名:</div>
+                    <div class="detail-value" id="detailCompany">株式会社山田建設</div>
+                    
+                    <div class="detail-label">備考:</div>
+                    <div class="detail-value" id="detailNotes">2階建て希望、予算3000万円程度</div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">処理履歴</h4>
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 6px;">
+                    <div style="margin-bottom: 10px;">
+                        <strong>2025-08-25 10:30</strong> - 請求受付
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>2025-08-25 11:00</strong> - 担当者アサイン（田中）
+                    </div>
+                    <div>
+                        <strong>2025-08-25 14:00</strong> - ステータス変更：処理中
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="status-change">
+                    <label>ステータス変更:</label>
+                    <select class="filter-select">
+                        <option value="new">未対応</option>
+                        <option value="processing">処理中</option>
+                        <option value="completed">発送済み</option>
+                        <option value="hold">保留</option>
+                    </select>
+                    <button class="btn btn-primary">更新</button>
+                </div>
+                <div>
+                    <button class="btn btn-secondary" onclick="closeDetailModal()">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 選択数の更新
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            const countElements = document.querySelectorAll('.selected-count');
+            countElements.forEach(el => {
+                el.textContent = `${checkboxes.length}件選択中`;
+            });
+        }
+
+        // 全選択/全解除
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = selectAll.checked;
+            });
+            updateSelectedCount();
+        }
+
+        // 詳細モーダルを開く
+        function openDetailModal(requestId) {
+            document.getElementById('detailModal').classList.add('show');
+            // ここで実際のデータを読み込む
+            console.log('Opening detail for:', requestId);
+        }
+
+        // 詳細モーダルを閉じる
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('show');
+        }
+
+        // 検索機能
+        function searchRequests() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const rows = document.querySelectorAll('#requestTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // フィルタークリア
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('periodFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('companyFilter').value = '';
+            document.getElementById('searchBox').value = '';
+            filterTable();
+        }
+
+        // フィルター適用
+        function filterTable() {
+            // 実際のフィルタリング処理
+            console.log('Applying filters...');
+        }
+
+        // タブ切り替え
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-item');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // タブに応じてデータをフィルタリング
+            console.log('Switching to tab:', tabName);
+        }
+
+        // CSV エクスポート
+        function exportCSV() {
+            console.log('Exporting to CSV...');
+            alert('CSVファイルをダウンロード中...');
+        }
+
+        // 一括ステータス更新
+        function bulkUpdateStatus(status) {
+            const selected = document.querySelectorAll('.row-checkbox:checked');
+            if (selected.length === 0) {
+                alert('請求を選択してください');
+                return;
+            }
+            
+            if (confirm(`選択した${selected.length}件のステータスを変更しますか？`)) {
+                console.log('Updating status to:', status);
+                // ステータス更新処理
+            }
+        }
+
+        // 選択項目のエクスポート
+        function bulkExport() {
+            const selected = document.querySelectorAll('.row-checkbox:checked');
+            if (selected.length === 0) {
+                alert('エクスポートする請求を選択してください');
+                return;
+            }
+            console.log('Exporting selected items...');
+        }
+
+        // 新規請求登録モーダル
+        function openNewRequestModal() {
+            alert('新規請求登録機能は実装予定です');
+        }
+    </script>
+</body>
+</html>

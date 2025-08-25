@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>見学予約日時設定一覧 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* 統計カード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7a7a7a;
+            font-size: 14px;
+        }
+
+        /* フィルター */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        /* テーブル */
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 14px;
+        }
+
+        tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-configured {
+            background: #e5e5e5;
+            color: #4a4a4a;
+        }
+
+        .status-partial {
+            background: #f0f0f0;
+            color: #6a6a6a;
+        }
+
+        .status-not-configured {
+            background: #f5f5f5;
+            color: #8a8a8a;
+        }
+
+        /* 物件情報 */
+        .property-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .property-type {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .type-house {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .type-land {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .property-details {
+            flex: 1;
+        }
+
+        .property-name {
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .property-address {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        /* 設定情報 */
+        .settings-info {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .unavailable-dates {
+            color: #d32f2f;
+            margin-bottom: 5px;
+        }
+
+        .available-times {
+            color: #2e7d32;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 3% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 1000px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6a6a6a;
+        }
+
+        .detail-value {
+            color: #2c2c2c;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* カレンダー表示 */
+        .calendar-mini {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin: 15px 0;
+            font-size: 12px;
+        }
+
+        .calendar-day-mini {
+            padding: 4px;
+            text-align: center;
+            border-radius: 2px;
+        }
+
+        .calendar-day-mini.unavailable {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .calendar-day-mini.configured {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 見学予約管理 > 予約日時設定一覧
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">📅 見学予約日時設定一覧</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="exportSettings()">設定をエクスポート</button>
+                    <button class="btn btn-primary" onclick="window.location.href='tour_schedule_register.html'">新規日時設定</button>
+                </div>
+            </div>
+
+            <!-- 統計カード -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">設定済み物件</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">部分設定</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">未設定物件</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">186</div>
+                    <div class="stat-label">設定済み時間枠</div>
+                </div>
+            </div>
+
+            <!-- フィルター -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">設定ステータス</label>
+                        <select class="filter-select" id="statusFilter" onchange="filterTable()">
+                            <option value="">全て</option>
+                            <option value="configured">設定済み</option>
+                            <option value="partial">部分設定</option>
+                            <option value="not-configured">未設定</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">物件タイプ</label>
+                        <select class="filter-select" id="propertyTypeFilter" onchange="filterTable()">
+                            <option value="">全タイプ</option>
+                            <option value="house">住宅</option>
+                            <option value="land">土地</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">担当者</label>
+                        <select class="filter-select" id="staffFilter" onchange="filterTable()">
+                            <option value="">全担当者</option>
+                            <option value="tanaka">田中 太郎</option>
+                            <option value="sato">佐藤 花子</option>
+                            <option value="suzuki">鈴木 一郎</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">最終更新</label>
+                        <select class="filter-select" id="updateFilter" onchange="filterTable()">
+                            <option value="">全期間</option>
+                            <option value="today">今日</option>
+                            <option value="week">今週</option>
+                            <option value="month">今月</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-group" style="grid-column: span 3;">
+                        <label class="filter-label">キーワード検索</label>
+                        <input type="text" class="filter-input" id="searchBox" placeholder="物件名、住所、物件IDで検索..." onkeyup="searchProperties()">
+                    </div>
+                    <div class="search-controls">
+                        <button class="btn btn-secondary" onclick="clearFilters()">フィルタークリア</button>
+                        <button class="btn btn-primary" onclick="applyFilters()">検索</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- データテーブル -->
+            <div class="data-table">
+                <div class="table-header">
+                    <h3 class="table-title">物件別日時設定</h3>
+                </div>
+                
+                <table id="settingsTable">
+                    <thead>
+                        <tr>
+                            <th>物件ID</th>
+                            <th>物件情報</th>
+                            <th>担当者</th>
+                            <th>設定ステータス</th>
+                            <th>不可能日数</th>
+                            <th>設定済み時間枠</th>
+                            <th>最終更新</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>H001</td>
+                            <td>
+                                <div class="property-info">
+                                    <span class="property-type type-house">住宅</span>
+                                    <div class="property-details">
+                                        <div class="property-name">モダンハウス新宿</div>
+                                        <div class="property-address">東京都新宿区西新宿1-1-1</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>田中 太郎</td>
+                            <td><span class="status-badge status-configured">設定済み</span></td>
+                            <td>8日</td>
+                            <td>
+                                <div class="settings-info">
+                                    <div class="unavailable-dates">不可: 2025/9/15, 22, 29...</div>
+                                    <div class="available-times">平日: 9:00-18:00 (15分間隔)</div>
+                                </div>
+                            </td>
+                            <td>2025-08-25 14:30</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('H001')">詳細</button>
+                                <button class="btn btn-secondary btn-sm" onclick="editSettings('H001')">編集</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>L001</td>
+                            <td>
+                                <div class="property-info">
+                                    <span class="property-type type-land">土地</span>
+                                    <div class="property-details">
+                                        <div class="property-name">新宿駅前土地</div>
+                                        <div class="property-address">東京都新宿区新宿4-4-4</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>鈴木 一郎</td>
+                            <td><span class="status-badge status-partial">部分設定</span></td>
+                            <td>3日</td>
+                            <td>
+                                <div class="settings-info">
+                                    <div class="unavailable-dates">不可: 2025/9/1, 15, 30</div>
+                                    <div class="available-times">一部日程のみ設定</div>
+                                </div>
+                            </td>
+                            <td>2025-08-20 09:15</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('L001')">詳細</button>
+                                <button class="btn btn-secondary btn-sm" onclick="editSettings('L001')">編集</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>H002</td>
+                            <td>
+                                <div class="property-info">
+                                    <span class="property-type type-house">住宅</span>
+                                    <div class="property-details">
+                                        <div class="property-name">エコハウス渋谷</div>
+                                        <div class="property-address">東京都渋谷区渋谷2-2-2</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>佐藤 花子</td>
+                            <td><span class="status-badge status-configured">設定済み</span></td>
+                            <td>5日</td>
+                            <td>
+                                <div class="settings-info">
+                                    <div class="unavailable-dates">不可: 2025/9/8, 16, 23...</div>
+                                    <div class="available-times">全曜日: 10:00-17:00 (30分間隔)</div>
+                                </div>
+                            </td>
+                            <td>2025-08-24 16:45</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('H002')">詳細</button>
+                                <button class="btn btn-secondary btn-sm" onclick="editSettings('H002')">編集</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>L002</td>
+                            <td>
+                                <div class="property-info">
+                                    <span class="property-type type-land">土地</span>
+                                    <div class="property-details">
+                                        <div class="property-name">世田谷住宅用地</div>
+                                        <div class="property-address">東京都世田谷区世田谷5-5-5</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>田中 太郎</td>
+                            <td><span class="status-badge status-not-configured">未設定</span></td>
+                            <td>0日</td>
+                            <td>
+                                <div class="settings-info">
+                                    <div style="color: #8a8a8a;">日時設定なし</div>
+                                </div>
+                            </td>
+                            <td>-</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="editSettings('L002')">設定開始</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>H003</td>
+                            <td>
+                                <div class="property-info">
+                                    <span class="property-type type-house">住宅</span>
+                                    <div class="property-details">
+                                        <div class="property-name">ファミリーハウス池袋</div>
+                                        <div class="property-address">東京都豊島区池袋3-3-3</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>田中 太郎</td>
+                            <td><span class="status-badge status-configured">設定済み</span></td>
+                            <td>12日</td>
+                            <td>
+                                <div class="settings-info">
+                                    <div class="unavailable-dates">不可: 2025/9/2, 9, 16...</div>
+                                    <div class="available-times">土日祝: 11:00-16:00のみ</div>
+                                </div>
+                            </td>
+                            <td>2025-08-22 11:20</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('H003')">詳細</button>
+                                <button class="btn btn-secondary btn-sm" onclick="editSettings('H003')">編集</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- 詳細モーダル -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">予約日時設定詳細</h3>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4 style="margin-bottom: 15px; color: #4a4a4a;">物件情報</h4>
+                <div class="detail-grid">
+                    <div class="detail-label">物件ID:</div>
+                    <div class="detail-value" id="detailPropertyId">H001</div>
+                    
+                    <div class="detail-label">物件名:</div>
+                    <div class="detail-value" id="detailPropertyName">モダンハウス新宿</div>
+                    
+                    <div class="detail-label">物件タイプ:</div>
+                    <div class="detail-value" id="detailPropertyType">住宅（注文住宅・新築戸建て）</div>
+                    
+                    <div class="detail-label">住所:</div>
+                    <div class="detail-value" id="detailAddress">東京都新宿区西新宿1-1-1</div>
+                    
+                    <div class="detail-label">担当者:</div>
+                    <div class="detail-value" id="detailStaff">田中 太郎</div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">予約不可日設定</h4>
+                <div class="detail-value">
+                    <div style="background: #f8f8f8; padding: 15px; border-radius: 6px;">
+                        <strong>設定済み不可日:</strong><br>
+                        2025年9月15日(日), 2025年9月22日(日), 2025年9月29日(日), 2025年10月6日(日), 
+                        2025年10月13日(日), 2025年10月20日(日), 2025年10月27日(日), 2025年11月3日(日)
+                        <div style="margin-top: 10px; color: #6a6a6a; font-size: 12px;">
+                            ※ 合計8日の予約不可日が設定されています
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">対応可能時間設定</h4>
+                <div class="detail-value">
+                    <div style="background: #f8f8f8; padding: 15px; border-radius: 6px;">
+                        <div style="margin-bottom: 15px;">
+                            <strong>平日（月〜金）:</strong><br>
+                            09:00, 09:15, 09:30, 09:45, 10:00, 10:15, 10:30, 10:45, 11:00, 11:15, 11:30, 11:45,<br>
+                            13:00, 13:15, 13:30, 13:45, 14:00, 14:15, 14:30, 14:45, 15:00, 15:15, 15:30, 15:45,<br>
+                            16:00, 16:15, 16:30, 16:45, 17:00, 17:15, 17:30, 17:45
+                        </div>
+                        <div>
+                            <strong>土日祝:</strong><br>
+                            10:00, 10:30, 11:00, 11:30, 13:00, 13:30, 14:00, 14:30, 15:00, 15:30, 16:00, 16:30
+                        </div>
+                        <div style="margin-top: 10px; color: #6a6a6a; font-size: 12px;">
+                            ※ 合計44個の時間枠が設定されています
+                        </div>
+                    </div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">カレンダービュー（9月）</h4>
+                <div class="calendar-mini">
+                    <div class="calendar-day-mini" style="font-weight: 600;">日</div>
+                    <div class="calendar-day-mini" style="font-weight: 600;">月</div>
+                    <div class="calendar-day-mini" style="font-weight: 600;">火</div>
+                    <div class="calendar-day-mini" style="font-weight: 600;">水</div>
+                    <div class="calendar-day-mini" style="font-weight: 600;">木</div>
+                    <div class="calendar-day-mini" style="font-weight: 600;">金</div>
+                    <div class="calendar-day-mini" style="font-weight: 600;">土</div>
+                    
+                    <div class="calendar-day-mini configured">1</div>
+                    <div class="calendar-day-mini configured">2</div>
+                    <div class="calendar-day-mini configured">3</div>
+                    <div class="calendar-day-mini configured">4</div>
+                    <div class="calendar-day-mini configured">5</div>
+                    <div class="calendar-day-mini configured">6</div>
+                    <div class="calendar-day-mini configured">7</div>
+                    <div class="calendar-day-mini configured">8</div>
+                    <div class="calendar-day-mini configured">9</div>
+                    <div class="calendar-day-mini configured">10</div>
+                    <div class="calendar-day-mini configured">11</div>
+                    <div class="calendar-day-mini configured">12</div>
+                    <div class="calendar-day-mini configured">13</div>
+                    <div class="calendar-day-mini configured">14</div>
+                    <div class="calendar-day-mini unavailable">15</div>
+                    <div class="calendar-day-mini configured">16</div>
+                    <div class="calendar-day-mini configured">17</div>
+                    <div class="calendar-day-mini configured">18</div>
+                    <div class="calendar-day-mini configured">19</div>
+                    <div class="calendar-day-mini configured">20</div>
+                    <div class="calendar-day-mini configured">21</div>
+                    <div class="calendar-day-mini unavailable">22</div>
+                    <div class="calendar-day-mini configured">23</div>
+                    <div class="calendar-day-mini configured">24</div>
+                    <div class="calendar-day-mini configured">25</div>
+                    <div class="calendar-day-mini configured">26</div>
+                    <div class="calendar-day-mini configured">27</div>
+                    <div class="calendar-day-mini configured">28</div>
+                    <div class="calendar-day-mini unavailable">29</div>
+                    <div class="calendar-day-mini configured">30</div>
+                </div>
+                <div style="display: flex; gap: 20px; font-size: 12px; justify-content: center; margin-top: 10px;">
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #e8f5e8; margin-right: 5px;"></span>対応可能</div>
+                    <div><span style="display: inline-block; width: 12px; height: 12px; background: #ffebee; margin-right: 5px;"></span>予約不可</div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">更新履歴</h4>
+                <div class="detail-value">
+                    <div style="background: #f8f8f8; padding: 15px; border-radius: 6px; font-size: 12px;">
+                        <div style="margin-bottom: 8px;">2025-08-25 14:30 - 時間設定を更新（田中 太郎）</div>
+                        <div style="margin-bottom: 8px;">2025-08-20 09:15 - 不可日を追加：9月29日（田中 太郎）</div>
+                        <div style="margin-bottom: 8px;">2025-08-15 16:45 - 初期設定を作成（田中 太郎）</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div>
+                    <button class="btn btn-secondary" onclick="copySettings('H001')">設定をコピー</button>
+                    <button class="btn btn-primary" onclick="editSettings('H001')">編集</button>
+                </div>
+                <div>
+                    <button class="btn btn-secondary" onclick="closeModal()">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 詳細モーダルを開く
+        function openDetailModal(propertyId) {
+            document.getElementById('detailModal').classList.add('show');
+            console.log('Opening detail for property:', propertyId);
+        }
+
+        // モーダルを閉じる
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('show');
+        }
+
+        // 検索機能
+        function searchProperties() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const rows = document.querySelectorAll('#settingsTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // フィルタークリア
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('propertyTypeFilter').value = '';
+            document.getElementById('staffFilter').value = '';
+            document.getElementById('updateFilter').value = '';
+            document.getElementById('searchBox').value = '';
+            filterTable();
+        }
+
+        // フィルター適用
+        function filterTable() {
+            console.log('Applying filters...');
+        }
+
+        // 設定のエクスポート
+        function exportSettings() {
+            console.log('Exporting settings...');
+            alert('予約日時設定データをエクスポートしています...');
+        }
+
+        // 設定編集
+        function editSettings(propertyId) {
+            console.log('Editing settings for property:', propertyId);
+            window.location.href = 'tour_schedule_register.html?id=' + propertyId;
+        }
+
+        // 設定コピー
+        function copySettings(propertyId) {
+            const targetProperty = prompt('設定をコピーする物件IDを入力してください:');
+            if (targetProperty) {
+                if (confirm(`物件 ${propertyId} の設定を物件 ${targetProperty} にコピーしますか？`)) {
+                    console.log(`Copying settings from ${propertyId} to ${targetProperty}`);
+                    alert('設定をコピーしました');
+                    closeModal();
+                    // ページを更新して変更を反映
+                    location.reload();
+                }
+            }
+        }
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

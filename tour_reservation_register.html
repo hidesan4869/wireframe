@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>見学予約登録 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        /* フォーム */
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a4a4a;
+        }
+
+        .required {
+            color: #d32f2f;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6a6a6a;
+            box-shadow: 0 0 0 2px rgba(106, 106, 106, 0.25);
+        }
+
+        .form-textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .form-radio {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* 日時選択 */
+        .datetime-section {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .time-slot {
+            padding: 10px;
+            border: 2px solid #c0c0c0;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .time-slot:hover {
+            border-color: #6a6a6a;
+            background: #f0f0f0;
+        }
+
+        .time-slot.selected {
+            border-color: #4a4a4a;
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .time-slot.unavailable {
+            background: #f0f0f0;
+            color: #7a7a7a;
+            cursor: not-allowed;
+            border-color: #e0e0e0;
+        }
+
+        /* 住所検索 */
+        .address-search {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .address-search .form-input {
+            flex: 1;
+        }
+
+        .search-btn {
+            padding: 12px 16px;
+            background: #6a6a6a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        /* 物件情報カード */
+        .property-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f8f8f8;
+            margin-bottom: 20px;
+        }
+
+        .property-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 10px;
+        }
+
+        .property-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .property-detail {
+            color: #6a6a6a;
+            font-size: 14px;
+        }
+
+        /* フォームアクション */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            margin-top: 40px;
+        }
+
+        .form-actions-left {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-actions-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* バリデーション */
+        .form-error {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .form-input.error {
+            border-color: #d32f2f;
+        }
+
+        .form-input.error:focus {
+            box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.25);
+        }
+
+        /* 確認画面 */
+        .confirmation-section {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .confirm-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .confirm-label {
+            font-weight: 600;
+            color: #6a6a6a;
+        }
+
+        .confirm-value {
+            color: #2c2c2c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 
+                見学予約管理 > 見学予約登録
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">👁️ 見学予約登録</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="saveDraft()">下書き保存</button>
+                    <button class="btn btn-secondary" onclick="previewReservation()">プレビュー</button>
+                </div>
+            </div>
+
+            <form id="tourReservationForm" class="form-container">
+                <!-- 物件選択 -->
+                <div class="form-section">
+                    <h3 class="section-title">物件情報</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            物件タイプ <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="propertyType" required onchange="handlePropertyTypeChange()">
+                            <option value="">物件タイプを選択してください</option>
+                            <option value="house">住宅（注文住宅・新築戸建て）</option>
+                            <option value="land">宅地（土地）</option>
+                        </select>
+                        <div class="form-error" id="propertyTypeError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            住宅及び宅地名 <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="propertyName" required>
+                            <option value="">まず物件タイプを選択してください</option>
+                        </select>
+                        <div class="form-error" id="propertyNameError"></div>
+                    </div>
+
+                    <!-- 選択された物件の詳細情報 -->
+                    <div id="propertyDetails" class="property-card" style="display: none;">
+                        <div class="property-title" id="selectedPropertyTitle">物件詳細</div>
+                        <div class="property-details">
+                            <div class="property-detail">
+                                <strong>住所:</strong> <span id="propertyAddress">-</span>
+                            </div>
+                            <div class="property-detail">
+                                <strong>価格:</strong> <span id="propertyPrice">-</span>
+                            </div>
+                            <div class="property-detail">
+                                <strong>面積:</strong> <span id="propertyArea">-</span>
+                            </div>
+                            <div class="property-detail">
+                                <strong>築年月:</strong> <span id="propertyAge">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 見学日時 -->
+                <div class="form-section">
+                    <h3 class="section-title">見学日時</h3>
+                    
+                    <div class="datetime-section">
+                        <div class="form-group">
+                            <label class="form-label">
+                                希望見学日 <span class="required">*</span>
+                            </label>
+                            <input type="date" class="form-input" id="tourDate" required onchange="loadAvailableTimeSlots()">
+                            <div class="form-error" id="tourDateError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                希望時間 <span class="required">*</span>
+                            </label>
+                            <div class="time-slots" id="timeSlots">
+                                <!-- 時間スロットは日付選択後に動的に生成 -->
+                            </div>
+                            <input type="hidden" id="selectedTimeSlot" required>
+                            <div class="form-error" id="timeSlotError"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 集合場所 -->
+                <div class="form-section">
+                    <h3 class="section-title">集合場所</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            集合場所 <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="meetingPoint" required>
+                            <option value="">集合場所を選択してください</option>
+                            <option value="property">現地（物件前）</option>
+                            <option value="station">最寄り駅</option>
+                            <option value="office">営業所</option>
+                            <option value="other">その他</option>
+                        </select>
+                        <div class="form-error" id="meetingPointError"></div>
+                    </div>
+
+                    <div class="form-group" id="otherMeetingPoint" style="display: none;">
+                        <label class="form-label">集合場所の詳細</label>
+                        <input type="text" class="form-input" id="meetingPointDetail" 
+                               placeholder="詳細な集合場所を入力してください">
+                    </div>
+                </div>
+
+                <!-- ユーザー情報 -->
+                <div class="form-section">
+                    <h3 class="section-title">お客様情報</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                氏名（姓） <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" id="lastName" required 
+                                   placeholder="山田">
+                            <div class="form-error" id="lastNameError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                氏名（名） <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" id="firstName" required 
+                                   placeholder="太郎">
+                            <div class="form-error" id="firstNameError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                フリガナ（姓） <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" id="lastNameKana" required 
+                                   placeholder="ヤマダ">
+                            <div class="form-error" id="lastNameKanaError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                フリガナ（名） <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" id="firstNameKana" required 
+                                   placeholder="タロウ">
+                            <div class="form-error" id="firstNameKanaError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                メールアドレス <span class="required">*</span>
+                            </label>
+                            <input type="email" class="form-input" id="email" required 
+                                   placeholder="example@email.com">
+                            <div class="form-error" id="emailError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                電話番号 <span class="required">*</span>
+                            </label>
+                            <input type="tel" class="form-input" id="phone" required 
+                                   placeholder="090-1234-5678">
+                            <div class="form-error" id="phoneError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">郵便番号</label>
+                            <div class="address-search">
+                                <input type="text" class="form-input" id="zipCode" 
+                                       placeholder="123-4567" pattern="[0-9]{3}-[0-9]{4}">
+                                <button type="button" class="search-btn" onclick="searchAddress()">住所検索</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">都道府県</label>
+                            <select class="form-select" id="prefecture">
+                                <option value="">都道府県を選択</option>
+                                <option value="tokyo">東京都</option>
+                                <option value="kanagawa">神奈川県</option>
+                                <option value="saitama">埼玉県</option>
+                                <option value="chiba">千葉県</option>
+                                <option value="osaka">大阪府</option>
+                                <option value="kyoto">京都府</option>
+                                <option value="other">その他</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">住所</label>
+                            <input type="text" class="form-input" id="address" 
+                                   placeholder="新宿区西新宿1-1-1 ○○マンション 101号室">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">備考</label>
+                        <textarea class="form-input form-textarea" id="remarks" 
+                                  placeholder="見学に関するご要望やご質問があればご記入ください..."></textarea>
+                    </div>
+                </div>
+
+                <!-- 売却予定（土地の場合のみ表示） -->
+                <div class="form-section" id="landSaleSection" style="display: none;">
+                    <h3 class="section-title">売却予定について</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            現在お住まいの物件の売却予定はありますか？ <span class="required">*</span>
+                        </label>
+                        <div class="form-radio">
+                            <div class="radio-option">
+                                <input type="radio" id="saleYes" name="saleIntention" value="yes">
+                                <label for="saleYes">はい、売却予定があります</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="saleNo" name="saleIntention" value="no">
+                                <label for="saleNo">いいえ、売却予定はありません</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="saleUndecided" name="saleIntention" value="undecided">
+                                <label for="saleUndecided">まだ未定です</label>
+                            </div>
+                        </div>
+                        <div class="form-error" id="saleIntentionError"></div>
+                    </div>
+
+                    <div class="form-group" id="saleDetailsGroup" style="display: none;">
+                        <label class="form-label">売却予定時期</label>
+                        <select class="form-select" id="saleSchedule">
+                            <option value="">売却時期を選択</option>
+                            <option value="3months">3ヶ月以内</option>
+                            <option value="6months">6ヶ月以内</option>
+                            <option value="1year">1年以内</option>
+                            <option value="2years">2年以内</option>
+                            <option value="flexible">時期は柔軟に対応可能</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- フォームアクション -->
+                <div class="form-actions">
+                    <div class="form-actions-left">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">
+                            キャンセル
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                            リセット
+                        </button>
+                    </div>
+                    <div class="form-actions-right">
+                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">
+                            下書き保存
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            見学予約を登録
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        // 物件データ（実際の実装では API から取得）
+        const propertyData = {
+            house: [
+                {
+                    id: 'H001',
+                    name: 'モダンハウス新宿',
+                    address: '東京都新宿区西新宿1-1-1',
+                    price: '4,800万円',
+                    area: '延床面積：120㎡',
+                    age: '2024年3月築'
+                },
+                {
+                    id: 'H002', 
+                    name: 'エコハウス渋谷',
+                    address: '東京都渋谷区渋谷2-2-2',
+                    price: '5,200万円',
+                    area: '延床面積：135㎡',
+                    age: '2024年1月築'
+                },
+                {
+                    id: 'H003',
+                    name: 'ファミリーハウス池袋',
+                    address: '東京都豊島区池袋3-3-3',
+                    price: '4,200万円',
+                    area: '延床面積：110㎡',
+                    age: '2024年5月築'
+                }
+            ],
+            land: [
+                {
+                    id: 'L001',
+                    name: '新宿駅前土地',
+                    address: '東京都新宿区新宿4-4-4',
+                    price: '3,500万円',
+                    area: '土地面積：80㎡',
+                    age: '-'
+                },
+                {
+                    id: 'L002',
+                    name: '世田谷住宅用地',
+                    address: '東京都世田谷区世田谷5-5-5',
+                    price: '4,800万円',
+                    area: '土地面積：120㎡',
+                    age: '-'
+                },
+                {
+                    id: 'L003',
+                    name: '中野区画整理地',
+                    address: '東京都中野区中野6-6-6',
+                    price: '3,200万円',
+                    area: '土地面積：95㎡',
+                    age: '-'
+                }
+            ]
+        };
+
+        // 物件タイプ変更時の処理
+        function handlePropertyTypeChange() {
+            const propertyType = document.getElementById('propertyType').value;
+            const propertyNameSelect = document.getElementById('propertyName');
+            const landSaleSection = document.getElementById('landSaleSection');
+            
+            // 物件名選択肢をクリア
+            propertyNameSelect.innerHTML = '<option value="">物件を選択してください</option>';
+            
+            if (propertyType) {
+                // 選択された物件タイプに応じて物件を表示
+                const properties = propertyData[propertyType];
+                properties.forEach(property => {
+                    const option = document.createElement('option');
+                    option.value = property.id;
+                    option.textContent = property.name;
+                    propertyNameSelect.appendChild(option);
+                });
+
+                // 土地の場合は売却予定セクションを表示
+                if (propertyType === 'land') {
+                    landSaleSection.style.display = 'block';
+                } else {
+                    landSaleSection.style.display = 'none';
+                }
+            } else {
+                propertyNameSelect.innerHTML = '<option value="">まず物件タイプを選択してください</option>';
+                landSaleSection.style.display = 'none';
+            }
+
+            // 物件詳細を非表示
+            document.getElementById('propertyDetails').style.display = 'none';
+        }
+
+        // 物件選択時の処理
+        document.getElementById('propertyName').addEventListener('change', function() {
+            const propertyId = this.value;
+            const propertyType = document.getElementById('propertyType').value;
+            const propertyDetails = document.getElementById('propertyDetails');
+            
+            if (propertyId && propertyType) {
+                const property = propertyData[propertyType].find(p => p.id === propertyId);
+                if (property) {
+                    document.getElementById('selectedPropertyTitle').textContent = property.name;
+                    document.getElementById('propertyAddress').textContent = property.address;
+                    document.getElementById('propertyPrice').textContent = property.price;
+                    document.getElementById('propertyArea').textContent = property.area;
+                    document.getElementById('propertyAge').textContent = property.age;
+                    
+                    propertyDetails.style.display = 'block';
+                }
+            } else {
+                propertyDetails.style.display = 'none';
+            }
+        });
+
+        // 利用可能時間スロットの読み込み
+        function loadAvailableTimeSlots() {
+            const tourDate = document.getElementById('tourDate').value;
+            const timeSlotsContainer = document.getElementById('timeSlots');
+            
+            if (!tourDate) {
+                timeSlotsContainer.innerHTML = '';
+                return;
+            }
+
+            // 15分単位の時間スロットを生成（9:00-18:00）
+            const timeSlots = [];
+            for (let hour = 9; hour < 18; hour++) {
+                for (let minute = 0; minute < 60; minute += 15) {
+                    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    timeSlots.push(timeString);
+                }
+            }
+
+            // 予約済みの時間（実際の実装では API から取得）
+            const unavailableSlots = ['10:00', '14:30', '16:15'];
+
+            timeSlotsContainer.innerHTML = '';
+            timeSlots.forEach(time => {
+                const slotElement = document.createElement('div');
+                slotElement.className = 'time-slot';
+                slotElement.textContent = time;
+                
+                if (unavailableSlots.includes(time)) {
+                    slotElement.classList.add('unavailable');
+                    slotElement.textContent += ' (予約済)';
+                } else {
+                    slotElement.addEventListener('click', function() {
+                        // 既選択の時間スロットを解除
+                        document.querySelectorAll('.time-slot').forEach(slot => {
+                            slot.classList.remove('selected');
+                        });
+                        
+                        // 新しく選択
+                        this.classList.add('selected');
+                        document.getElementById('selectedTimeSlot').value = time;
+                    });
+                }
+                
+                timeSlotsContainer.appendChild(slotElement);
+            });
+        }
+
+        // 集合場所変更時の処理
+        document.getElementById('meetingPoint').addEventListener('change', function() {
+            const otherMeetingPoint = document.getElementById('otherMeetingPoint');
+            if (this.value === 'other') {
+                otherMeetingPoint.style.display = 'block';
+                document.getElementById('meetingPointDetail').required = true;
+            } else {
+                otherMeetingPoint.style.display = 'none';
+                document.getElementById('meetingPointDetail').required = false;
+            }
+        });
+
+        // 売却予定ラジオボタン変更時の処理
+        document.querySelectorAll('input[name="saleIntention"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const saleDetailsGroup = document.getElementById('saleDetailsGroup');
+                if (this.value === 'yes') {
+                    saleDetailsGroup.style.display = 'block';
+                } else {
+                    saleDetailsGroup.style.display = 'none';
+                }
+            });
+        });
+
+        // 住所検索
+        function searchAddress() {
+            const zipCode = document.getElementById('zipCode').value;
+            if (zipCode) {
+                // 実際の実装では郵便番号 API を呼び出す
+                console.log('Searching address for zip code:', zipCode);
+                alert('住所検索機能は実装予定です');
+            } else {
+                alert('郵便番号を入力してください');
+            }
+        }
+
+        // 下書き保存
+        function saveDraft() {
+            console.log('Saving draft...');
+            alert('下書きを保存しました');
+        }
+
+        // プレビュー
+        function previewReservation() {
+            const propertyName = document.getElementById('propertyName').selectedOptions[0]?.textContent || '';
+            const tourDate = document.getElementById('tourDate').value;
+            const timeSlot = document.getElementById('selectedTimeSlot').value;
+            const customerName = `${document.getElementById('lastName').value} ${document.getElementById('firstName').value}`;
+            
+            if (propertyName && tourDate && timeSlot && customerName.trim() !== ' ') {
+                alert(`プレビュー\n物件: ${propertyName}\n日時: ${tourDate} ${timeSlot}\nお客様: ${customerName}`);
+            } else {
+                alert('必要な情報を入力してからプレビューしてください');
+            }
+        }
+
+        // フォームリセット
+        function resetForm() {
+            if (confirm('入力内容をすべてリセットしますか？')) {
+                document.getElementById('tourReservationForm').reset();
+                document.getElementById('propertyDetails').style.display = 'none';
+                document.getElementById('landSaleSection').style.display = 'none';
+                document.getElementById('otherMeetingPoint').style.display = 'none';
+                document.getElementById('saleDetailsGroup').style.display = 'none';
+                document.getElementById('timeSlots').innerHTML = '';
+                document.getElementById('selectedTimeSlot').value = '';
+            }
+        }
+
+        // フォーム送信
+        document.getElementById('tourReservationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // バリデーション
+            if (validateForm()) {
+                if (confirm('見学予約を登録しますか？')) {
+                    console.log('Registering tour reservation...');
+                    alert('見学予約を登録しました');
+                    // 成功時は一覧ページに戻る（実装時は適切なページに）
+                    window.location.href = 'index.html';
+                }
+            }
+        });
+
+        // バリデーション
+        function validateForm() {
+            let isValid = true;
+            const required = ['propertyType', 'propertyName', 'tourDate', 'meetingPoint', 
+                            'lastName', 'firstName', 'lastNameKana', 'firstNameKana', 'email', 'phone'];
+            
+            // 必須項目チェック
+            required.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const errorElement = document.getElementById(fieldId + 'Error');
+                
+                if (!field.value.trim()) {
+                    field.classList.add('error');
+                    if (errorElement) {
+                        errorElement.textContent = 'この項目は必須です';
+                    }
+                    isValid = false;
+                } else {
+                    field.classList.remove('error');
+                    if (errorElement) {
+                        errorElement.textContent = '';
+                    }
+                }
+            });
+
+            // 時間スロット選択チェック
+            const timeSlot = document.getElementById('selectedTimeSlot');
+            const timeSlotError = document.getElementById('timeSlotError');
+            if (!timeSlot.value) {
+                timeSlotError.textContent = '見学時間を選択してください';
+                isValid = false;
+            } else {
+                timeSlotError.textContent = '';
+            }
+
+            // 土地の場合の売却予定チェック
+            const propertyType = document.getElementById('propertyType').value;
+            if (propertyType === 'land') {
+                const saleIntention = document.querySelector('input[name="saleIntention"]:checked');
+                const saleError = document.getElementById('saleIntentionError');
+                if (!saleIntention) {
+                    saleError.textContent = 'この項目は必須です';
+                    isValid = false;
+                } else {
+                    saleError.textContent = '';
+                }
+            }
+
+            return isValid;
+        }
+
+        // リアルタイムバリデーション
+        document.addEventListener('DOMContentLoaded', function() {
+            const requiredFields = ['propertyType', 'propertyName', 'tourDate', 'meetingPoint',
+                                  'lastName', 'firstName', 'lastNameKana', 'firstNameKana', 'email', 'phone'];
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('blur', function() {
+                        validateField(fieldId);
+                    });
+                }
+            });
+        });
+
+        function validateField(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + 'Error');
+            
+            if (!field.value.trim()) {
+                field.classList.add('error');
+                if (errorElement) {
+                    errorElement.textContent = 'この項目は必須です';
+                }
+            } else {
+                field.classList.remove('error');
+                if (errorElement) {
+                    errorElement.textContent = '';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

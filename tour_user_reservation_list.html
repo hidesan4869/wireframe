@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>見学予約ユーザー一覧 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* 統計カード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7a7a7a;
+            font-size: 14px;
+        }
+
+        /* フィルター */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        /* テーブル */
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 14px;
+        }
+
+        tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #f0f0f0;
+            color: #6a6a6a;
+        }
+
+        .status-confirmed {
+            background: #e5e5e5;
+            color: #4a4a4a;
+        }
+
+        .status-completed {
+            background: #e0e0e0;
+            color: #3a3a3a;
+        }
+
+        .status-cancelled {
+            background: #f5f5f5;
+            color: #8a8a8a;
+        }
+
+        .checkbox-cell {
+            width: 40px;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 15px 25px;
+            background: #fafafa;
+            border-top: 1px solid #d0d0d0;
+        }
+
+        .selected-count {
+            color: #6a6a6a;
+            font-size: 14px;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 3% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 900px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6a6a6a;
+        }
+
+        .detail-value {
+            color: #2c2c2c;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* タブナビゲーション */
+        .tab-nav {
+            display: flex;
+            gap: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .tab-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            color: #6a6a6a;
+        }
+
+        .tab-item:hover {
+            color: #4a4a4a;
+        }
+
+        .tab-item.active {
+            color: #2c2c2c;
+            border-bottom-color: #4a4a4a;
+            font-weight: 600;
+        }
+
+        .property-info {
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .customer-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .customer-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #6a6a6a;
+            font-size: 12px;
+        }
+
+        .datetime-info {
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 見学予約管理 > ユーザー見学予約一覧
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">👥 見学予約ユーザー一覧</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="exportReservations()">CSVエクスポート</button>
+                </div>
+            </div>
+
+            <!-- 統計カード -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">156</div>
+                    <div class="stat-label">総予約数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">89</div>
+                    <div class="stat-label">予約確定</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">42</div>
+                    <div class="stat-label">予約待ち</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">25</div>
+                    <div class="stat-label">完了</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">今月新規</div>
+                </div>
+            </div>
+
+            <!-- タブナビゲーション -->
+            <div class="tab-nav">
+                <div class="tab-item active" onclick="switchTab('all')">全て (156)</div>
+                <div class="tab-item" onclick="switchTab('pending')">予約待ち (42)</div>
+                <div class="tab-item" onclick="switchTab('confirmed')">予約確定 (89)</div>
+                <div class="tab-item" onclick="switchTab('completed')">完了 (25)</div>
+                <div class="tab-item" onclick="switchTab('cancelled')">キャンセル (8)</div>
+            </div>
+
+            <!-- フィルター -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">物件タイプ</label>
+                        <select class="filter-select" id="propertyTypeFilter" onchange="filterTable()">
+                            <option value="">全タイプ</option>
+                            <option value="house">新築戸建て</option>
+                            <option value="house">中古戸建て</option>
+                            <option value="house">新築マンション</option>
+                            <option value="house">中古マンション</option>
+                            <option value="land">土地</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">予約期間</label>
+                        <select class="filter-select" id="periodFilter" onchange="filterTable()">
+                            <option value="">全期間</option>
+                            <option value="today">今日</option>
+                            <option value="week">今週</option>
+                            <option value="month">今月</option>
+                            <option value="3months">過去3ヶ月</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-group" style="grid-column: span 3;">
+                        <label class="filter-label">キーワード検索</label>
+                        <input type="text" class="filter-input" id="searchBox" placeholder="顧客名、物件名、予約IDで検索..." onkeyup="searchReservations()">
+                    </div>
+                    <div class="search-controls">
+                        <button class="btn btn-secondary" onclick="clearFilters()">フィルタークリア</button>
+                        <button class="btn btn-primary" onclick="applyFilters()">検索</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- データテーブル -->
+            <div class="data-table">
+                <div class="table-header">
+                    <h3 class="table-title">見学予約リスト</h3>
+                    <div class="table-controls">
+                        <span class="selected-count">0件選択中</span>
+                    </div>
+                </div>
+                
+                <table id="reservationTable">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-cell">
+                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                            </th>
+                            <th>予約ID</th>
+                            <th>住宅及び土地</th>
+                            <th>見学日時</th>
+                            <th>物件情報</th>
+                            <th>顧客情報</th>
+                            <th>集合場所</th>
+                            <th>申込日</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>R2025001</td>
+                            <td>
+                                <div class="property-info">
+                                    <strong>新築戸建て</strong><br>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="datetime-info">2025-09-05<br>14:00</div>
+                            </td>
+                            <td>
+                                <div class="property-info">
+                                    <strong>モダンハウス新宿</strong><br>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <div>
+                                        <div style="font-weight: 600;">山田 太郎</div>
+                                        <small style="color: #7a7a7a;">090-1234-5678</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>現地</td>
+                            <td>2025-08-25</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('R2025001')">詳細</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>R2025002</td>
+                            <td>
+                                <div class="property-info">
+                                    <strong>新築戸建て</strong><br>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="datetime-info">2025-09-06<br>10:30</div>
+                            </td>
+                            <td>
+                                <div class="property-info">
+                                    <strong>新宿駅前土地</strong><br>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <div>
+                                        <div style="font-weight: 600;">佐藤 花子</div>
+                                        <small style="color: #7a7a7a;">080-9876-5432</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>最寄り駅</td>
+                            <td>2025-08-24</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('R2025002')">詳細</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>R2025003</td>
+                            <td>
+                                <div class="property-info">
+                                    <strong>新築戸建て</strong><br>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="datetime-info">2025-09-03<br>16:00</div>
+                            </td>
+                            <td>
+                                <div class="property-info">
+                                    <strong>エコハウス渋谷</strong><br>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <div>
+                                        <div style="font-weight: 600;">鈴木 一郎</div>
+                                        <small style="color: #7a7a7a;">070-1111-2222</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>現地</td>
+                            <td>2025-08-20</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('R2025003')">詳細</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>R2025004</td>
+                            <td>
+                                <div class="property-info">
+                                    <strong>新築戸建て</strong><br>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="datetime-info">2025-09-07<br>11:15</div>
+                            </td>
+                            <td>
+                                <div class="property-info">
+                                    <strong>世田谷住宅用地</strong><br>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <div>
+                                        <div style="font-weight: 600;">田中 美咲</div>
+                                        <small style="color: #7a7a7a;">090-3333-4444</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>現地</td>
+                            <td>2025-08-23</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('R2025004')">詳細</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>R2025005</td>
+                            <td>
+                                <div class="property-info">
+                                    <strong>新築戸建て</strong><br>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="datetime-info">2025-09-08<br>13:45</div>
+                            </td>
+                            <td>
+                                <div class="property-info">
+                                    <strong>ファミリーハウス池袋</strong><br>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <div>
+                                        <div style="font-weight: 600;">高橋 健太</div>
+                                        <small style="color: #7a7a7a;">080-5555-6666</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>現地</td>
+                            <td>2025-08-22</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('R2025005')">詳細</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- 一括操作 -->
+                <div class="bulk-actions">
+                    <span class="selected-count">0件選択中</span>
+                    <button class="btn btn-secondary" onclick="bulkConfirm()">一括確定</button>
+                    <button class="btn btn-secondary" onclick="bulkCancel()">一括キャンセル</button>
+                    <button class="btn btn-secondary" onclick="bulkExport()">選択をエクスポート</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 詳細モーダル -->
+    <div id="reservationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">見学予約詳細情報</h3>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4 style="margin-bottom: 15px; color: #4a4a4a;">予約情報</h4>
+                <div class="detail-grid">
+                    <div class="detail-label">予約ID:</div>
+                    <div class="detail-value" id="detailReservationId">R2025001</div>
+                    
+                    <div class="detail-label">見学日時:</div>
+                    <div class="detail-value" id="detailDateTime">2025年9月5日 14:00</div>
+                    
+                    <div class="detail-label">集合場所:</div>
+                    <div class="detail-value" id="detailMeetingPoint">現地</div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">物件情報</h4>
+                <div class="detail-grid">
+                    <div class="detail-label">物件名:</div>
+                    <div class="detail-value" id="detailPropertyName">モダンハウス新宿</div>
+                    
+                    <div class="detail-label">物件タイプ:</div>
+                    <div class="detail-value" id="detailPropertyType">新築戸建て</div>
+                    
+                    <div class="detail-label">住所:</div>
+                    <div class="detail-value" id="detailPropertyAddress">東京都新宿区西新宿1-1-1</div>
+                    
+                    <div class="detail-label">価格:</div>
+                    <div class="detail-value" id="detailPropertyPrice">4,800万円</div>
+                    
+                    <div class="detail-label">面積:</div>
+                    <div class="detail-value" id="detailPropertyArea">延床面積：120㎡</div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">顧客情報</h4>
+                <div class="detail-grid">
+                    <div class="detail-label">氏名:</div>
+                    <div class="detail-value" id="detailCustomerName">山田 太郎（ヤマダ タロウ）</div>
+                    
+                    <div class="detail-label">メールアドレス:</div>
+                    <div class="detail-value" id="detailCustomerEmail">yamada@example.com</div>
+                    
+                    <div class="detail-label">電話番号:</div>
+                    <div class="detail-value" id="detailCustomerPhone">090-1234-5678</div>
+                    
+                    <div class="detail-label">住所:</div>
+                    <div class="detail-value" id="detailCustomerAddress">東京都世田谷区世田谷1-1-1</div>
+                </div>
+
+                <!-- 土地の場合の売却予定 -->
+                <div id="landSaleInfo" style="display: none;">
+                    <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">売却予定情報</h4>
+                    <div class="detail-grid">
+                        <div class="detail-label">売却予定:</div>
+                        <div class="detail-value" id="detailSaleIntention">はい、売却予定があります</div>
+                        
+                        <div class="detail-label">売却時期:</div>
+                        <div class="detail-value" id="detailSaleSchedule">6ヶ月以内</div>
+                    </div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">備考・特記事項</h4>
+                <div class="detail-value" id="detailRemarks" style="background: #f8f8f8; padding: 15px; border-radius: 6px;">
+                    子供連れでの見学予定です。駐車場の利用可否もお聞かせください。
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">申込情報</h4>
+                <div class="detail-grid">
+                    <div class="detail-label">申込日:</div>
+                    <div class="detail-value" id="detailRegDate">2025年8月25日 15:30</div>
+                    
+                    <div class="detail-label">最終更新:</div>
+                    <div class="detail-value" id="detailUpdateDate">2025年8月26日 10:15</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div>
+                    <button class="btn btn-secondary" onclick="sendNotification('R2025001')">顧客に通知</button>
+                    <button class="btn btn-primary" onclick="updateStatus('R2025001')">ステータス変更</button>
+                </div>
+                <div>
+                    <button class="btn btn-secondary" onclick="closeModal()">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 選択数の更新
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            const countElements = document.querySelectorAll('.selected-count');
+            countElements.forEach(el => {
+                el.textContent = `${checkboxes.length}件選択中`;
+            });
+        }
+
+        // 全選択/全解除
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = selectAll.checked;
+            });
+            updateSelectedCount();
+        }
+
+        // 詳細モーダルを開く
+        function openDetailModal(reservationId) {
+            document.getElementById('reservationModal').classList.add('show');
+            
+            // 実際の実装では API から詳細情報を取得
+            console.log('Opening detail for reservation:', reservationId);
+            
+            // 土地の場合は売却予定情報を表示
+            const propertyType = 'house'; // 実際のデータから取得
+            const landSaleInfo = document.getElementById('landSaleInfo');
+            if (propertyType === 'land') {
+                landSaleInfo.style.display = 'block';
+            } else {
+                landSaleInfo.style.display = 'none';
+            }
+        }
+
+        // モーダルを閉じる
+        function closeModal() {
+            document.getElementById('reservationModal').classList.remove('show');
+        }
+
+        // 検索機能
+        function searchReservations() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const rows = document.querySelectorAll('#reservationTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // フィルタークリア
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('propertyTypeFilter').value = '';
+            document.getElementById('periodFilter').value = '';
+            document.getElementById('staffFilter').value = '';
+            document.getElementById('searchBox').value = '';
+            filterTable();
+        }
+
+        // フィルター適用
+        function filterTable() {
+            console.log('Applying filters...');
+        }
+
+        // タブ切り替え
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-item');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            console.log('Switching to tab:', tabName);
+        }
+
+        // CSV エクスポート
+        function exportReservations() {
+            console.log('Exporting reservations...');
+            alert('見学予約データをCSVでエクスポート中...');
+        }
+
+        // 一括確定
+        function bulkConfirm() {
+            const selected = document.querySelectorAll('.row-checkbox:checked');
+            if (selected.length === 0) {
+                alert('確定する予約を選択してください');
+                return;
+            }
+            
+            if (confirm(`選択した${selected.length}件の予約を確定しますか？`)) {
+                console.log('Bulk confirming reservations:', selected.length);
+                alert('選択した予約を確定しました');
+            }
+        }
+
+        // 一括キャンセル
+        function bulkCancel() {
+            const selected = document.querySelectorAll('.row-checkbox:checked');
+            if (selected.length === 0) {
+                alert('キャンセルする予約を選択してください');
+                return;
+            }
+            
+            if (confirm(`選択した${selected.length}件の予約をキャンセルしますか？`)) {
+                console.log('Bulk cancelling reservations:', selected.length);
+                alert('選択した予約をキャンセルしました');
+            }
+        }
+
+        // 選択項目のエクスポート
+        function bulkExport() {
+            const selected = document.querySelectorAll('.row-checkbox:checked');
+            if (selected.length === 0) {
+                alert('エクスポートする予約を選択してください');
+                return;
+            }
+            console.log('Exporting selected reservations...');
+            alert(`選択した${selected.length}件の予約をエクスポートします`);
+        }
+
+        // 顧客への通知送信
+        function sendNotification(reservationId) {
+            console.log('Sending notification for reservation:', reservationId);
+            alert('顧客に見学予約の確認メールを送信しました');
+        }
+
+        // ステータス変更
+        function updateStatus(reservationId) {
+            const newStatus = prompt('新しいステータスを選択してください:\n1. 予約待ち\n2. 予約確定\n3. 完了\n4. キャンセル', '2');
+            
+            if (newStatus) {
+                const statusMap = {
+                    '1': '予約待ち',
+                    '2': '予約確定', 
+                    '3': '完了',
+                    '4': 'キャンセル'
+                };
+                
+                if (statusMap[newStatus]) {
+                    console.log('Updating status to:', statusMap[newStatus]);
+                    alert(`予約ステータスを「${statusMap[newStatus]}」に変更しました`);
+                    closeModal();
+                    // ページを更新して変更を反映
+                    location.reload();
+                }
+            }
+        }
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('reservationModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企業登録 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* フォーム */
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: #f5f5f5;
+            padding: 20px 25px;
+            border-bottom: 1px solid #d0d0d0;
+        }
+
+        .form-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        .form-body {
+            padding: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .required {
+            color: #d32f2f;
+        }
+
+        .form-input {
+            padding: 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4a4a4a;
+        }
+
+        .form-textarea {
+            padding: 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            min-height: 80px;
+            resize: vertical;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4a4a4a;
+        }
+
+        /* カテゴリ選択 */
+        .category-selection {
+            margin-top: 10px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .category-label {
+            font-size: 14px;
+            color: #2c2c2c;
+            cursor: pointer;
+        }
+
+        /* プレビューセクション */
+        .preview-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .preview-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 15px;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .preview-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            font-weight: 600;
+        }
+
+        .preview-value {
+            font-size: 14px;
+            color: #2c2c2c;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            margin: 1px 2px;
+            background: #f0f0f0;
+            color: #4a4a4a;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* フォームフッター */
+        .form-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-note {
+            font-size: 12px;
+            color: #6a6a6a;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 郵便番号検索 */
+        .postal-search {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .postal-input {
+            flex: 1;
+        }
+
+        .postal-btn {
+            padding: 12px 16px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .postal-btn:hover {
+            background: #5a6268;
+        }
+
+        /* バリデーションエラー */
+        .error {
+            border-color: #d32f2f !important;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        /* 成功メッセージ */
+        .success-message {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 契約企業情報 > 企業登録
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">🏢 企業登録</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="window.location.href='index.html'">一覧に戻る</button>
+                    <button class="btn btn-secondary" onclick="clearForm()">クリア</button>
+                </div>
+            </div>
+
+            <!-- 成功メッセージ（表示時のみ） -->
+            <div id="successMessage" class="success-message" style="display: none;">
+                企業情報が正常に登録されました。
+            </div>
+
+            <!-- 登録フォーム -->
+            <div class="form-container">
+                <div class="form-header">
+                    <h3 class="form-title">企業基本情報</h3>
+                </div>
+                
+                <form id="companyForm" onsubmit="submitForm(event)">
+                    <div class="form-body">
+                        <div class="form-grid">
+                            <!-- 企業名 -->
+                            <div class="form-group">
+                                <label class="form-label">企業名 <span class="required">*</span></label>
+                                <input type="text" id="companyName" class="form-input" 
+                                       placeholder="例：株式会社山田建設" 
+                                       required maxlength="100"
+                                       oninput="updatePreview()">
+                                <div class="error-message" id="companyNameError"></div>
+                            </div>
+
+                            <!-- 企業名（カナ） -->
+                            <div class="form-group">
+                                <label class="form-label">企業名（カナ） <span class="required">*</span></label>
+                                <input type="text" id="companyNameKana" class="form-input" 
+                                       placeholder="例：カブシキガイシャヤマダケンセツ" 
+                                       required maxlength="100"
+                                       pattern="[ァ-ヶー　 ]*"
+                                       oninput="updatePreview()">
+                                <div class="error-message" id="companyNameKanaError"></div>
+                            </div>
+
+                            <!-- 代表者名 -->
+                            <div class="form-group">
+                                <label class="form-label">代表者名 <span class="required">*</span></label>
+                                <input type="text" id="representativeName" class="form-input" 
+                                       placeholder="例：山田 太郎" 
+                                       required maxlength="50"
+                                       oninput="updatePreview()">
+                                <div class="error-message" id="representativeNameError"></div>
+                            </div>
+
+                            <!-- 郵便番号 -->
+                            <div class="form-group">
+                                <label class="form-label">郵便番号 <span class="required">*</span></label>
+                                <div class="postal-search">
+                                    <input type="text" id="postalCode" class="form-input postal-input" 
+                                           placeholder="例：160-0023" 
+                                           required pattern="\d{3}-\d{4}"
+                                           oninput="updatePreview()">
+                                    <button type="button" class="postal-btn" onclick="searchAddress()">住所検索</button>
+                                </div>
+                                <div class="error-message" id="postalCodeError"></div>
+                            </div>
+
+                            <!-- 住所 -->
+                            <div class="form-group full-width">
+                                <label class="form-label">住所 <span class="required">*</span></label>
+                                <input type="text" id="address" class="form-input" 
+                                       placeholder="例：東京都新宿区西新宿1-1-1 新宿ビル5階" 
+                                       required maxlength="200"
+                                       oninput="updatePreview()">
+                                <div class="error-message" id="addressError"></div>
+                            </div>
+
+                            <!-- インボイス -->
+                            <div class="form-group">
+                                <label class="form-label">インボイス登録番号</label>
+                                <input type="text" id="invoice" class="form-input" 
+                                       placeholder="例：T1234567890123" 
+                                       maxlength="20"
+                                       pattern="T\d{13}"
+                                       oninput="updatePreview()">
+                                <div class="error-message" id="invoiceError"></div>
+                            </div>
+
+                            <!-- 代表電話番号 -->
+                            <div class="form-group">
+                                <label class="form-label">代表電話番号 <span class="required">*</span></label>
+                                <input type="tel" id="phone" class="form-input" 
+                                       placeholder="例：03-1234-5678" 
+                                       required pattern="\d{2,4}-\d{3,4}-\d{4}"
+                                       oninput="updatePreview()">
+                                <div class="error-message" id="phoneError"></div>
+                            </div>
+
+                            <!-- メールアドレス -->
+                            <div class="form-group">
+                                <label class="form-label">メールアドレス <span class="required">*</span></label>
+                                <input type="email" id="email" class="form-input" 
+                                       placeholder="例：info@yamada-kensetsu.co.jp" 
+                                       required maxlength="100"
+                                       oninput="updatePreview()">
+                                <div class="error-message" id="emailError"></div>
+                            </div>
+
+                            <!-- カテゴリ -->
+                            <div class="form-group full-width">
+                                <label class="form-label">取扱いカテゴリ <span class="required">*</span></label>
+                                <div class="category-selection">
+                                    <div class="category-grid">
+                                        <div class="category-item">
+                                            <input type="checkbox" id="category1" class="category-checkbox" value="注文住宅" onchange="updatePreview()">
+                                            <label for="category1" class="category-label">注文住宅</label>
+                                        </div>
+                                        <div class="category-item">
+                                            <input type="checkbox" id="category2" class="category-checkbox" value="土地" onchange="updatePreview()">
+                                            <label for="category2" class="category-label">土地</label>
+                                        </div>
+                                        <div class="category-item">
+                                            <input type="checkbox" id="category3" class="category-checkbox" value="新築戸建て" onchange="updatePreview()">
+                                            <label for="category3" class="category-label">新築戸建て</label>
+                                        </div>
+                                        <div class="category-item">
+                                            <input type="checkbox" id="category4" class="category-checkbox" value="中古戸建て" onchange="updatePreview()">
+                                            <label for="category4" class="category-label">中古戸建て</label>
+                                        </div>
+                                        <div class="category-item">
+                                            <input type="checkbox" id="category5" class="category-checkbox" value="新築マンション" onchange="updatePreview()">
+                                            <label for="category5" class="category-label">新築マンション</label>
+                                        </div>
+                                        <div class="category-item">
+                                            <input type="checkbox" id="category6" class="category-checkbox" value="中古マンション" onchange="updatePreview()">
+                                            <label for="category6" class="category-label">中古マンション</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="error-message" id="categoryError"></div>
+                            </div>
+                        </div>
+
+                        <!-- プレビューセクション -->
+                        <div class="preview-section">
+                            <div class="preview-title">登録内容プレビュー</div>
+                            <div class="preview-grid">
+                                <div class="preview-label">企業名:</div>
+                                <div class="preview-value">
+                                    <div id="previewCompanyName" style="font-weight: 600;">-</div>
+                                    <small id="previewCompanyNameKana" style="color: #7a7a7a;">-</small>
+                                </div>
+
+                                <div class="preview-label">代表者名:</div>
+                                <div class="preview-value" id="previewRepresentative">-</div>
+
+                                <div class="preview-label">郵便番号:</div>
+                                <div class="preview-value" id="previewPostal">-</div>
+
+                                <div class="preview-label">住所:</div>
+                                <div class="preview-value" id="previewAddress">-</div>
+
+                                <div class="preview-label">インボイス:</div>
+                                <div class="preview-value" id="previewInvoice">-</div>
+
+                                <div class="preview-label">電話番号:</div>
+                                <div class="preview-value" id="previewPhone">-</div>
+
+                                <div class="preview-label">メールアドレス:</div>
+                                <div class="preview-value" id="previewEmail">-</div>
+
+                                <div class="preview-label">カテゴリ:</div>
+                                <div class="preview-value" id="previewCategories">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-footer">
+                        <div class="form-note">
+                            <span class="required">*</span> 必須項目は必ず入力してください。
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="clearForm()">リセット</button>
+                            <button type="submit" class="btn btn-primary">登録</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // プレビュー更新
+        function updatePreview() {
+            // 企業名
+            const companyName = document.getElementById('companyName').value || '-';
+            const companyNameKana = document.getElementById('companyNameKana').value || '-';
+            document.getElementById('previewCompanyName').textContent = companyName;
+            document.getElementById('previewCompanyNameKana').textContent = companyNameKana;
+
+            // 代表者名
+            document.getElementById('previewRepresentative').textContent = 
+                document.getElementById('representativeName').value || '-';
+
+            // 郵便番号
+            document.getElementById('previewPostal').textContent = 
+                document.getElementById('postalCode').value || '-';
+
+            // 住所
+            document.getElementById('previewAddress').textContent = 
+                document.getElementById('address').value || '-';
+
+            // インボイス
+            document.getElementById('previewInvoice').textContent = 
+                document.getElementById('invoice').value || '-';
+
+            // 電話番号
+            document.getElementById('previewPhone').textContent = 
+                document.getElementById('phone').value || '-';
+
+            // メールアドレス
+            document.getElementById('previewEmail').textContent = 
+                document.getElementById('email').value || '-';
+
+            // カテゴリ
+            const categories = [];
+            document.querySelectorAll('.category-checkbox:checked').forEach(checkbox => {
+                categories.push(checkbox.value);
+            });
+            
+            const categoryContainer = document.getElementById('previewCategories');
+            if (categories.length > 0) {
+                categoryContainer.innerHTML = categories.map(cat => 
+                    `<span class="category-badge">${cat}</span>`
+                ).join(' ');
+            } else {
+                categoryContainer.textContent = '-';
+            }
+        }
+
+        // 住所検索（郵便番号API使用のダミー）
+        function searchAddress() {
+            const postalCode = document.getElementById('postalCode').value;
+            if (!postalCode) {
+                alert('郵便番号を入力してください。');
+                return;
+            }
+
+            // 実際のAPIと連携する場合はここでAJAX通信
+            // ダミーとして一部の郵便番号に対応
+            const dummyAddresses = {
+                '160-0023': '東京都新宿区西新宿',
+                '530-0001': '大阪府大阪市北区梅田',
+                '460-0008': '愛知県名古屋市中区錦',
+                '812-0013': '福岡県福岡市博多区駅東',
+                '220-0012': '神奈川県横浜市西区みなとみらい'
+            };
+
+            const address = dummyAddresses[postalCode];
+            if (address) {
+                document.getElementById('address').value = address;
+                updatePreview();
+                alert(`住所を取得しました: ${address}`);
+            } else {
+                alert('該当する住所が見つかりませんでした。');
+            }
+        }
+
+        // フォームクリア
+        function clearForm() {
+            if (confirm('入力内容をすべてクリアしますか？')) {
+                document.getElementById('companyForm').reset();
+                updatePreview();
+                clearErrors();
+            }
+        }
+
+        // エラーメッセージクリア
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(elem => {
+                elem.textContent = '';
+            });
+            document.querySelectorAll('.error').forEach(elem => {
+                elem.classList.remove('error');
+            });
+        }
+
+        // バリデーション
+        function validateForm() {
+            let isValid = true;
+            clearErrors();
+
+            // 企業名
+            const companyName = document.getElementById('companyName');
+            if (!companyName.value.trim()) {
+                showError('companyName', 'companyNameError', '企業名は必須です');
+                isValid = false;
+            }
+
+            // 企業名（カナ）
+            const companyNameKana = document.getElementById('companyNameKana');
+            if (!companyNameKana.value.trim()) {
+                showError('companyNameKana', 'companyNameKanaError', '企業名（カナ）は必須です');
+                isValid = false;
+            } else if (!/^[ァ-ヶー　 ]+$/.test(companyNameKana.value)) {
+                showError('companyNameKana', 'companyNameKanaError', 'カタカナで入力してください');
+                isValid = false;
+            }
+
+            // 代表者名
+            const representativeName = document.getElementById('representativeName');
+            if (!representativeName.value.trim()) {
+                showError('representativeName', 'representativeNameError', '代表者名は必須です');
+                isValid = false;
+            }
+
+            // 郵便番号
+            const postalCode = document.getElementById('postalCode');
+            if (!postalCode.value.trim()) {
+                showError('postalCode', 'postalCodeError', '郵便番号は必須です');
+                isValid = false;
+            } else if (!/^\d{3}-\d{4}$/.test(postalCode.value)) {
+                showError('postalCode', 'postalCodeError', '郵便番号の形式が正しくありません（例：123-4567）');
+                isValid = false;
+            }
+
+            // 住所
+            const address = document.getElementById('address');
+            if (!address.value.trim()) {
+                showError('address', 'addressError', '住所は必須です');
+                isValid = false;
+            }
+
+            // 電話番号
+            const phone = document.getElementById('phone');
+            if (!phone.value.trim()) {
+                showError('phone', 'phoneError', '電話番号は必須です');
+                isValid = false;
+            } else if (!/^\d{2,4}-\d{3,4}-\d{4}$/.test(phone.value)) {
+                showError('phone', 'phoneError', '電話番号の形式が正しくありません（例：03-1234-5678）');
+                isValid = false;
+            }
+
+            // メールアドレス
+            const email = document.getElementById('email');
+            if (!email.value.trim()) {
+                showError('email', 'emailError', 'メールアドレスは必須です');
+                isValid = false;
+            }
+
+            // インボイス
+            const invoice = document.getElementById('invoice');
+            if (invoice.value && !/^T\d{13}$/.test(invoice.value)) {
+                showError('invoice', 'invoiceError', 'インボイス番号の形式が正しくありません（例：T1234567890123）');
+                isValid = false;
+            }
+
+            // カテゴリ
+            const categories = document.querySelectorAll('.category-checkbox:checked');
+            if (categories.length === 0) {
+                document.getElementById('categoryError').textContent = '少なくとも1つのカテゴリを選択してください';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // エラー表示
+        function showError(inputId, errorId, message) {
+            document.getElementById(inputId).classList.add('error');
+            document.getElementById(errorId).textContent = message;
+        }
+
+        // フォーム送信
+        function submitForm(event) {
+            event.preventDefault();
+            
+            if (validateForm()) {
+                // 実際の処理ではAPIへ送信
+                console.log('企業登録データ:', {
+                    companyName: document.getElementById('companyName').value,
+                    companyNameKana: document.getElementById('companyNameKana').value,
+                    representativeName: document.getElementById('representativeName').value,
+                    postalCode: document.getElementById('postalCode').value,
+                    address: document.getElementById('address').value,
+                    invoice: document.getElementById('invoice').value,
+                    phone: document.getElementById('phone').value,
+                    email: document.getElementById('email').value,
+                    categories: Array.from(document.querySelectorAll('.category-checkbox:checked'))
+                        .map(cb => cb.value)
+                });
+
+                // 成功メッセージ表示
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // フォームリセット
+                setTimeout(() => {
+                    if (confirm('企業情報が登録されました。続けて新しい企業を登録しますか？')) {
+                        clearForm();
+                        document.getElementById('successMessage').style.display = 'none';
+                        window.scrollTo(0, 0);
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                }, 1000);
+            }
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePreview();
+        });
+    </script>
+</body>
+</html>

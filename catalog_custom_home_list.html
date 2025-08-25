@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注文住宅カタログ一覧 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #7a7a7a;
+            color: white;
+        }
+
+        /* 統計カード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7a7a7a;
+            font-size: 14px;
+        }
+
+        /* 検索・フィルター */
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        /* カタログカード */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .catalog-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease;
+        }
+
+        .catalog-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+
+        .catalog-image {
+            width: 100%;
+            height: 200px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #c0c0c0;
+        }
+
+        .catalog-body {
+            padding: 20px;
+        }
+
+        .catalog-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 10px;
+        }
+
+        .catalog-company {
+            font-size: 14px;
+            color: #6a6a6a;
+            margin-bottom: 10px;
+        }
+
+        .catalog-description {
+            font-size: 14px;
+            color: #7a7a7a;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .catalog-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .catalog-stats {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        .catalog-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e5e5e5;
+            color: #4a4a4a;
+        }
+
+        .status-inactive {
+            background: #f0f0f0;
+            color: #7a7a7a;
+        }
+
+        /* テーブルビュー */
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .view-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .view-btn.active {
+            background: #4a4a4a;
+            color: white;
+            border-color: #4a4a4a;
+        }
+
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            display: none;
+        }
+
+        .data-table.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 14px;
+        }
+
+        tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > カタログ請求管理 > 注文住宅 > カタログ一覧
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">🏘️ 注文住宅カタログ一覧</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="exportCatalog()">エクスポート</button>
+                    <button class="btn btn-primary" onclick="window.location.href='catalog_custom_home_register.html'">新規カタログ登録</button>
+                </div>
+            </div>
+
+            <!-- 統計カード -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">登録カタログ数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">公開中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">非公開</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">342</div>
+                    <div class="stat-label">今月の請求数</div>
+                </div>
+            </div>
+
+            <!-- 検索・フィルター -->
+            <div class="search-section">
+                <div class="search-row">
+                    <input type="text" class="search-input" placeholder="カタログ名、企業名で検索..." onkeyup="searchCatalogs()">
+                    <select class="filter-select">
+                        <option value="">全ての企業</option>
+                        <option value="C001">株式会社山田建設</option>
+                        <option value="C002">田中不動産株式会社</option>
+                        <option value="C003">佐藤ハウジング</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">全てのステータス</option>
+                        <option value="active">公開中</option>
+                        <option value="inactive">非公開</option>
+                    </select>
+                    <button class="btn btn-primary">検索</button>
+                </div>
+            </div>
+
+            <!-- ビュー切り替え -->
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="switchView('grid')">📱 カードビュー</button>
+                <button class="view-btn" onclick="switchView('table')">📋 テーブルビュー</button>
+            </div>
+
+            <!-- カタログカードグリッド -->
+            <div id="gridView" class="catalog-grid">
+                <div class="catalog-card">
+                    <div class="catalog-image">📖</div>
+                    <div class="catalog-body">
+                        <h3 class="catalog-title">モダンハウスカタログ2025</h3>
+                        <div class="catalog-company">株式会社山田建設</div>
+                        <p class="catalog-description">
+                            最新のデザイントレンドを取り入れたモダンな住宅カタログ。シンプルで機能的な設計を特徴としています。
+                        </p>
+                        <div class="catalog-meta">
+                            <div>
+                                <span class="status-badge status-active">公開中</span>
+                                <div class="catalog-stats">請求数: 125件</div>
+                            </div>
+                            <div class="catalog-actions">
+                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH001')">編集</button>
+                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH001')">詳細</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="catalog-card">
+                    <div class="catalog-image">📘</div>
+                    <div class="catalog-body">
+                        <h3 class="catalog-title">エコハウスコレクション</h3>
+                        <div class="catalog-company">株式会社山田建設</div>
+                        <p class="catalog-description">
+                            環境に配慮した省エネ住宅のカタログ。太陽光発電や高断熱材を使用した住宅を紹介。
+                        </p>
+                        <div class="catalog-meta">
+                            <div>
+                                <span class="status-badge status-active">公開中</span>
+                                <div class="catalog-stats">請求数: 89件</div>
+                            </div>
+                            <div class="catalog-actions">
+                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH002')">編集</button>
+                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH002')">詳細</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="catalog-card">
+                    <div class="catalog-image">📕</div>
+                    <div class="catalog-body">
+                        <h3 class="catalog-title">和モダン住宅特集</h3>
+                        <div class="catalog-company">佐藤ハウジング</div>
+                        <p class="catalog-description">
+                            日本の伝統美と現代的な快適性を融合させた和モダン住宅のカタログ。
+                        </p>
+                        <div class="catalog-meta">
+                            <div>
+                                <span class="status-badge status-active">公開中</span>
+                                <div class="catalog-stats">請求数: 67件</div>
+                            </div>
+                            <div class="catalog-actions">
+                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH003')">編集</button>
+                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH003')">詳細</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="catalog-card">
+                    <div class="catalog-image">📗</div>
+                    <div class="catalog-body">
+                        <h3 class="catalog-title">スマートホーム2025</h3>
+                        <div class="catalog-company">田中不動産株式会社</div>
+                        <p class="catalog-description">
+                            IoT技術を活用した最新のスマートホーム。快適で安全な暮らしを実現。
+                        </p>
+                        <div class="catalog-meta">
+                            <div>
+                                <span class="status-badge status-inactive">非公開</span>
+                                <div class="catalog-stats">請求数: 0件</div>
+                            </div>
+                            <div class="catalog-actions">
+                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH004')">編集</button>
+                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH004')">詳細</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="catalog-card">
+                    <div class="catalog-image">📙</div>
+                    <div class="catalog-body">
+                        <h3 class="catalog-title">コンパクトハウス</h3>
+                        <div class="catalog-company">鈴木工務店有限会社</div>
+                        <p class="catalog-description">
+                            限られた敷地を最大限に活用する、都市型コンパクト住宅のカタログ。
+                        </p>
+                        <div class="catalog-meta">
+                            <div>
+                                <span class="status-badge status-active">公開中</span>
+                                <div class="catalog-stats">請求数: 45件</div>
+                            </div>
+                            <div class="catalog-actions">
+                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH005')">編集</button>
+                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH005')">詳細</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="catalog-card">
+                    <div class="catalog-image">📓</div>
+                    <div class="catalog-body">
+                        <h3 class="catalog-title">ファミリーハウス</h3>
+                        <div class="catalog-company">高橋デベロップメント株式会社</div>
+                        <p class="catalog-description">
+                            子育て世代に最適な間取りと設備を備えた、ファミリー向け住宅カタログ。
+                        </p>
+                        <div class="catalog-meta">
+                            <div>
+                                <span class="status-badge status-active">公開中</span>
+                                <div class="catalog-stats">請求数: 93件</div>
+                            </div>
+                            <div class="catalog-actions">
+                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH006')">編集</button>
+                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH006')">詳細</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- テーブルビュー -->
+            <div id="tableView" class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>カタログID</th>
+                            <th>カタログ名</th>
+                            <th>企業名</th>
+                            <th>ステータス</th>
+                            <th>請求数</th>
+                            <th>登録日</th>
+                            <th>更新日</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CH001</td>
+                            <td>モダンハウスカタログ2025</td>
+                            <td>株式会社山田建設</td>
+                            <td><span class="status-badge status-active">公開中</span></td>
+                            <td>125件</td>
+                            <td>2025-01-15</td>
+                            <td>2025-08-20</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH001')">編集</button>
+                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH001')">詳細</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CH002</td>
+                            <td>エコハウスコレクション</td>
+                            <td>株式会社山田建設</td>
+                            <td><span class="status-badge status-active">公開中</span></td>
+                            <td>89件</td>
+                            <td>2025-02-01</td>
+                            <td>2025-08-15</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH002')">編集</button>
+                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH002')">詳細</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CH003</td>
+                            <td>和モダン住宅特集</td>
+                            <td>佐藤ハウジング</td>
+                            <td><span class="status-badge status-active">公開中</span></td>
+                            <td>67件</td>
+                            <td>2025-03-10</td>
+                            <td>2025-08-10</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH003')">編集</button>
+                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH003')">詳細</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- 詳細モーダル -->
+    <div id="catalogModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">カタログ詳細</h3>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- カタログ詳細情報 -->
+                <p>カタログの詳細情報がここに表示されます。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ビュー切り替え
+        function switchView(view) {
+            const gridView = document.getElementById('gridView');
+            const tableView = document.getElementById('tableView');
+            const viewBtns = document.querySelectorAll('.view-btn');
+            
+            viewBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (view === 'grid') {
+                gridView.style.display = 'grid';
+                tableView.classList.remove('active');
+            } else {
+                gridView.style.display = 'none';
+                tableView.classList.add('active');
+            }
+        }
+
+        // カタログ検索
+        function searchCatalogs() {
+            console.log('Searching catalogs...');
+        }
+
+        // カタログ編集
+        function editCatalog(catalogId) {
+            console.log('Editing catalog:', catalogId);
+            window.location.href = 'catalog_custom_home_register.html?id=' + catalogId;
+        }
+
+        // カタログ詳細表示
+        function viewCatalog(catalogId) {
+            document.getElementById('catalogModal').classList.add('show');
+            console.log('Viewing catalog:', catalogId);
+        }
+
+        // モーダルを閉じる
+        function closeModal() {
+            document.getElementById('catalogModal').classList.remove('show');
+        }
+
+        // エクスポート
+        function exportCatalog() {
+            alert('カタログデータをエクスポート中...');
+        }
+    </script>
+</body>
+</html>

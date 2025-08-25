@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>問い合わせ管理 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* 統計カード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7a7a7a;
+            font-size: 14px;
+        }
+
+        /* フィルター */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        /* テーブル */
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 14px;
+        }
+
+        tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-new {
+            background: #f0f0f0;
+            color: #5a5a5a;
+        }
+
+        .status-processing {
+            background: #e5e5e5;
+            color: #4a4a4a;
+        }
+
+        .status-completed {
+            background: #e0e0e0;
+            color: #3a3a3a;
+        }
+
+        .status-hold {
+            background: #e8e8e8;
+            color: #6a6a6a;
+        }
+
+        .priority-high {
+            background: #f5f5f5;
+            color: #2c2c2c;
+            border-left: 4px solid #6a6a6a;
+        }
+
+        .priority-medium {
+            background: #fafafa;
+            color: #4a4a4a;
+        }
+
+        .priority-low {
+            background: #f9f9f9;
+            color: #7a7a7a;
+        }
+
+        .checkbox-cell {
+            width: 40px;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 15px 25px;
+            background: #fafafa;
+            border-top: 1px solid #d0d0d0;
+        }
+
+        .selected-count {
+            color: #6a6a6a;
+            font-size: 14px;
+        }
+
+        .inquiry-type {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .type-general {
+            background: #f0f0f0;
+            color: #5a5a5a;
+        }
+
+        .type-catalog {
+            background: #e5e5e5;
+            color: #4a4a4a;
+        }
+
+        .type-event {
+            background: #e8e8e8;
+            color: #3a3a3a;
+        }
+
+        .type-complaint {
+            background: #f5f5f5;
+            color: #2c2c2c;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 900px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6a6a6a;
+        }
+
+        .detail-value {
+            color: #2c2c2c;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .inquiry-content {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+
+        .response-area {
+            margin-top: 20px;
+        }
+
+        .response-textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .response-history {
+            background: #fafafa;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .response-item {
+            padding: 15px;
+            border-left: 3px solid #e0e0e0;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .response-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .response-author {
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        .response-time {
+            color: #7a7a7a;
+            font-size: 12px;
+        }
+
+        .response-content {
+            color: #2c2c2c;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* タブナビゲーション */
+        .tab-nav {
+            display: flex;
+            gap: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .tab-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            color: #6a6a6a;
+        }
+
+        .tab-item:hover {
+            color: #4a4a4a;
+        }
+
+        .tab-item.active {
+            color: #2c2c2c;
+            border-bottom-color: #4a4a4a;
+            font-weight: 600;
+        }
+
+        .attachment-list {
+            margin-top: 15px;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+
+        .attachment-icon {
+            color: #6a6a6a;
+        }
+
+        .attachment-name {
+            color: #4a4a4a;
+            text-decoration: none;
+        }
+
+        .attachment-name:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 会員管理 > 問い合わせ管理
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">💬 問い合わせ管理</h2>
+            </div>
+
+            <!-- 統計カード -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">234</div>
+                    <div class="stat-label">総問い合わせ数</div>
+                </div>
+            </div>
+
+            <!-- フィルター -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">問い合わせ種別</label>
+                        <select class="filter-select" id="typeFilter" onchange="filterTable()">
+                            <option value="">全て</option>
+                            <option value="general">一般問い合わせ</option>
+                            <option value="catalog">カタログ関連</option>
+                            <option value="event">イベント関連</option>
+                            <option value="complaint">苦情・要望</option>
+                            <option value="technical">技術的問題</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">優先度</label>
+                        <select class="filter-select" id="priorityFilter" onchange="filterTable()">
+                            <option value="">全て</option>
+                            <option value="high">高</option>
+                            <option value="medium">中</option>
+                            <option value="low">低</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-group" style="grid-column: span 3;">
+                        <label class="filter-label">キーワード検索</label>
+                        <input type="text" class="filter-input" id="searchBox" placeholder="件名、内容、顧客名で検索..." onkeyup="searchInquiries()">
+                    </div>
+                    <div class="search-controls">
+                        <button class="btn btn-secondary" onclick="clearFilters()">フィルタークリア</button>
+                        <button class="btn btn-primary" onclick="applyFilters()">検索</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- データテーブル -->
+            <div class="data-table">
+                <div class="table-header">
+                    <h3 class="table-title">問い合わせリスト</h3>
+                    <div class="table-controls">
+                        <span class="selected-count">0件選択中</span>
+                    </div>
+                </div>
+                
+                <table id="inquiryTable">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-cell">
+                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                            </th>
+                            <th>ID</th>
+                            <th>問い合わせ日時</th>
+                            <th>種別</th>
+                            <th>件名</th>
+                            <th>顧客情報</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="priority-high">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>INQ001</td>
+                            <td>2025-08-25 09:30</td>
+                            <td><span class="inquiry-type type-complaint">苦情・要望</span></td>
+                            <td>
+                                <div style="font-weight: 600; margin-bottom: 5px;">カタログの配送について</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">配送が遅れているとのご指摘</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600;">山田 太郎</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">yamada@example.com</div>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openInquiryModal('INQ001')">詳細</button>
+                                <button class="btn btn-secondary btn-sm" onclick="openReplyModal('INQ001', 'yamada@example.com', '山田 太郎')">返信</button>
+                            </td>
+                        </tr>
+                        <tr class="priority-medium">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>INQ002</td>
+                            <td>2025-08-25 11:15</td>
+                            <td><span class="inquiry-type type-catalog">カタログ関連</span></td>
+                            <td>
+                                <div style="font-weight: 600; margin-bottom: 5px;">追加資料の請求</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">価格表と詳細間取り図の請求</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600;">佐藤 花子</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">sato@example.com</div>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openInquiryModal('INQ002')">詳細</button>
+                                <button class="btn btn-secondary btn-sm" onclick="openReplyModal('INQ002', 'sato@example.com', '佐藤 花子')">返信</button>
+                            </td>
+                        </tr>
+                        <tr class="priority-low">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>INQ003</td>
+                            <td>2025-08-24 16:45</td>
+                            <td><span class="inquiry-type type-general">一般問い合わせ</span></td>
+                            <td>
+                                <div style="font-weight: 600; margin-bottom: 5px;">展示場の営業時間について</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">土日の営業時間の確認</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600;">鈴木 一郎</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">suzuki@example.com</div>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openInquiryModal('INQ003')">詳細</button>
+                                <button class="btn btn-secondary btn-sm" onclick="openReplyModal('INQ003', 'suzuki@example.com', '鈴木 一郎')">返信</button>
+                            </td>
+                        </tr>
+                        <tr class="priority-high">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>INQ004</td>
+                            <td>2025-08-24 14:20</td>
+                            <td><span class="inquiry-type type-event">イベント関連</span></td>
+                            <td>
+                                <div style="font-weight: 600; margin-bottom: 5px;">見学会の予約変更</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">急遽参加できなくなったため</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600;">田中 美咲</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">tanaka@example.com</div>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openInquiryModal('INQ004')">詳細</button>
+                                <button class="btn btn-secondary btn-sm" onclick="openReplyModal('INQ004', 'tanaka@example.com', '田中 美咲')">返信</button>
+                            </td>
+                        </tr>
+                        <tr class="priority-medium">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
+                            </td>
+                            <td>INQ005</td>
+                            <td>2025-08-24 10:30</td>
+                            <td><span class="inquiry-type type-general">一般問い合わせ</span></td>
+                            <td>
+                                <div style="font-weight: 600; margin-bottom: 5px;">土地探しのサポート</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">予算3000万円での土地探し相談</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600;">高橋 健太</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">takahashi@example.com</div>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openInquiryModal('INQ005')">詳細</button>
+                                <button class="btn btn-secondary btn-sm" onclick="openReplyModal('INQ005', 'takahashi@example.com', '高橋 健太')">返信</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- 詳細モーダル -->
+    <div id="inquiryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">問い合わせ詳細</h3>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4 style="margin-bottom: 15px; color: #4a4a4a;">問い合わせ情報</h4>
+                <div class="detail-grid">
+                    <div class="detail-label">問い合わせID:</div>
+                    <div class="detail-value" id="detailInquiryId">INQ001</div>
+                    
+                    <div class="detail-label">受付日時:</div>
+                    <div class="detail-value" id="detailReceiveDate">2025-08-25 09:30</div>
+                    
+                    <div class="detail-label">種別:</div>
+                    <div class="detail-value" id="detailType">苦情・要望</div>
+                    
+                    <div class="detail-label">優先度:</div>
+                    <div class="detail-value" id="detailPriority">高</div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">顧客情報</h4>
+                <div class="detail-grid">
+                    <div class="detail-label">氏名:</div>
+                    <div class="detail-value" id="detailCustomerName">山田 太郎</div>
+                    
+                    <div class="detail-label">メールアドレス:</div>
+                    <div class="detail-value" id="detailCustomerEmail">yamada@example.com</div>
+                    
+                    <div class="detail-label">電話番号:</div>
+                    <div class="detail-value" id="detailCustomerPhone">090-1234-5678</div>
+                    
+                    <div class="detail-label">会員ID:</div>
+                    <div class="detail-value" id="detailMemberId">M001234</div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">問い合わせ内容</h4>
+                <div style="margin-bottom: 10px;"><strong>件名:</strong> カタログの配送について</div>
+                <div class="inquiry-content" id="detailContent">
+                    先日カタログを請求させていただきましたが、1週間経っても届いておりません。
+                    配送状況についてご確認いただけますでしょうか。
+                    
+                    以下の情報でお願いしました：
+                    - 請求日: 2025-08-18
+                    - 請求カタログ: モダンハウスカタログ2025
+                    - 配送先: 東京都新宿区西新宿1-1-1
+                    
+                    お忙しいところ恐れ入りますが、確認のほどよろしくお願いいたします。
+                </div>
+
+                <div class="attachment-list">
+                    <h5 style="margin-bottom: 10px; color: #4a4a4a;">添付ファイル</h5>
+                    <div class="attachment-item">
+                        <span class="attachment-icon">📎</span>
+                        <a href="#" class="attachment-name">配送先住所.pdf</a>
+                        <span style="font-size: 12px; color: #7a7a7a;">(124KB)</span>
+                    </div>
+                </div>
+
+                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">対応履歴</h4>
+                <div class="response-history">
+                    <div class="response-item">
+                        <div class="response-header">
+                            <span class="response-author">システム</span>
+                            <span class="response-time">2025-08-25 09:30</span>
+                        </div>
+                        <div class="response-content">問い合わせを受け付けました。</div>
+                    </div>
+                </div>
+
+                <div class="response-area">
+                    <h5 style="margin-bottom: 10px; color: #4a4a4a;">メール送信履歴</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- メール返信モーダル -->
+    <div id="replyModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title">📧 メール返信</h3>
+                <button class="close" onclick="closeReplyModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- 受信者情報 -->
+                <div class="reply-info-section">
+                    <h4 style="margin-bottom: 15px; color: #4a4a4a;">返信先情報</h4>
+                    <div class="detail-grid">
+                        <div class="detail-label">宛先:</div>
+                        <div class="detail-value">
+                            <span id="recipientName" style="font-weight: 600;">山田 太郎</span>
+                            <span style="color: #7a7a7a; margin-left: 10px;" id="recipientEmail">&lt;yamada@example.com&gt;</span>
+                        </div>
+                        
+                        <div class="detail-label">問い合わせID:</div>
+                        <div class="detail-value" id="replyInquiryId">INQ001</div>
+
+                        <div class="detail-label">返信日時:</div>
+                        <div class="detail-value" id="replyDate">2025-08-25 15:30</div>
+                    </div>
+                </div>
+
+                <!-- メール作成フォーム -->
+                <form id="replyForm" style="margin-top: 25px;">
+                    <div class="form-group">
+                        <label class="form-label">件名 <span style="color: #d32f2f;">*</span></label>
+                        <input type="text" id="emailSubject" class="form-input" 
+                               placeholder="例：Re: お問い合わせありがとうございます" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">テンプレート</label>
+                        <select id="emailTemplate" class="form-select" onchange="applyTemplate()">
+                            <option value="">テンプレートを選択（任意）</option>
+                            <option value="thanks">お問い合わせありがとうございます</option>
+                            <option value="catalog">カタログ送付のご案内</option>
+                            <option value="schedule">見学日程のご提案</option>
+                            <option value="follow">追加資料のご案内</option>
+                            <option value="contact">担当者からの連絡</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">本文 <span style="color: #d32f2f;">*</span></label>
+                        <textarea id="emailBody" class="form-textarea" rows="12" 
+                                  placeholder="メール本文を入力してください..." required></textarea>
+                        <div style="font-size: 12px; color: #7a7a7a; margin-top: 5px;">
+                            自動で署名が追加されます
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">添付ファイル</label>
+                        <div class="file-upload-area" onclick="document.getElementById('attachments').click()">
+                            <input type="file" id="attachments" multiple style="display: none;" onchange="updateAttachmentList()">
+                            <div id="uploadPrompt" style="padding: 20px; border: 2px dashed #c0c0c0; border-radius: 6px; text-align: center; color: #7a7a7a; cursor: pointer;">
+                                📎 ファイルを選択またはドラッグ&ドロップ
+                            </div>
+                            <div id="attachmentList" style="margin-top: 10px; display: none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- メール送信オプション -->
+                    <div class="form-group">
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="sendCopy" checked>
+                                <label for="sendCopy" style="font-size: 14px;">担当者にもコピーを送信</label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="markAsReplied" checked>
+                                <label for="markAsReplied" style="font-size: 14px;">問い合わせステータスを「返信済み」に更新</label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="scheduleFollowUp">
+                                <label for="scheduleFollowUp" style="font-size: 14px;">フォローアップリマインダーを設定</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- フォローアップ設定 -->
+                    <div id="followUpSettings" style="display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 6px;">
+                        <h5 style="margin-bottom: 10px; color: #4a4a4a;">フォローアップ設定</h5>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div>
+                                <label style="font-size: 12px; color: #6a6a6a; margin-bottom: 5px; display: block;">リマインダー日時</label>
+                                <input type="datetime-local" id="followUpDate" class="form-input">
+                            </div>
+                            <div>
+                                <label style="font-size: 12px; color: #6a6a6a; margin-bottom: 5px; display: block;">メモ</label>
+                                <input type="text" id="followUpNote" class="form-input" placeholder="フォローアップ内容">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- プレビューセクション -->
+                <div id="emailPreview" style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 6px; display: none;">
+                    <h5 style="margin-bottom: 10px; color: #4a4a4a;">📋 送信内容プレビュー</h5>
+                    <div style="font-size: 12px; line-height: 1.6; white-space: pre-wrap;" id="previewContent"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div>
+                    <button type="button" class="btn btn-secondary" onclick="togglePreview()">プレビュー</button>
+                    <button type="button" class="btn btn-secondary" onclick="saveDraft()">下書き保存</button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-secondary" onclick="closeReplyModal()">キャンセル</button>
+                    <button type="button" class="btn btn-primary" onclick="sendReply()">送信</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 選択数の更新
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            const countElements = document.querySelectorAll('.selected-count');
+            countElements.forEach(el => {
+                el.textContent = `${checkboxes.length}件選択中`;
+            });
+        }
+
+        // 全選択/全解除
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = selectAll.checked;
+            });
+            updateSelectedCount();
+        }
+
+        // 詳細モーダルを開く
+        function openInquiryModal(inquiryId) {
+            document.getElementById('inquiryModal').classList.add('show');
+            console.log('Opening inquiry detail for:', inquiryId);
+        }
+
+        // モーダルを閉じる
+        function closeModal() {
+            document.getElementById('inquiryModal').classList.remove('show');
+        }
+
+        // 検索機能
+        function searchInquiries() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const rows = document.querySelectorAll('#inquiryTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // フィルタークリア
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('priorityFilter').value = '';
+            document.getElementById('assigneeFilter').value = '';
+            document.getElementById('searchBox').value = '';
+            filterTable();
+        }
+
+        // フィルター適用
+        function filterTable() {
+            console.log('Applying filters...');
+        }
+
+        // タブ切り替え
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-item');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            console.log('Switching to tab:', tabName);
+        }
+
+        // CSV エクスポート
+        function exportInquiries() {
+            console.log('Exporting inquiries...');
+            alert('問い合わせデータをCSVでエクスポート中...');
+        }
+
+        // 一括担当者割り当て
+        function bulkAssign() {
+            const selected = document.querySelectorAll('.row-checkbox:checked');
+            if (selected.length === 0) {
+                alert('担当者を割り当てる問い合わせを選択してください');
+                return;
+            }
+            console.log('Bulk assigning inquiries:', selected.length);
+        }
+
+        // 一括ステータス更新
+        function bulkUpdateStatus(status) {
+            const selected = document.querySelectorAll('.row-checkbox:checked');
+            if (selected.length === 0) {
+                alert('ステータスを変更する問い合わせを選択してください');
+                return;
+            }
+            
+            if (confirm(`選択した${selected.length}件を${status}に変更しますか？`)) {
+                console.log('Updating status to:', status);
+            }
+        }
+
+        // 選択項目のエクスポート
+        function bulkExport() {
+            const selected = document.querySelectorAll('.row-checkbox:checked');
+            if (selected.length === 0) {
+                alert('エクスポートする問い合わせを選択してください');
+                return;
+            }
+            console.log('Exporting selected inquiries...');
+        }
+
+        // 返信送信
+        function saveResponse() {
+            const responseText = document.querySelector('.response-textarea').value;
+            if (responseText.trim()) {
+                if (confirm('返信を送信しますか？')) {
+                    console.log('Sending response:', responseText);
+                    alert('返信を送信しました');
+                    closeModal();
+                }
+            } else {
+                alert('返信内容を入力してください');
+            }
+        }
+
+        // 新規問い合わせ登録
+        function openNewInquiryModal() {
+            alert('新規問い合わせ登録機能は実装予定です');
+        }
+
+        // メール返信モーダルを開く
+        function openReplyModal(inquiryId, email, name) {
+            // モーダル表示
+            document.getElementById('replyModal').classList.add('show');
+            
+            // 返信先情報を設定
+            document.getElementById('recipientName').textContent = name;
+            document.getElementById('recipientEmail').textContent = `<${email}>`;
+            document.getElementById('replyInquiryId').textContent = inquiryId;
+            
+            // 現在時刻を設定
+            const now = new Date();
+            const dateStr = now.getFullYear() + '-' + 
+                          String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                          String(now.getDate()).padStart(2, '0') + ' ' +
+                          String(now.getHours()).padStart(2, '0') + ':' + 
+                          String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('replyDate').textContent = dateStr;
+
+            // 件名にRe:を自動設定
+            document.getElementById('emailSubject').value = `Re: ${inquiryId} お問い合わせの件`;
+            
+            // フォームをリセット
+            document.getElementById('emailBody').value = '';
+            document.getElementById('emailTemplate').value = '';
+            document.getElementById('attachments').value = '';
+            document.getElementById('attachmentList').style.display = 'none';
+            document.getElementById('emailPreview').style.display = 'none';
+            document.getElementById('followUpSettings').style.display = 'none';
+        }
+
+        // メール返信モーダルを閉じる
+        function closeReplyModal() {
+            document.getElementById('replyModal').classList.remove('show');
+        }
+
+        // テンプレート適用
+        function applyTemplate() {
+            const template = document.getElementById('emailTemplate').value;
+            const recipientName = document.getElementById('recipientName').textContent;
+            const inquiryId = document.getElementById('replyInquiryId').textContent;
+            
+            let templateText = '';
+            
+            switch(template) {
+                case 'thanks':
+                    templateText = `${recipientName}様
+
+この度は、弊社にお問い合わせをいただき、誠にありがとうございます。
+
+お問い合わせ内容を確認いたしました。
+詳細につきまして、担当者より改めてご連絡させていただきます。
+
+今後ともよろしくお願いいたします。`;
+                    break;
+                case 'catalog':
+                    templateText = `${recipientName}様
+
+お問い合わせいただきました資料をお送りいたします。
+
+添付ファイルにて資料をお送りしておりますので、ご確認ください。
+ご不明な点がございましたら、お気軽にお問い合わせください。
+
+何かご質問がございましたら、お気軽にご連絡ください。`;
+                    break;
+                case 'schedule':
+                    templateText = `${recipientName}様
+
+見学のお申し込みをいただき、ありがとうございます。
+
+以下の日程にて見学のお時間を確保させていただきました：
+
+見学予定日：○月○日（○）○○:○○〜
+集合場所：
+担当者：
+
+当日お会いできることを楽しみにしております。`;
+                    break;
+                case 'follow':
+                    templateText = `${recipientName}様
+
+先日はお問い合わせいただき、ありがとうございました。
+
+追加の資料をご用意いたしましたので、添付ファイルにてお送りいたします。
+ご検討の参考にしていただければと思います。
+
+ご不明な点がございましたら、いつでもお気軽にお問い合わせください。`;
+                    break;
+                case 'contact':
+                    templateText = `${recipientName}様
+
+お忙しい中、お問い合わせをいただきありがとうございます。
+
+担当者の○○より、改めてご連絡させていただきます。
+お電話でのご連絡をご希望の場合は、ご都合の良いお時間をお教えください。
+
+引き続きよろしくお願いいたします。`;
+                    break;
+            }
+            
+            if (templateText) {
+                document.getElementById('emailBody').value = templateText;
+            }
+        }
+
+        // 添付ファイルリスト更新
+        function updateAttachmentList() {
+            const files = document.getElementById('attachments').files;
+            const attachmentList = document.getElementById('attachmentList');
+            const uploadPrompt = document.getElementById('uploadPrompt');
+            
+            if (files.length > 0) {
+                uploadPrompt.style.display = 'none';
+                attachmentList.style.display = 'block';
+                attachmentList.innerHTML = '';
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const fileItem = document.createElement('div');
+                    fileItem.style.cssText = 'display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid #e0e0e0;';
+                    fileItem.innerHTML = `
+                        <span>📎</span>
+                        <span style="flex: 1; font-size: 14px;">${file.name}</span>
+                        <span style="font-size: 12px; color: #7a7a7a;">(${(file.size / 1024).toFixed(1)}KB)</span>
+                        <button type="button" onclick="removeAttachment(${i})" style="background: none; border: none; color: #d32f2f; cursor: pointer;">✕</button>
+                    `;
+                    attachmentList.appendChild(fileItem);
+                }
+            } else {
+                uploadPrompt.style.display = 'block';
+                attachmentList.style.display = 'none';
+            }
+        }
+
+        // 添付ファイル削除
+        function removeAttachment(index) {
+            const fileInput = document.getElementById('attachments');
+            const dt = new DataTransfer();
+            
+            for (let i = 0; i < fileInput.files.length; i++) {
+                if (i !== index) {
+                    dt.items.add(fileInput.files[i]);
+                }
+            }
+            
+            fileInput.files = dt.files;
+            updateAttachmentList();
+        }
+
+        // プレビュー表示切り替え
+        function togglePreview() {
+            const preview = document.getElementById('emailPreview');
+            const subject = document.getElementById('emailSubject').value;
+            const body = document.getElementById('emailBody').value;
+            const recipientName = document.getElementById('recipientName').textContent;
+            const recipientEmail = document.getElementById('recipientEmail').textContent;
+            
+            if (preview.style.display === 'none' || !preview.style.display) {
+                const previewText = `件名: ${subject}
+宛先: ${recipientName} ${recipientEmail}
+送信者: 田中 太郎 <tanaka@company.co.jp>
+
+${body}
+
+--
+株式会社〇〇不動産
+田中 太郎
+TEL: 03-1234-5678
+Email: tanaka@company.co.jp`;
+                
+                document.getElementById('previewContent').textContent = previewText;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // フォローアップ設定表示切り替え
+        document.getElementById('scheduleFollowUp').addEventListener('change', function() {
+            const settings = document.getElementById('followUpSettings');
+            if (this.checked) {
+                settings.style.display = 'block';
+                // デフォルトで1週間後を設定
+                const followUpDate = new Date();
+                followUpDate.setDate(followUpDate.getDate() + 7);
+                const dateStr = followUpDate.toISOString().slice(0, 16);
+                document.getElementById('followUpDate').value = dateStr;
+            } else {
+                settings.style.display = 'none';
+            }
+        });
+
+        // 下書き保存
+        function saveDraft() {
+            const subject = document.getElementById('emailSubject').value;
+            const body = document.getElementById('emailBody').value;
+            
+            if (subject || body) {
+                console.log('Saving draft:', { subject, body });
+                alert('下書きを保存しました。');
+            } else {
+                alert('保存する内容がありません。');
+            }
+        }
+
+        // メール送信
+        function sendReply() {
+            const subject = document.getElementById('emailSubject').value;
+            const body = document.getElementById('emailBody').value;
+            const recipientEmail = document.getElementById('recipientEmail').textContent.replace('<', '').replace('>', '');
+            const inquiryId = document.getElementById('replyInquiryId').textContent;
+            
+            if (subject && body) {
+                const replyData = {
+                    inquiryId: inquiryId,
+                    to: recipientEmail,
+                    subject: subject,
+                    body: body,
+                    sendCopy: document.getElementById('sendCopy').checked,
+                    markAsReplied: document.getElementById('markAsReplied').checked,
+                    scheduleFollowUp: document.getElementById('scheduleFollowUp').checked
+                };
+                
+                if (replyData.scheduleFollowUp) {
+                    replyData.followUpDate = document.getElementById('followUpDate').value;
+                    replyData.followUpNote = document.getElementById('followUpNote').value;
+                }
+                
+                console.log('Sending reply:', replyData);
+                
+                if (confirm('メールを送信しますか？')) {
+                    alert('メールを送信しました。');
+                    closeReplyModal();
+                    
+                    // ステータス更新
+                    if (replyData.markAsReplied) {
+                        // 実際の実装では対象行のステータスを更新
+                        console.log('Status updated to replied for:', inquiryId);
+                    }
+                }
+            } else {
+                alert('件名と本文を入力してください。');
+            }
+        }
+
+        // モーダル外クリックで閉じる
+        window.addEventListener('click', function(event) {
+            const replyModal = document.getElementById('replyModal');
+            if (event.target === replyModal) {
+                closeReplyModal();
+            }
+        });
+    </script>
+</body>
+</html>

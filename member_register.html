@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会員登録 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* フォームコンテナ */
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .form-body {
+            padding: 25px;
+        }
+
+        .form-section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .required {
+            color: #d32f2f;
+        }
+
+        .form-input {
+            padding: 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4a4a4a;
+        }
+
+        .form-select {
+            padding: 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-checkbox input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .form-checkbox label {
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* アバターアップロード */
+        .avatar-upload {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border: 2px dashed #c0c0c0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            font-size: 12px;
+            color: #6a6a6a;
+            text-align: center;
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .upload-btn {
+            padding: 8px 16px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .upload-btn:hover {
+            background: #5a6268;
+        }
+
+        /* 郵便番号検索 */
+        .postal-search {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .postal-input {
+            flex: 1;
+        }
+
+        .postal-btn {
+            padding: 12px 16px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .postal-btn:hover {
+            background: #5a6268;
+        }
+
+        /* フォームフッター */
+        .form-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-note {
+            font-size: 12px;
+            color: #6a6a6a;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 成功メッセージ */
+        .success-message {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        /* バリデーションエラー */
+        .error {
+            border-color: #d32f2f !important;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 会員管理 > 会員登録
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">👤 会員登録</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="window.location.href='member_list.html'">一覧に戻る</button>
+                    <button class="btn btn-secondary" onclick="clearForm()">クリア</button>
+                </div>
+            </div>
+
+            <!-- 成功メッセージ（表示時のみ） -->
+            <div id="successMessage" class="success-message" style="display: none;">
+                会員情報が正常に登録されました。
+            </div>
+
+            <form id="memberForm" class="form-container" onsubmit="submitForm(event)">
+                <div class="form-body">
+                    <!-- 基本情報セクション -->
+                    <div class="form-section">
+                        <h3 class="section-title">基本情報</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">姓 <span class="required">*</span></label>
+                                <input type="text" id="lastName" class="form-input" placeholder="例：山田" required>
+                                <div class="error-message" id="lastNameError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">名 <span class="required">*</span></label>
+                                <input type="text" id="firstName" class="form-input" placeholder="例：太郎" required>
+                                <div class="error-message" id="firstNameError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">姓（カナ） <span class="required">*</span></label>
+                                <input type="text" id="lastNameKana" class="form-input" placeholder="例：ヤマダ" required pattern="[ァ-ヶー　 ]*">
+                                <div class="error-message" id="lastNameKanaError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">名（カナ） <span class="required">*</span></label>
+                                <input type="text" id="firstNameKana" class="form-input" placeholder="例：タロウ" required pattern="[ァ-ヶー　 ]*">
+                                <div class="error-message" id="firstNameKanaError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">生年月日 <span class="required">*</span></label>
+                                <input type="date" id="birthDate" class="form-input" required>
+                                <div class="error-message" id="birthDateError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">性別 <span class="required">*</span></label>
+                                <select id="gender" class="form-select" required>
+                                    <option value="">選択してください</option>
+                                    <option value="male">男性</option>
+                                    <option value="female">女性</option>
+                                    <option value="other">その他</option>
+                                    <option value="no_answer">回答しない</option>
+                                </select>
+                                <div class="error-message" id="genderError"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 連絡先情報セクション -->
+                    <div class="form-section">
+                        <h3 class="section-title">連絡先情報</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">郵便番号 <span class="required">*</span></label>
+                                <div class="postal-search">
+                                    <input type="text" id="postalCode" class="form-input postal-input" 
+                                           placeholder="例：160-0023" required pattern="\d{3}-\d{4}">
+                                    <button type="button" class="postal-btn" onclick="searchAddress()">住所検索</button>
+                                </div>
+                                <div class="error-message" id="postalCodeError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">都道府県 <span class="required">*</span></label>
+                                <select id="prefecture" class="form-select" required>
+                                    <option value="">都道府県を選択</option>
+                                    <option value="tokyo">東京都</option>
+                                    <option value="kanagawa">神奈川県</option>
+                                    <option value="chiba">千葉県</option>
+                                    <option value="saitama">埼玉県</option>
+                                </select>
+                                <div class="error-message" id="prefectureError"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">住所 <span class="required">*</span></label>
+                            <input type="text" id="address" class="form-input" 
+                                   placeholder="例：新宿区西新宿1-1-1 新宿マンション101" required>
+                            <div class="error-message" id="addressError"></div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">電話番号 <span class="required">*</span></label>
+                                <input type="tel" id="phone" class="form-input" 
+                                       placeholder="例：090-1234-5678" required pattern="\d{2,4}-\d{3,4}-\d{4}">
+                                <div class="error-message" id="phoneError"></div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">メールアドレス <span class="required">*</span></label>
+                                <input type="email" id="email" class="form-input" 
+                                       placeholder="例：yamada@example.com" required>
+                                <div class="error-message" id="emailError"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- アカウント設定セクション -->
+                    <div class="form-section">
+                        <h3 class="section-title">アカウント設定</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">通知設定</label>
+                            <div style="display: flex; flex-direction: column; gap: 15px;">
+                                <div class="form-checkbox">
+                                    <input type="checkbox" id="emailNotification" checked>
+                                    <label for="emailNotification">土地情報通知を受け取る</label>
+                                </div>
+                                <div class="form-checkbox">
+                                    <input type="checkbox" id="smsNotification">
+                                    <label for="smsNotification">○○通知を受け取る</label>
+                                </div>
+                                <div class="form-checkbox">
+                                    <input type="checkbox" id="newsNotification" checked>
+                                    <label for="newsNotification">○○を受け取る</label>
+                                </div>
+                                <div class="form-checkbox">
+                                    <input type="checkbox" id="eventNotification">
+                                    <label for="eventNotification">イベント情報を受け取る</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <div class="form-note">
+                        <span class="required">*</span> 必須項目は必ず入力してください。
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">リセット</button>
+                        <button type="submit" class="btn btn-primary">登録</button>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        // アバター画像プレビュー
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('avatarPreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="プレビュー">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 住所検索（郵便番号API使用のダミー）
+        function searchAddress() {
+            const postalCode = document.getElementById('postalCode').value;
+            if (!postalCode) {
+                alert('郵便番号を入力してください。');
+                return;
+            }
+
+            // ダミーデータ
+            const dummyAddresses = {
+                '160-0023': { prefecture: 'tokyo', address: '新宿区西新宿' },
+                '530-0001': { prefecture: 'kanagawa', address: '大阪市北区梅田' },
+                '460-0008': { prefecture: 'chiba', address: '名古屋市中区錦' },
+                '812-0013': { prefecture: 'saitama', address: '福岡市博多区駅東' }
+            };
+
+            const addressData = dummyAddresses[postalCode];
+            if (addressData) {
+                document.getElementById('prefecture').value = addressData.prefecture;
+                document.getElementById('address').value = addressData.address;
+                alert(`住所を取得しました: ${addressData.address}`);
+            } else {
+                alert('該当する住所が見つかりませんでした。');
+            }
+        }
+
+        // フォームクリア
+        function clearForm() {
+            if (confirm('入力内容をすべてクリアしますか？')) {
+                document.getElementById('memberForm').reset();
+                document.getElementById('avatarPreview').innerHTML = 'プロフィール<br>画像';
+                clearErrors();
+            }
+        }
+
+        // エラーメッセージクリア
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(elem => {
+                elem.textContent = '';
+            });
+            document.querySelectorAll('.error').forEach(elem => {
+                elem.classList.remove('error');
+            });
+        }
+
+        // バリデーション
+        function validateForm() {
+            let isValid = true;
+            clearErrors();
+
+            // 必須項目のチェック
+            const requiredFields = [
+                { id: 'lastName', error: 'lastNameError', message: '姓は必須です' },
+                { id: 'firstName', error: 'firstNameError', message: '名は必須です' },
+                { id: 'lastNameKana', error: 'lastNameKanaError', message: '姓（カナ）は必須です' },
+                { id: 'firstNameKana', error: 'firstNameKanaError', message: '名（カナ）は必須です' },
+                { id: 'birthDate', error: 'birthDateError', message: '生年月日は必須です' },
+                { id: 'gender', error: 'genderError', message: '性別は必須です' },
+                { id: 'postalCode', error: 'postalCodeError', message: '郵便番号は必須です' },
+                { id: 'prefecture', error: 'prefectureError', message: '都道府県は必須です' },
+                { id: 'address', error: 'addressError', message: '住所は必須です' },
+                { id: 'phone', error: 'phoneError', message: '電話番号は必須です' },
+                { id: 'email', error: 'emailError', message: 'メールアドレスは必須です' }
+            ];
+
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field.id);
+                if (!element.value.trim()) {
+                    showError(field.id, field.error, field.message);
+                    isValid = false;
+                }
+            });
+
+            // カナのパターンチェック
+            const kanaFields = ['lastNameKana', 'firstNameKana'];
+            kanaFields.forEach(fieldId => {
+                const element = document.getElementById(fieldId);
+                if (element.value && !/^[ァ-ヶー　 ]+$/.test(element.value)) {
+                    showError(fieldId, fieldId + 'Error', 'カタカナで入力してください');
+                    isValid = false;
+                }
+            });
+
+            // 郵便番号の形式チェック
+            const postalCode = document.getElementById('postalCode');
+            if (postalCode.value && !/^\d{3}-\d{4}$/.test(postalCode.value)) {
+                showError('postalCode', 'postalCodeError', '郵便番号の形式が正しくありません（例：123-4567）');
+                isValid = false;
+            }
+
+            // 電話番号の形式チェック
+            const phone = document.getElementById('phone');
+            if (phone.value && !/^\d{2,4}-\d{3,4}-\d{4}$/.test(phone.value)) {
+                showError('phone', 'phoneError', '電話番号の形式が正しくありません（例：090-1234-5678）');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // エラー表示
+        function showError(inputId, errorId, message) {
+            document.getElementById(inputId).classList.add('error');
+            document.getElementById(errorId).textContent = message;
+        }
+
+        // フォーム送信
+        function submitForm(event) {
+            event.preventDefault();
+            
+            if (validateForm()) {
+                // 実際の処理ではAPIへ送信
+                console.log('会員登録データ:', {
+                    lastName: document.getElementById('lastName').value,
+                    firstName: document.getElementById('firstName').value,
+                    lastNameKana: document.getElementById('lastNameKana').value,
+                    firstNameKana: document.getElementById('firstNameKana').value,
+                    birthDate: document.getElementById('birthDate').value,
+                    gender: document.getElementById('gender').value,
+                    postalCode: document.getElementById('postalCode').value,
+                    prefecture: document.getElementById('prefecture').value,
+                    address: document.getElementById('address').value,
+                    phone: document.getElementById('phone').value,
+                    email: document.getElementById('email').value,
+                    notifications: {
+                        email: document.getElementById('emailNotification').checked,
+                        sms: document.getElementById('smsNotification').checked,
+                        news: document.getElementById('newsNotification').checked,
+                        event: document.getElementById('eventNotification').checked
+                    }
+                });
+
+                // 成功メッセージ表示
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // フォームリセット
+                setTimeout(() => {
+                    if (confirm('会員情報が登録されました。続けて新しい会員を登録しますか？')) {
+                        clearForm();
+                        document.getElementById('successMessage').style.display = 'none';
+                        window.scrollTo(0, 0);
+                    } else {
+                        window.location.href = 'member_list.html';
+                    }
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>

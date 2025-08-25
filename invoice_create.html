@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>請求書作成 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', Arial, sans-serif;
+            background-color: #fff;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .header {
+            background-color: #000;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #333;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #000;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #333;
+            padding-bottom: 1rem;
+        }
+
+        .breadcrumb {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .form-container {
+            background: white;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+
+        .form-section {
+            border-bottom: 2px solid #333;
+            padding: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .required {
+            color: #000;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid #333;
+            border-radius: 0;
+            font-size: 0.9rem;
+            background-color: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: 2px solid #000;
+            border-color: #000;
+        }
+
+        .company-info {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .items-section {
+            padding: 1.5rem;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        .items-table th,
+        .items-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .items-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .items-table input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .add-item-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .add-item-btn:hover {
+            background-color: #229954;
+        }
+
+        .remove-item-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .remove-item-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .total-section {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            text-align: right;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .total-row.final {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            border-top: 2px solid #2c3e50;
+            padding-top: 0.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #000;
+            border-radius: 0;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            background-color: white;
+            color: #000;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #000;
+            color: white;
+        }
+
+        .btn-primary {
+            background-color: #000;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #333;
+        }
+
+        .btn-success {
+            background-color: white;
+            color: #000;
+        }
+
+        .btn-warning {
+            background-color: white;
+            color: #000;
+        }
+
+        .btn-outline {
+            background-color: white;
+            border: 1px solid #333;
+            color: #000;
+        }
+
+        .btn-outline:hover {
+            background-color: #000;
+            color: white;
+        }
+
+        .preview-section {
+            display: none;
+            background-color: white;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            margin-top: 2rem;
+            padding: 2rem;
+        }
+
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #2c3e50;
+        }
+
+        .invoice-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .invoice-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .detail-box {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .detail-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .invoice-details {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>不動産ポータル管理画面</h1>
+        <div class="user-info">
+            <span>管理者</span>
+            <button class="btn btn-outline">ログアウト</button>
+        </div>
+    </header>
+
+
+    <main class="main-content">
+        <div class="page-header">
+            <h2 class="page-title">請求書作成</h2>
+            <nav class="breadcrumb">
+                ダッシュボード > 請求書管理 > 請求書作成
+            </nav>
+        </div>
+
+        <div class="form-container">
+            <div class="form-section">
+                <h3 class="section-title">基本情報</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="company-select">請求先企業 <span class="required">*</span></label>
+                        <select id="company-select" required onchange="loadCompanyInfo()">
+                            <option value="">企業を選択してください</option>
+                            <option value="sekisui">積水ハウス株式会社</option>
+                            <option value="daiwa">大和ハウス工業株式会社</option>
+                            <option value="mitsui">三井不動産リアルティ株式会社</option>
+                            <option value="sumitomo">住友不動産販売株式会社</option>
+                            <option value="panasonic">パナソニックホームズ株式会社</option>
+                            <option value="asahi">旭化成ホームズ株式会社</option>
+                        </select>
+                        <div id="company-info" class="company-info" style="display: none;">
+                            <div><strong>企業名:</strong> <span id="company-name"></span></div>
+                            <div><strong>住所:</strong> <span id="company-address"></span></div>
+                            <div><strong>担当者:</strong> <span id="company-contact"></span></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoice-date">請求日 <span class="required">*</span></label>
+                        <input type="date" id="invoice-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="due-date">支払期限 <span class="required">*</span></label>
+                        <input type="date" id="due-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoice-month">請求対象月 <span class="required">*</span></label>
+                        <select id="invoice-month" required>
+                            <option value="">選択してください</option>
+                            <option value="2024-12">2024年12月</option>
+                            <option value="2024-11">2024年11月</option>
+                            <option value="2024-10">2024年10月</option>
+                            <option value="2024-09">2024年9月</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="items-section">
+                <h3 class="section-title">請求明細</h3>
+                <table class="items-table" id="items-table">
+                    <thead>
+                        <tr>
+                            <th>項目名</th>
+                            <th>単価</th>
+                            <th>数量</th>
+                            <th>小計</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <select class="item-name">
+                                    <option value="">項目を選択</option>
+                                    <option value="referral_contract">送客手数料（成約）</option>
+                                    <option value="referral_estimate">送客手数料（見積もり提出）</option>
+                                    <option value="referral_contact">送客手数料（企業連絡済み）</option>
+                                    <option value="ad_fee">広告掲載料</option>
+                                    <option value="system_fee">システム利用料</option>
+                                    <option value="other">その他</option>
+                                </select>
+                            </td>
+                            <td><input type="number" class="unit-price" placeholder="0" oninput="calculateRow(this)"></td>
+                            <td><input type="number" class="quantity" placeholder="0" oninput="calculateRow(this)"></td>
+                            <td class="subtotal">¥0</td>
+                            <td><button type="button" class="remove-item-btn" onclick="removeRow(this)">削除</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="add-item-btn" onclick="addRow()">+ 明細行を追加</button>
+                
+                <div class="total-section">
+                    <div class="total-row">
+                        <span>小計:</span>
+                        <span id="subtotal-amount">¥0</span>
+                    </div>
+                    <div class="total-row">
+                        <span>消費税（10%）:</span>
+                        <span id="tax-amount">¥0</span>
+                    </div>
+                    <div class="total-row final">
+                        <span>合計金額:</span>
+                        <span id="total-amount">¥0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="section-title">備考・特記事項</h3>
+                <div class="form-group">
+                    <label for="notes">備考</label>
+                    <textarea id="notes" rows="4" placeholder="請求に関する備考や特記事項があれば入力してください"></textarea>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn btn-outline" onclick="goBack()">キャンセル</button>
+                <button type="button" class="btn btn-warning" onclick="saveDraft()">下書き保存</button>
+                <button type="button" class="btn btn-primary" onclick="previewInvoice()">プレビュー</button>
+                <button type="button" class="btn btn-success" onclick="createInvoice()">請求書作成</button>
+            </div>
+        </div>
+
+        <div id="preview-section" class="preview-section">
+            <div class="invoice-header">
+                <h2 class="invoice-title">請求書</h2>
+                <div>請求書番号: <span id="preview-invoice-number">INV-2025-XXX</span></div>
+            </div>
+            
+            <div class="invoice-details">
+                <div class="detail-box">
+                    <div class="detail-title">請求先</div>
+                    <div id="preview-company-details"></div>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-title">請求情報</div>
+                    <div>請求日: <span id="preview-invoice-date"></span></div>
+                    <div>支払期限: <span id="preview-due-date"></span></div>
+                    <div>対象月: <span id="preview-invoice-month"></span></div>
+                </div>
+            </div>
+
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>単価</th>
+                        <th>数量</th>
+                        <th>小計</th>
+                    </tr>
+                </thead>
+                <tbody id="preview-items">
+                </tbody>
+            </table>
+
+            <div class="total-section">
+                <div class="total-row">
+                    <span>小計:</span>
+                    <span id="preview-subtotal">¥0</span>
+                </div>
+                <div class="total-row">
+                    <span>消費税（10%）:</span>
+                    <span id="preview-tax">¥0</span>
+                </div>
+                <div class="total-row final">
+                    <span>合計金額:</span>
+                    <span id="preview-total">¥0</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn btn-outline" onclick="closePreview()">編集に戻る</button>
+                <button type="button" class="btn btn-success" onclick="confirmCreate()">この内容で作成</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const companyData = {
+            sekisui: {
+                name: '積水ハウス株式会社',
+                address: '〒531-0076 大阪府大阪市北区大淀中1-1-88',
+                contact: '営業部 田中様'
+            },
+            daiwa: {
+                name: '大和ハウス工業株式会社',
+                address: '〒530-8241 大阪府大阪市北区梅田3-3-5',
+                contact: '事業推進部 佐藤様'
+            },
+            mitsui: {
+                name: '三井不動産リアルティ株式会社',
+                address: '〒100-6019 東京都千代田区霞が関3-2-5',
+                contact: '営業企画部 山田様'
+            },
+            sumitomo: {
+                name: '住友不動産販売株式会社',
+                address: '〒160-0023 東京都新宿区西新宿2-4-1',
+                contact: 'マーケティング部 鈴木様'
+            },
+            panasonic: {
+                name: 'パナソニックホームズ株式会社',
+                address: '〒560-8543 大阪府豊中市新千里西町1-1-4',
+                contact: '営業統括部 高橋様'
+            },
+            asahi: {
+                name: '旭化成ホームズ株式会社',
+                address: '〒160-8345 東京都新宿区西新宿1-24-1',
+                contact: '事業開発部 伊藤様'
+            }
+        };
+
+        // 今日の日付を設定
+        document.getElementById('invoice-date').value = new Date().toISOString().split('T')[0];
+        
+        // 30日後を支払期限に設定
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30);
+        document.getElementById('due-date').value = dueDate.toISOString().split('T')[0];
+
+        function loadCompanyInfo() {
+            const select = document.getElementById('company-select');
+            const companyInfo = document.getElementById('company-info');
+            
+            if (select.value) {
+                const company = companyData[select.value];
+                document.getElementById('company-name').textContent = company.name;
+                document.getElementById('company-address').textContent = company.address;
+                document.getElementById('company-contact').textContent = company.contact;
+                companyInfo.style.display = 'block';
+            } else {
+                companyInfo.style.display = 'none';
+            }
+        }
+
+        function addRow() {
+            const tbody = document.querySelector('#items-table tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <select class="item-name">
+                        <option value="">項目を選択</option>
+                        <option value="referral_contract">送客手数料（成約）</option>
+                        <option value="referral_estimate">送客手数料（見積もり提出）</option>
+                        <option value="referral_contact">送客手数料（企業連絡済み）</option>
+                        <option value="ad_fee">広告掲載料</option>
+                        <option value="system_fee">システム利用料</option>
+                        <option value="other">その他</option>
+                    </select>
+                </td>
+                <td><input type="number" class="unit-price" placeholder="0" oninput="calculateRow(this)"></td>
+                <td><input type="number" class="quantity" placeholder="0" oninput="calculateRow(this)"></td>
+                <td class="subtotal">¥0</td>
+                <td><button type="button" class="remove-item-btn" onclick="removeRow(this)">削除</button></td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function removeRow(button) {
+            const row = button.closest('tr');
+            row.remove();
+            calculateTotal();
+        }
+
+        function calculateRow(input) {
+            const row = input.closest('tr');
+            const unitPrice = parseFloat(row.querySelector('.unit-price').value) || 0;
+            const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+            const subtotal = unitPrice * quantity;
+            row.querySelector('.subtotal').textContent = '¥' + subtotal.toLocaleString();
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            const subtotals = document.querySelectorAll('.subtotal');
+            let total = 0;
+            
+            subtotals.forEach(cell => {
+                const value = parseFloat(cell.textContent.replace('¥', '').replace(/,/g, '')) || 0;
+                total += value;
+            });
+
+            const tax = Math.floor(total * 0.1);
+            const finalTotal = total + tax;
+
+            document.getElementById('subtotal-amount').textContent = '¥' + total.toLocaleString();
+            document.getElementById('tax-amount').textContent = '¥' + tax.toLocaleString();
+            document.getElementById('total-amount').textContent = '¥' + finalTotal.toLocaleString();
+        }
+
+        function goBack() {
+            window.location.href = 'invoice_list.html';
+        }
+
+        function saveDraft() {
+            alert('請求書を下書きとして保存しました。');
+        }
+
+        function previewInvoice() {
+            // プレビューデータを設定
+            const companySelect = document.getElementById('company-select');
+            const invoiceDate = document.getElementById('invoice-date').value;
+            const dueDate = document.getElementById('due-date').value;
+            const invoiceMonth = document.getElementById('invoice-month').value;
+
+            if (!companySelect.value || !invoiceDate || !dueDate || !invoiceMonth) {
+                alert('必須項目を入力してください。');
+                return;
+            }
+
+            const company = companyData[companySelect.value];
+            document.getElementById('preview-company-details').innerHTML = `
+                ${company.name}<br>
+                ${company.address}<br>
+                担当者: ${company.contact}
+            `;
+
+            document.getElementById('preview-invoice-date').textContent = invoiceDate;
+            document.getElementById('preview-due-date').textContent = dueDate;
+            document.getElementById('preview-invoice-month').textContent = invoiceMonth;
+
+            // 明細をプレビューに反映
+            const items = document.querySelectorAll('#items-table tbody tr');
+            const previewItems = document.getElementById('preview-items');
+            previewItems.innerHTML = '';
+
+            items.forEach(row => {
+                const itemName = row.querySelector('.item-name').value;
+                const unitPrice = row.querySelector('.unit-price').value;
+                const quantity = row.querySelector('.quantity').value;
+                const subtotal = row.querySelector('.subtotal').textContent;
+
+                if (itemName && unitPrice && quantity) {
+                    const previewRow = document.createElement('tr');
+                    previewRow.innerHTML = `
+                        <td>${row.querySelector('.item-name option:checked').textContent}</td>
+                        <td>¥${parseFloat(unitPrice).toLocaleString()}</td>
+                        <td>${quantity}</td>
+                        <td>${subtotal}</td>
+                    `;
+                    previewItems.appendChild(previewRow);
+                }
+            });
+
+            // 合計をプレビューに反映
+            document.getElementById('preview-subtotal').textContent = document.getElementById('subtotal-amount').textContent;
+            document.getElementById('preview-tax').textContent = document.getElementById('tax-amount').textContent;
+            document.getElementById('preview-total').textContent = document.getElementById('total-amount').textContent;
+
+            document.getElementById('preview-section').style.display = 'block';
+            document.getElementById('preview-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function closePreview() {
+            document.getElementById('preview-section').style.display = 'none';
+        }
+
+        function createInvoice() {
+            previewInvoice();
+        }
+
+        function confirmCreate() {
+            const confirmed = confirm('この内容で請求書を作成しますか？');
+            if (confirmed) {
+                alert('請求書が作成されました。請求書一覧ページに移動します。');
+                window.location.href = 'invoice_list.html';
+            }
+        }
+    </script>
+</body>
+</html>
