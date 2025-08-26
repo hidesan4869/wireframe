@@ -1,0 +1,32 @@
+@startuml app
+entity "User" {
+  *id : integer
+  --
+  name : string
+}
+
+entity "UserProfile" {
+  *user_id : integer
+  --
+  birthday : date
+  bio : text
+}
+
+entity "Post" {
+  *id : integer
+  --
+  title : string
+  content : text
+}
+
+entity "Like" {
+  *user_id : integer
+  *post_id : integer
+  --
+  created_at : datetime
+}
+
+User ||--o| UserProfile
+User ||--o{ Like
+Post |o--o{ Like
+@enduml

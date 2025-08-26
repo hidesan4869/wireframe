@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月次報告編集 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* コンテナ */
+        .container {
+            margin-top: 60px;
+            padding: 20px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* パンくずリスト */
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 14px;
+            color: #7a7a7a;
+        }
+
+        /* ページヘッダー */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        /* ボタン */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        /* カード */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* フォーム */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a4a4a;
+        }
+
+        .required {
+            color: #dc3545;
+            margin-left: 4px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 10px 14px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #4a4a4a;
+            box-shadow: 0 0 0 2px rgba(74, 74, 74, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-input[readonly] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        /* 情報表示 */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .info-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #4a4a4a;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c2c2c;
+        }
+
+        /* ステータスバッジ */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-draft {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .status-submitted {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* ボタングループ */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        /* メーカー情報 */
+        .company-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .company-badge {
+            background: #f0f0f0;
+            color: #4a4a4a;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        /* アラート */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #e7f3ff;
+            color: #004085;
+            border-left: 4px solid #004085;
+        }
+
+        /* ラジオボタングループ */
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ファイルアップロードエリア */
+        .upload-section {
+            margin-top: 10px;
+            display: none;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .upload-section.show {
+            display: block;
+        }
+
+        .upload-area {
+            border: 2px dashed #ced4da;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 10px;
+        }
+
+        .upload-area:hover {
+            border-color: #4a4a4a;
+            background: #f8f9fa;
+        }
+
+        .upload-area.dragover {
+            border-color: #28a745;
+            background: #e8f5e8;
+        }
+
+        .file-list {
+            margin-top: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+
+        .file-name {
+            font-size: 14px;
+            color: #2c2c2c;
+        }
+
+        .file-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .upload-type-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c2c2c;
+        }
+
+        /* 成約アップロード用スタイル */
+        .contract-upload {
+            border-left: 4px solid #28a745;
+        }
+
+        .contract-upload .upload-type-title {
+            color: #28a745;
+        }
+
+        /* 着工アップロード用スタイル */
+        .groundbreaking-upload {
+            border-left: 4px solid #007bff;
+        }
+
+        .groundbreaking-upload .upload-type-title {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <h1>🏠 月次報告編集</h1>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <span id="userInfo">管理者: 田中 太郎</span>
+            <button class="btn btn-secondary">ログアウト</button>
+        </div>
+    </header>
+
+    <!-- コンテンツ -->
+    <div class="container">
+        <!-- パンくずリスト -->
+        <div class="breadcrumb" id="breadcrumb">
+            ホーム > 送客管理 > 運営者向け > 月次報告管理 > 月次報告編集
+        </div>
+
+        <!-- ページヘッダー -->
+        <div class="page-header">
+            <h2 class="page-title">【山田建設】 月次報告編集 - 2024年12月分</h2>
+            <button class="btn btn-secondary" onclick="goBack()">一覧に戻る</button>
+        </div>
+
+        <!-- アラート（メーカー用） -->
+        <div class="alert alert-info" id="manufacturerAlert" style="display: none;">
+            この報告は運営者による確認待ちです。承認後は編集できなくなります。
+        </div>
+
+
+        <!-- 担当顧客別ステータス更新 -->
+        <div class="card">
+            <h3 class="card-title">担当顧客別ステータス更新</h3>
+            <div style="color: #6a6a6a; font-size: 13px; margin-bottom: 15px;">
+                ※ 当社に送客されたお客様のみ表示されます。競合他社の情報は含まれません。
+            </div>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="background: #f5f5f5; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; border-bottom: 2px solid #d0d0d0;">送客ID</th>
+                        <th style="background: #f5f5f5; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; border-bottom: 2px solid #d0d0d0;">顧客情報</th>
+                        <th style="background: #f5f5f5; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; border-bottom: 2px solid #d0d0d0;">送客日</th>
+                        <th style="background: #f5f5f5; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; border-bottom: 2px solid #d0d0d0;">物件種別</th>
+                        <th style="background: #f5f5f5; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; border-bottom: 2px solid #d0d0d0;">前回ステータス</th>
+                        <th style="background: #f5f5f5; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; border-bottom: 2px solid #d0d0d0;">現在のステータス <span class="required">*</span></th>
+                        <th style="background: #f5f5f5; padding: 12px; text-align: left; font-weight: 600; font-size: 14px; border-bottom: 2px solid #d0d0d0;">対応メモ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #e8e8e8;">
+                        <td style="padding: 12px; font-size: 14px;">REF001</td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <div>
+                                <div style="font-weight: 600;">山田 太郎</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">090-1234-5678</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">yamada@example.com</div>
+                            </div>
+                        </td>
+                        <td style="padding: 12px; font-size: 14px;">2025-08-20</td>
+                        <td style="padding: 12px; font-size: 14px;">注文住宅</td>
+                        <td style="padding: 12px; font-size: 14px;">商談中</td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <select class="status-select" onchange="updateStatus(this)" style="width: 100%; padding: 6px 10px; border: 1px solid #c0c0c0; border-radius: 4px; font-size: 13px;">
+                                <option value="">選択してください</option>
+                                <option value="contracted" selected>成約</option>
+                                <option value="estimate">見積提出</option>
+                                <option value="contracted">成約</option>
+                                <option value="groundbreaking">着工</option>
+                                <option value="lost">失注</option>
+                                <option value="cancelled">キャンセル</option>
+                            </select>
+                        </td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <input type="text" class="remarks-input" style="width: 100%; padding: 6px 10px; border: 1px solid #c0c0c0; border-radius: 4px; font-size: 13px;" value="見積もり作成中">
+                        </td>
+                    </tr>
+                    <tr id="upload-row-REF001" style="display: none;">
+                        <td colspan="7" style="padding: 0; background: #f8f9fa;">
+                            <div id="upload-section-REF001" class="upload-section show">
+                                <div class="upload-area" onclick="document.getElementById('file-input-REF001').click()">
+                                    <input type="file" id="file-input-REF001" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;" onchange="handleFileUpload(this, 'REF001')">
+                                    <p>📎 ファイルをアップロード</p>
+                                    <small>PDF, DOC, DOCX, JPG, PNG対応（複数選択可）</small>
+                                </div>
+                                <div id="file-list-REF001" class="file-list"></div>
+                                <div class="upload-type-title">書類アップロード</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e8e8e8;">
+                        <td style="padding: 12px; font-size: 14px;">REF003</td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <div>
+                                <div style="font-weight: 600;">鈴木 一郎</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">070-1111-2222</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">suzuki@example.com</div>
+                            </div>
+                        </td>
+                        <td style="padding: 12px; font-size: 14px;">2025-08-25</td>
+                        <td style="padding: 12px; font-size: 14px;">新築戸建て</td>
+                        <td style="padding: 12px; font-size: 14px;">連絡済み</td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <select class="status-select" onchange="updateStatus(this)" style="width: 100%; padding: 6px 10px; border: 1px solid #c0c0c0; border-radius: 4px; font-size: 13px;">
+                                <option value="">選択してください</option>
+                                <option value="negotiating" selected>商談中</option>
+                                <option value="estimate">見積提出</option>
+                                <option value="contracted">成約</option>
+                                <option value="groundbreaking">着工</option>
+                                <option value="lost">失注</option>
+                                <option value="cancelled">キャンセル</option>
+                            </select>
+                        </td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <input type="text" class="remarks-input" style="width: 100%; padding: 6px 10px; border: 1px solid #c0c0c0; border-radius: 4px; font-size: 13px;" value="9/10にショールーム見学予定">
+                        </td>
+                    </tr>
+                    <tr id="upload-row-REF003" style="display: none;">
+                        <td colspan="7" style="padding: 0; background: #f8f9fa;">
+                            <div id="upload-section-REF003" class="upload-section show">
+                                <div class="upload-area" onclick="document.getElementById('file-input-REF003').click()">
+                                    <input type="file" id="file-input-REF003" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;" onchange="handleFileUpload(this, 'REF003')">
+                                    <p>📎 ファイルをアップロード</p>
+                                    <small>PDF, DOC, DOCX, JPG, PNG対応（複数選択可）</small>
+                                </div>
+                                <div id="file-list-REF003" class="file-list"></div>
+                                <div class="upload-type-title">書類アップロード</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e8e8e8;">
+                        <td style="padding: 12px; font-size: 14px;">REF005</td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <div>
+                                <div style="font-weight: 600;">高橋 健太</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">080-3333-4444</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">takahashi@example.com</div>
+                            </div>
+                        </td>
+                        <td style="padding: 12px; font-size: 14px;">2025-08-28</td>
+                        <td style="padding: 12px; font-size: 14px;">注文住宅</td>
+                        <td style="padding: 12px; font-size: 14px;">-</td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <select class="status-select" onchange="updateStatus(this)" style="width: 100%; padding: 6px 10px; border: 1px solid #c0c0c0; border-radius: 4px; font-size: 13px;">
+                                <option value="">選択してください</option>
+                                <option value="negotiating">商談中</option>
+                                <option value="estimate">見積提出</option>
+                                <option value="contracted">成約</option>
+                                <option value="groundbreaking">着工</option>
+                                <option value="lost">失注</option>
+                                <option value="cancelled">キャンセル</option>
+                            </select>
+                        </td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <input type="text" class="remarks-input" style="width: 100%; padding: 6px 10px; border: 1px solid #c0c0c0; border-radius: 4px; font-size: 13px;" placeholder="対応メモを入力">
+                        </td>
+                    </tr>
+                    <tr id="upload-row-REF005" style="display: none;">
+                        <td colspan="7" style="padding: 0; background: #f8f9fa;">
+                            <div id="upload-section-REF005" class="upload-section show">
+                                <div class="upload-area" onclick="document.getElementById('file-input-REF005').click()">
+                                    <input type="file" id="file-input-REF005" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;" onchange="handleFileUpload(this, 'REF005')">
+                                    <p>📎 ファイルをアップロード</p>
+                                    <small>PDF, DOC, DOCX, JPG, PNG対応（複数選択可）</small>
+                                </div>
+                                <div id="file-list-REF005" class="file-list"></div>
+                                <div class="upload-type-title">書類アップロード</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e8e8e8;">
+                        <td style="padding: 12px; font-size: 14px;">REF008</td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <div>
+                                <div style="font-weight: 600;">田中 美咲</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">070-5555-6666</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">misaki@example.com</div>
+                            </div>
+                        </td>
+                        <td style="padding: 12px; font-size: 14px;">2025-09-02</td>
+                        <td style="padding: 12px; font-size: 14px;">注文住宅</td>
+                        <td style="padding: 12px; font-size: 14px;">-</td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <select class="status-select" onchange="updateStatus(this)" style="width: 100%; padding: 6px 10px; border: 1px solid #c0c0c0; border-radius: 4px; font-size: 13px;">
+                                <option value="">選択してください</option>
+                                <option value="negotiating">商談中</option>
+                                <option value="estimate">見積提出</option>
+                                <option value="contracted">成約</option>
+                                <option value="groundbreaking">着工</option>
+                                <option value="lost">失注</option>
+                                <option value="cancelled">キャンセル</option>
+                            </select>
+                        </td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <input type="text" class="remarks-input" style="width: 100%; padding: 6px 10px; border: 1px solid #c0c0c0; border-radius: 4px; font-size: 13px;" placeholder="対応メモを入力">
+                        </td>
+                    </tr>
+                    <tr id="upload-row-REF008" style="display: none;">
+                        <td colspan="7" style="padding: 0; background: #f8f9fa;">
+                            <div id="upload-section-REF008" class="upload-section show">
+                                <div class="upload-area" onclick="document.getElementById('file-input-REF008').click()">
+                                    <input type="file" id="file-input-REF008" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;" onchange="handleFileUpload(this, 'REF008')">
+                                    <p>📎 ファイルをアップロード</p>
+                                    <small>PDF, DOC, DOCX, JPG, PNG対応（複数選択可）</small>
+                                </div>
+                                <div id="file-list-REF008" class="file-list"></div>
+                                <div class="upload-type-title">書類アップロード</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e8e8e8;">
+                        <td style="padding: 12px; font-size: 14px;">REF010</td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <div>
+                                <div style="font-weight: 600;">佐藤 次郎</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">080-7777-8888</div>
+                                <div style="font-size: 12px; color: #7a7a7a;">jiro@example.com</div>
+                            </div>
+                        </td>
+                        <td style="padding: 12px; font-size: 14px;">2025-09-05</td>
+                        <td style="padding: 12px; font-size: 14px;">注文住宅</td>
+                        <td style="padding: 12px; font-size: 14px;">-</td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <select class="status-select" onchange="updateStatus(this)" style="width: 100%; padding: 6px 10px; border: 1px solid #c0c0c0; border-radius: 4px; font-size: 13px;">
+                                <option value="" selected>選択してください</option>
+                                <option value="negotiating">商談中</option>
+                                <option value="estimate">見積提出</option>
+                                <option value="contracted">成約</option>
+                                <option value="groundbreaking">着工</option>
+                                <option value="lost">失注</option>
+                                <option value="cancelled">キャンセル</option>
+                            </select>
+                        </td>
+                        <td style="padding: 12px; font-size: 14px;">
+                            <input type="text" class="remarks-input" style="width: 100%; padding: 6px 10px; border: 1px solid #c0c0c0; border-radius: 4px; font-size: 13px;" placeholder="対応メモを入力">
+                        </td>
+                    </tr>
+                    <tr id="upload-row-REF010" style="display: none;">
+                        <td colspan="7" style="padding: 0; background: #f8f9fa;">
+                            <div id="upload-section-REF010" class="upload-section show">
+                                <div class="upload-area" onclick="document.getElementById('file-input-REF010').click()">
+                                    <input type="file" id="file-input-REF010" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;" onchange="handleFileUpload(this, 'REF010')">
+                                    <p>📎 ファイルをアップロード</p>
+                                    <small>PDF, DOC, DOCX, JPG, PNG対応（複数選択可）</small>
+                                </div>
+                                <div id="file-list-REF010" class="file-list"></div>
+                                <div class="upload-type-title">書類アップロード</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- コメント・特記事項 -->
+        <div class="card">
+            <h3 class="card-title">コメント・特記事項</h3>
+            <div class="form-group full-width">
+                <label class="form-label">今月の活動報告・来月の見込み等</label>
+                <textarea class="form-textarea" id="monthlyComments" 
+                          placeholder="今月の活動内容、成果、課題、来月の見込み等をご記入ください">12月は年末需要により問い合わせが増加。
+山田様には注文住宅の詳細見積もりを提出し、好感触を得ています。
+来年1月中旬には契約締結の見込み。
+
+年明けには住宅展示場でのイベント開催を予定しており、
+さらなる顧客獲得を目指します。</textarea>
+            </div>
+        </div>
+
+        <!-- ボタングループ -->
+        <div class="button-group">
+            <button class="btn btn-secondary" onclick="goBack()">キャンセル</button>
+            <button class="btn btn-primary" onclick="saveDraft()">一時保存</button>
+            <button class="btn btn-success" onclick="submitReport()">提出</button>
+        </div>
+    </div>
+
+    <script>
+        // ユーザー種別の判定（実際の実装では認証情報から取得）
+        const userType = 'admin'; // 'admin' または 'manufacturer'
+
+        // 初期設定
+        window.onload = function() {
+            if (userType === 'manufacturer') {
+                // メーカー用の表示調整
+                document.getElementById('userInfo').textContent = 'メーカー: 山田建設';
+                document.getElementById('breadcrumb').textContent = 'ホーム > 送客管理 > メーカー向け > 月次報告入力 > 月次報告編集';
+                document.getElementById('manufacturerAlert').style.display = 'block';
+                document.getElementById('approvalSection').style.display = 'none';
+            }
+        };
+
+        // 戻るボタン
+        function goBack() {
+            if (userType === 'admin') {
+                window.location.href = 'monthly_report_management.html';
+            } else {
+                window.location.href = 'monthly_report_input.html';
+            }
+        }
+
+        // ファイル管理オブジェクト
+        const fileManager = {};
+
+        // ステータス更新
+        function updateStatus(selectElement) {
+            const row = selectElement.closest('tr');
+            const refId = row.cells[0].textContent;
+            const newStatus = selectElement.value;
+            
+            console.log(`Updated status for ${refId}: ${newStatus}`);
+            
+            // アップロードセクションの表示制御
+            const uploadRow = document.getElementById(`upload-row-${refId}`);
+            
+            if (newStatus === 'contracted' || newStatus === 'groundbreaking') {
+                // 成約または着工の場合、アップロードセクションを表示
+                uploadRow.style.display = 'table-row';
+                updateUploadSectionTitle(refId, newStatus);
+            } else {
+                // それ以外の場合は非表示
+                uploadRow.style.display = 'none';
+            }
+        }
+
+        // アップロードセクションのタイトルを更新
+        function updateUploadSectionTitle(refId, status) {
+            const uploadSection = document.getElementById(`upload-section-${refId}`);
+            const titleElement = uploadSection.querySelector('.upload-type-title');
+            const uploadArea = uploadSection.querySelector('.upload-area');
+            
+            // 既存のクラスをリセット
+            uploadSection.classList.remove('contract-upload', 'groundbreaking-upload');
+            
+            switch(status) {
+                case 'contracted':
+                    titleElement.textContent = '📄 成約書類アップロード';
+                    uploadSection.classList.add('contract-upload');
+                    uploadArea.querySelector('p').textContent = '📄 成約関連書類をアップロード';
+                    uploadArea.querySelector('small').textContent = '契約書、重要事項説明書など（複数選択可）';
+                    break;
+                case 'groundbreaking':
+                    titleElement.textContent = '🏗️ 着工書類アップロード';
+                    uploadSection.classList.add('groundbreaking-upload');
+                    uploadArea.querySelector('p').textContent = '🏗️ 着工関連書類をアップロード';
+                    uploadArea.querySelector('small').textContent = '着工届、建築確認書など（複数選択可）';
+                    break;
+                default:
+                    titleElement.textContent = '書類アップロード';
+                    uploadArea.querySelector('p').textContent = '📎 ファイルをアップロード';
+                    uploadArea.querySelector('small').textContent = 'PDF, DOC, DOCX, JPG, PNG対応（複数選択可）';
+                    break;
+            }
+        }
+
+        // 初期状態のチェック（ページ読み込み時）
+        function checkInitialStatuses() {
+            const statusSelects = document.querySelectorAll('.status-select');
+            statusSelects.forEach(select => {
+                const row = select.closest('tr');
+                const refId = row.cells[0].textContent;
+                const status = select.value;
+                
+                const uploadRow = document.getElementById(`upload-row-${refId}`);
+                if (uploadRow) {
+                    if (status === 'contracted' || status === 'groundbreaking') {
+                        uploadRow.style.display = 'table-row';
+                        updateUploadSectionTitle(refId, status);
+                    } else {
+                        uploadRow.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // ファイルアップロード処理
+        function handleFileUpload(input, refId) {
+            const files = Array.from(input.files);
+            
+            if (!fileManager[refId]) {
+                fileManager[refId] = [];
+            }
+            
+            files.forEach(file => {
+                // ファイルサイズチェック（10MB制限）
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`${file.name} はファイルサイズが大きすぎます（10MB以下にしてください）`);
+                    return;
+                }
+                
+                fileManager[refId].push(file);
+            });
+            
+            updateFileList(refId);
+            input.value = ''; // inputをリセット
+        }
+
+        // ファイルリストの更新
+        function updateFileList(refId) {
+            const fileListElement = document.getElementById(`file-list-${refId}`);
+            const files = fileManager[refId] || [];
+            
+            fileListElement.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                
+                const fileName = document.createElement('span');
+                fileName.className = 'file-name';
+                fileName.textContent = file.name;
+                
+                const removeButton = document.createElement('button');
+                removeButton.className = 'file-remove';
+                removeButton.textContent = '削除';
+                removeButton.onclick = () => removeFile(refId, index);
+                
+                fileItem.appendChild(fileName);
+                fileItem.appendChild(removeButton);
+                fileListElement.appendChild(fileItem);
+            });
+        }
+
+        // ファイル削除
+        function removeFile(refId, index) {
+            if (fileManager[refId]) {
+                fileManager[refId].splice(index, 1);
+                updateFileList(refId);
+            }
+        }
+
+        // ドラッグ&ドロップ対応と初期状態チェック
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初期状態のチェック
+            checkInitialStatuses();
+            
+            // ドラッグ&ドロップ設定
+            const uploadAreas = document.querySelectorAll('.upload-area');
+            
+            uploadAreas.forEach(area => {
+                area.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('dragover');
+                });
+                
+                area.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                });
+                
+                area.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                    
+                    const refId = this.closest('[id^="upload-section-"]').id.replace('upload-section-', '');
+                    const fileInput = document.getElementById(`file-input-${refId}`);
+                    
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileUpload(fileInput, refId);
+                });
+            });
+        });
+
+        // 一時保存
+        function saveDraft() {
+            alert('報告内容を一時保存しました。');
+        }
+
+        // 提出
+        function submitReport() {
+            // バリデーション
+            const statusSelects = document.querySelectorAll('.status-select');
+            let allSelected = true;
+            
+            statusSelects.forEach(select => {
+                if (!select.value) {
+                    allSelected = false;
+                    select.style.borderColor = '#d32f2f';
+                } else {
+                    select.style.borderColor = '#c0c0c0';
+                }
+            });
+            
+            if (!allSelected) {
+                alert('すべての送客のステータスを選択してください。');
+                return;
+            }
+            
+            if (confirm('この内容で提出してもよろしいですか？')) {
+                alert('月次報告を提出しました。');
+                goBack();
+            }
+        }
+    </script>
+</body>
+</html>

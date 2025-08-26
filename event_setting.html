@@ -57,6 +57,9 @@
             margin-top: 60px;
             padding: 30px;
             overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .breadcrumb {
@@ -692,13 +695,6 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <div class="form-checkbox">
-                                    <input type="checkbox" id="requireReservation" checked>
-                                    <label for="requireReservation">予約必須</label>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="form-checkbox">
                                     <input type="checkbox" id="publishEvent" checked>
                                     <label for="publishEvent">イベントを公開する</label>
                                 </div>
@@ -709,24 +705,6 @@
                                 <textarea id="internalMemo" class="form-textarea" 
                                           placeholder="管理者向けのメモや備考を入力..." 
                                           style="min-height: 80px;"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- プレビューセクション -->
-                    <div class="preview-section">
-                        <div class="preview-title">🔍 イベントカードプレビュー</div>
-                        <div class="event-card-preview" id="eventPreview">
-                            <div class="preview-image">
-                                🏠
-                                <span class="preview-badge" id="previewBadge">見学会</span>
-                            </div>
-                            <div class="preview-content">
-                                <div class="preview-event-title" id="previewTitle">イベント名を入力してください</div>
-                                <div class="preview-event-details" id="previewDetails">
-                                    📅 開催日程を設定してください<br>
-                                    📍 開催場所を入力してください
-                                </div>
                             </div>
                         </div>
                     </div>

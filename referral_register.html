@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>送客登録 - 不動産ポータル管理画面</title>
+    <title>送客登録・編集 - 不動産ポータル管理画面</title>
     <style>
         * {
             margin: 0;
@@ -15,11 +15,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f9f9f9;
             color: #2c2c2c;
-        }
-
-        .container {
-            display: flex;
-            height: 100vh;
         }
 
         /* ヘッダー */
@@ -36,12 +31,13 @@
             justify-content: space-between;
             padding: 0 20px;
             z-index: 1000;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .header h1 {
             font-size: 20px;
             font-weight: 600;
+            cursor: pointer;
         }
 
         .user-info {
@@ -52,10 +48,11 @@
 
         /* メインコンテンツ */
         .main-content {
-            flex: 1;
             margin-top: 60px;
             padding: 30px;
-            overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .breadcrumb {
@@ -64,6 +61,7 @@
             border-radius: 8px;
             margin-bottom: 20px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
             font-size: 14px;
             color: #6a6a6a;
         }
@@ -81,6 +79,7 @@
             color: #2c2c2c;
         }
 
+        /* ボタン */
         .btn {
             padding: 10px 20px;
             border: none;
@@ -104,45 +103,39 @@
             color: white;
         }
 
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-
         .btn-success {
             background: #2e7d32;
             color: white;
         }
 
-        .btn-success:hover {
-            background: #1b5e20;
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
         }
 
-        /* フォームコンテナ */
-        .form-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .form-section {
+        /* カード */
+        .card {
             background: white;
-            padding: 30px;
             border-radius: 12px;
+            padding: 30px;
             margin-bottom: 20px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
         }
 
-        .section-title {
-            font-size: 20px;
+        .card-title {
+            font-size: 18px;
             font-weight: 600;
             color: #2c2c2c;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #f5f5f5;
+            border-bottom: 2px solid #f0f0f0;
         }
 
+        /* フォーム */
         .form-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 20px;
         }
@@ -150,548 +143,458 @@
         .form-group {
             display: flex;
             flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
         }
 
         .form-label {
             font-size: 14px;
             font-weight: 500;
             color: #4a4a4a;
-            margin-bottom: 8px;
         }
 
         .required {
-            color: #d32f2f;
-            margin-left: 3px;
+            color: #dc3545;
+            margin-left: 4px;
         }
 
-        .form-input, .form-select {
-            padding: 12px 16px;
-            border: 1px solid #c0c0c0;
+        .form-input,
+        .form-select,
+        .form-textarea {
+            padding: 10px 14px;
+            border: 1px solid #ced4da;
             border-radius: 6px;
             font-size: 14px;
+            transition: all 0.2s ease;
         }
 
-        .form-input:focus, .form-select:focus {
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
             outline: none;
             border-color: #4a4a4a;
             box-shadow: 0 0 0 2px rgba(74, 74, 74, 0.1);
         }
 
         .form-textarea {
-            padding: 12px 16px;
-            border: 1px solid #c0c0c0;
-            border-radius: 6px;
-            font-size: 14px;
-            resize: vertical;
             min-height: 100px;
-            font-family: inherit;
+            resize: vertical;
         }
 
-        /* 顧客選択テーブル */
-        .customer-selection {
-            margin-top: 15px;
+        .form-input[readonly] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
         }
 
-        .selection-tabs {
+        /* ステータスバッジ */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .status-sent {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-contacted {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-estimate {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .status-contracted {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-not-contracted {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .status-no-response {
+            background: #fafafa;
+            color: #999;
+        }
+
+        /* アクションボタン */
+        .action-buttons {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab-button {
-            padding: 10px 20px;
-            border: 1px solid #c0c0c0;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .tab-button.active {
-            background: #4a4a4a;
-            color: white;
-            border-color: #4a4a4a;
-        }
-
-        .customer-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        .customer-table thead th {
-            background: #f5f5f5;
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            color: #4a4a4a;
-            border-bottom: 2px solid #d0d0d0;
-            font-size: 13px;
-        }
-
-        .customer-table tbody td {
-            padding: 12px;
-            border-bottom: 1px solid #e8e8e8;
-            font-size: 14px;
-        }
-
-        .customer-table tbody tr:hover {
-            background: #f9f9f9;
-        }
-
-        .customer-table input[type="radio"] {
-            width: 16px;
-            height: 16px;
-        }
-
-        /* 企業選択カード */
-        .company-selection {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .company-card {
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .company-card:hover {
-            border-color: #4a4a4a;
-        }
-
-        .company-card.selected {
-            border-color: #4a4a4a;
-            background: #f8f8f8;
-        }
-
-        .company-checkbox {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-        }
-
-        .company-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-            padding-right: 30px;
-        }
-
-        .company-details {
-            font-size: 12px;
-            color: #7a7a7a;
-            margin-bottom: 8px;
-        }
-
-        .company-type {
-            display: inline-block;
-            padding: 3px 8px;
-            background: #e8e8ff;
-            color: #5555aa;
-            border-radius: 4px;
-            font-size: 11px;
-            margin-right: 5px;
-        }
-
-        .property-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 8px;
-        }
-
-        .property-tag {
-            background: #f0f0f0;
-            color: #555;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-        }
-
-        /* フォームフッター */
-        .form-footer {
-            background: white;
-            padding: 20px 30px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            display: flex;
             justify-content: flex-end;
-            gap: 15px;
-            position: sticky;
-            bottom: 0;
             margin-top: 30px;
         }
 
-        .error-message {
-            color: #d32f2f;
-            font-size: 12px;
-            margin-top: 5px;
+        /* アラート */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
 
-        .help-text {
+        .alert-info {
+            background: #e7f3ff;
+            color: #004085;
+            border-left: 4px solid #004085;
+        }
+
+        /* 履歴表示 */
+        .history-section {
+            margin-top: 20px;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-left: 4px solid #4a4a4a;
+            margin-bottom: 8px;
+            border-radius: 4px;
+        }
+
+        .history-date {
             font-size: 12px;
-            color: #7a7a7a;
-            margin-top: 5px;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .history-content {
+            font-size: 14px;
+            color: #2c2c2c;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- ヘッダー -->
-        <header class="header">
-            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">不動産ポータル管理システム</h1>
-            <div class="user-info">
-                <span>田中 太郎さん</span>
-                <button class="btn btn-secondary">ログアウト</button>
-            </div>
-        </header>
+    <!-- ヘッダー -->
+    <header class="header">
+        <h1 onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+        <div class="user-info">
+            <span>田中 太郎さん（運営者）</span>
+            <button class="btn btn-secondary">ログアウト</button>
+        </div>
+    </header>
 
-        <!-- メインコンテンツ -->
-        <main class="main-content">
-            <div class="breadcrumb">
-                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 
-                <a href="referral_list.html" style="color: #6a6a6a; text-decoration: none;">送客管理</a> > 送客登録
-            </div>
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+        <div class="breadcrumb">
+            <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 
+            <a href="referral_list.html" style="color: #6a6a6a; text-decoration: none;">送客一覧</a> > 
+            送客編集
+        </div>
 
-            <div class="page-header">
-                <h2 class="page-title">送客登録</h2>
-            </div>
+        <div class="page-header">
+            <h2 class="page-title" id="pageTitle">📝 送客編集</h2>
+            <button class="btn btn-secondary" onclick="goBack()">一覧に戻る</button>
+        </div>
 
-            <div class="form-container">
-                <form id="referralForm" onsubmit="submitForm(event)">
-                    <!-- 顧客選択 -->
-                    <div class="form-section">
-                        <h3 class="section-title">顧客情報選択</h3>
-                        
-                        <div class="customer-selection">
-                            <div class="selection-tabs">
-                                <button type="button" class="tab-button active" onclick="switchTab('tour')">見学予約</button>
-                                <button type="button" class="tab-button" onclick="switchTab('event')">イベント予約</button>
-                                <button type="button" class="tab-button" onclick="switchTab('catalog')">資料請求</button>
-                            </div>
+        <!-- アラート（編集モード時） -->
+        <div class="alert alert-info" id="editAlert">
+            送客ID: <span id="currentReferralId">REF-001</span> の情報を編集中です。
+        </div>
 
-                            <div id="tourTab" class="tab-content">
-                                <table class="customer-table">
-                                    <thead>
-                                        <tr>
-                                            <th>選択</th>
-                                            <th>予約ID</th>
-                                            <th>予約日</th>
-                                            <th>顧客名</th>
-                                            <th>電話番号</th>
-                                            <th>メールアドレス</th>
-                                            <th>希望物件</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="radio" name="customer" value="TOUR-001" data-source="見学予約"></td>
-                                            <td>TOUR-001</td>
-                                            <td>2025-08-25</td>
-                                            <td>山田 太郎</td>
-                                            <td>090-1234-5678</td>
-                                            <td>yamada@example.com</td>
-                                            <td>新築戸建て</td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="radio" name="customer" value="TOUR-002" data-source="見学予約"></td>
-                                            <td>TOUR-002</td>
-                                            <td>2025-08-24</td>
-                                            <td>佐藤 花子</td>
-                                            <td>080-9876-5432</td>
-                                            <td>sato@example.com</td>
-                                            <td>注文住宅</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div id="eventTab" class="tab-content" style="display: none;">
-                                <table class="customer-table">
-                                    <thead>
-                                        <tr>
-                                            <th>選択</th>
-                                            <th>予約ID</th>
-                                            <th>イベント日</th>
-                                            <th>顧客名</th>
-                                            <th>電話番号</th>
-                                            <th>メールアドレス</th>
-                                            <th>イベント名</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="radio" name="customer" value="EVENT-001" data-source="イベント予約"></td>
-                                            <td>EVENT-001</td>
-                                            <td>2025-08-30</td>
-                                            <td>鈴木 一郎</td>
-                                            <td>070-1111-2222</td>
-                                            <td>suzuki@example.com</td>
-                                            <td>住宅展示場見学会</td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="radio" name="customer" value="EVENT-002" data-source="イベント予約"></td>
-                                            <td>EVENT-002</td>
-                                            <td>2025-09-01</td>
-                                            <td>田中 美咲</td>
-                                            <td>090-3333-4444</td>
-                                            <td>tanaka.m@example.com</td>
-                                            <td>新築マンション内覧会</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div id="catalogTab" class="tab-content" style="display: none;">
-                                <table class="customer-table">
-                                    <thead>
-                                        <tr>
-                                            <th>選択</th>
-                                            <th>請求ID</th>
-                                            <th>請求日</th>
-                                            <th>顧客名</th>
-                                            <th>電話番号</th>
-                                            <th>メールアドレス</th>
-                                            <th>資料種別</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="radio" name="customer" value="CAT-001" data-source="資料請求"></td>
-                                            <td>CAT-001</td>
-                                            <td>2025-08-23</td>
-                                            <td>高橋 健太</td>
-                                            <td>080-5555-6666</td>
-                                            <td>takahashi@example.com</td>
-                                            <td>土地カタログ</td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="radio" name="customer" value="CAT-002" data-source="資料請求"></td>
-                                            <td>CAT-002</td>
-                                            <td>2025-08-22</td>
-                                            <td>中村 真理子</td>
-                                            <td>090-7777-8888</td>
-                                            <td>nakamura@example.com</td>
-                                            <td>注文住宅カタログ</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="help-text">送客する顧客を選択してください</div>
-                    </div>
-
-                    <!-- 送客先企業選択 -->
-                    <div class="form-section">
-                        <h3 class="section-title">送客先企業選択</h3>
-                        
-                        <div class="form-group">
-                            <label class="form-label">契約企業を選択 <span class="required">*</span></label>
-                            <div class="help-text">複数の企業に同時送客できます</div>
-                            
-                            <div class="company-selection">
-                                <div class="company-card" onclick="toggleCompany(this, 'yamada')">
-                                    <input type="checkbox" class="company-checkbox" name="companies" value="yamada">
-                                    <div class="company-name">株式会社山田建設</div>
-                                    <div class="company-details">
-                                        <span class="company-type">ハウスメーカー</span>
-                                        手数料率: 3.5%
-                                    </div>
-                                    <div class="property-tags">
-                                        <span class="property-tag">注文住宅</span>
-                                        <span class="property-tag">新築戸建て</span>
-                                    </div>
-                                </div>
-
-                                <div class="company-card" onclick="toggleCompany(this, 'tanaka')">
-                                    <input type="checkbox" class="company-checkbox" name="companies" value="tanaka">
-                                    <div class="company-name">田中不動産株式会社</div>
-                                    <div class="company-details">
-                                        <span class="company-type">仲介業者</span>
-                                        手数料率: 4.0%
-                                    </div>
-                                    <div class="property-tags">
-                                        <span class="property-tag">土地</span>
-                                        <span class="property-tag">新築戸建て</span>
-                                    </div>
-                                </div>
-
-                                <div class="company-card" onclick="toggleCompany(this, 'sato')">
-                                    <input type="checkbox" class="company-checkbox" name="companies" value="sato">
-                                    <div class="company-name">佐藤ハウジング</div>
-                                    <div class="company-details">
-                                        <span class="company-type">ハウスメーカー</span>
-                                        手数料率: 3.0%
-                                    </div>
-                                    <div class="property-tags">
-                                        <span class="property-tag">注文住宅</span>
-                                        <span class="property-tag">新築戸建て</span>
-                                    </div>
-                                </div>
-
-                                <div class="company-card" onclick="toggleCompany(this, 'suzuki')">
-                                    <input type="checkbox" class="company-checkbox" name="companies" value="suzuki">
-                                    <div class="company-name">鈴木工務店有限会社</div>
-                                    <div class="company-details">
-                                        <span class="company-type">ハウスメーカー</span>
-                                        手数料率: 2.5%
-                                    </div>
-                                    <div class="property-tags">
-                                        <span class="property-tag">注文住宅</span>
-                                        <span class="property-tag">新築戸建て</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="companyError" class="error-message" style="display: none;">送客先企業を選択してください</div>
-                        </div>
-                    </div>
-
-                    <!-- 送客詳細 -->
-                    <div class="form-section">
-                        <h3 class="section-title">送客詳細</h3>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">物件種別 <span class="required">*</span></label>
-                                <select id="propertyType" class="form-select" required>
-                                    <option value="">選択してください</option>
-                                    <option value="注文住宅">注文住宅</option>
-                                    <option value="土地">土地</option>
-                                    <option value="新築戸建て">新築戸建て</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">送客元 <span class="required">*</span></label>
-                                <input type="text" id="referralSource" class="form-input" readonly value="">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label class="form-label">送客理由・備考</label>
-                                <textarea id="remarks" class="form-textarea" placeholder="送客理由、顧客の特別な要望、注意事項など"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 送客条件 -->
-                    <div class="form-section">
-                        <h3 class="section-title">送客条件</h3>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">送客期限</label>
-                                <input type="date" id="expiryDate" class="form-input">
-                                <div class="help-text">未設定の場合は送客日から30日後</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">優先度</label>
-                                <select id="priority" class="form-select">
-                                    <option value="通常">通常</option>
-                                    <option value="高">高</option>
-                                    <option value="緊急">緊急</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
-                <!-- フォームフッター -->
-                <div class="form-footer">
-                    <button type="button" class="btn btn-secondary" onclick="window.location.href='referral_list.html'">キャンセル</button>
-                    <button type="submit" form="referralForm" class="btn btn-success">送客登録</button>
+        <!-- 基本情報 -->
+        <div class="card">
+            <h3 class="card-title">📋 基本情報</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">送客ID</label>
+                    <input type="text" class="form-input" id="referralId" value="REF-001" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">送客日 <span class="required">*</span></label>
+                    <input type="date" class="form-input" id="referralDate" value="2025-08-25">
                 </div>
             </div>
-        </main>
-    </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">初回送客</label>
+                    <select class="form-select" id="isInitial">
+                        <option value="1" selected>初回</option>
+                        <option value="0">再送客</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">送客媒体 <span class="required">*</span></label>
+                    <select class="form-select" id="referralSource">
+                        <option value="">選択してください</option>
+                        <option value="tour" selected>見学予約</option>
+                        <option value="catalog">資料請求</option>
+                        <option value="event">イベント予約</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 顧客情報 -->
+        <div class="card">
+            <h3 class="card-title">👤 顧客情報</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">顧客名 <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="customerName" value="山田 太郎">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">電話番号 <span class="required">*</span></label>
+                    <input type="tel" class="form-input" id="customerPhone" value="090-1234-5678">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">メールアドレス</label>
+                    <input type="email" class="form-input" id="customerEmail" value="yamada@example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">物件種別 <span class="required">*</span></label>
+                    <select class="form-select" id="propertyType">
+                        <option value="">選択してください</option>
+                        <option value="custom" selected>注文住宅</option>
+                        <option value="new-house">新築戸建て</option>
+                        <option value="land">土地</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group full-width">
+                <label class="form-label">顧客要望・メモ</label>
+                <textarea class="form-textarea" id="customerNotes" placeholder="顧客の要望やメモを入力してください">予算3000万円程度で注文住宅を希望。家族構成は夫婦+子供2人。</textarea>
+            </div>
+        </div>
+
+        <!-- 送客先企業情報 -->
+        <div class="card">
+            <h3 class="card-title">🏢 送客先企業情報</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">企業名 <span class="required">*</span></label>
+                    <select class="form-select" id="companyName">
+                        <option value="">選択してください</option>
+                        <option value="yamada" selected>株式会社山田建設</option>
+                        <option value="tanaka">田中ハウジング</option>
+                        <option value="sato">佐藤工務店</option>
+                        <option value="suzuki">鈴木工務店</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">担当者名</label>
+                    <input type="text" class="form-input" id="contactPerson" value="山田 次郎">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">担当者電話番号</label>
+                    <input type="tel" class="form-input" id="contactPhone" value="03-1234-5678">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">担当者メール</label>
+                    <input type="email" class="form-input" id="contactEmail" value="yamada.jiro@yamada-kensetsu.co.jp">
+                </div>
+            </div>
+        </div>
+
+        <!-- ステータス管理 -->
+        <div class="card">
+            <h3 class="card-title">📊 ステータス管理</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">現在のステータス <span class="required">*</span></label>
+                    <select class="form-select" id="currentStatus" onchange="updateStatusDisplay()">
+                        <option value="">選択してください</option>
+                        <option value="no-response">未対応</option>
+                        <option value="sent">送客済み</option>
+                        <option value="contacted">連絡済み</option>
+                        <option value="negotiating">商談中</option>
+                        <option value="estimate" selected>見積提出</option>
+                        <option value="contracted">成約</option>
+                        <option value="not-contracted">失注</option>
+                        <option value="cancelled">キャンセル</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ステータス更新日</label>
+                    <input type="date" class="form-input" id="statusUpdateDate" value="2025-08-26">
+                </div>
+            </div>
+            <div class="form-group full-width">
+                <label class="form-label">進捗メモ</label>
+                <textarea class="form-textarea" id="progressNotes" placeholder="進捗状況やメモを入力してください">見積もりを提出済み。お客様から好感触を得ており、来週詳細打ち合わせ予定。</textarea>
+            </div>
+            <div id="statusDisplay" style="margin-top: 15px;">
+                <span class="status-badge status-estimate">見積提出</span>
+            </div>
+        </div>
+
+        <!-- 更新履歴 -->
+        <div class="card">
+            <h3 class="card-title">📅 更新履歴</h3>
+            <div class="history-section">
+                <div class="history-item">
+                    <div class="history-date">2025-08-26 14:30</div>
+                    <div class="history-content">ステータスを「商談中」から「見積提出」に更新</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-date">2025-08-25 16:20</div>
+                    <div class="history-content">ステータスを「連絡済み」から「商談中」に更新</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-date">2025-08-25 09:15</div>
+                    <div class="history-content">送客情報を登録</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- アクションボタン -->
+        <div class="action-buttons">
+            <button class="btn btn-success" onclick="saveReferral()">保存</button>
+        </div>
+    </main>
 
     <script>
-        // タブ切り替え
-        function switchTab(tabName) {
-            // すべてのタブボタンとコンテンツを非表示
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.style.display = 'none';
-            });
+        // URLパラメータから編集モードを判定
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('edit');
+        const isEditMode = !!editId;
 
-            // 選択されたタブを表示
-            if (tabName === 'tour') {
-                document.getElementById('tourTab').style.display = 'block';
-                document.querySelectorAll('.tab-button')[0].classList.add('active');
-            } else if (tabName === 'event') {
-                document.getElementById('eventTab').style.display = 'block';
-                document.querySelectorAll('.tab-button')[1].classList.add('active');
-            } else if (tabName === 'catalog') {
-                document.getElementById('catalogTab').style.display = 'block';
-                document.querySelectorAll('.tab-button')[2].classList.add('active');
-            }
-        }
-
-        // 企業選択トグル
-        function toggleCompany(element, companyId) {
-            const checkbox = element.querySelector('.company-checkbox');
-            checkbox.checked = !checkbox.checked;
-            
-            if (checkbox.checked) {
-                element.classList.add('selected');
+        // 初期化処理
+        window.onload = function() {
+            if (isEditMode) {
+                document.getElementById('pageTitle').textContent = '📝 送客編集';
+                document.getElementById('currentReferralId').textContent = editId;
+                loadReferralData(editId);
             } else {
-                element.classList.remove('selected');
+                document.getElementById('pageTitle').textContent = '➕ 新規送客登録';
+                document.getElementById('editAlert').style.display = 'none';
+                document.getElementById('deleteBtn').style.display = 'none';
+                document.getElementById('referralId').value = '自動生成';
             }
-        }
+        };
 
-        // 顧客選択時の処理
-        document.addEventListener('change', function(e) {
-            if (e.target.name === 'customer') {
-                const source = e.target.getAttribute('data-source');
-                document.getElementById('referralSource').value = source;
-            }
-        });
-
-        // フォーム送信
-        function submitForm(event) {
-            event.preventDefault();
+        // 送客データの読み込み（編集モード時）
+        function loadReferralData(referralId) {
+            // 実際の実装では、APIから送客データを取得
+            console.log('Loading referral data for:', referralId);
             
-            // バリデーション
-            const selectedCustomer = document.querySelector('input[name="customer"]:checked');
-            if (!selectedCustomer) {
-                alert('顧客を選択してください');
-                return false;
-            }
+            // サンプルデータの設定
+            const sampleData = {
+                'REF-001': {
+                    customerName: '山田 太郎',
+                    customerPhone: '090-1234-5678',
+                    customerEmail: 'yamada@example.com',
+                    companyName: 'yamada',
+                    currentStatus: 'estimate',
+                    propertyType: 'custom',
+                    referralSource: 'tour',
+                    isInitial: '1'
+                },
+                'REF-002': {
+                    customerName: '山田 太郎',
+                    customerPhone: '090-1234-5678',
+                    customerEmail: 'yamada@example.com',
+                    companyName: 'tanaka',
+                    currentStatus: 'negotiating',
+                    propertyType: 'custom',
+                    referralSource: 'tour',
+                    isInitial: '0'
+                }
+            };
 
-            const selectedCompanies = document.querySelectorAll('input[name="companies"]:checked');
-            if (selectedCompanies.length === 0) {
-                document.getElementById('companyError').style.display = 'block';
-                return false;
-            }
-
-            const propertyType = document.getElementById('propertyType').value;
-            if (!propertyType) {
-                alert('物件種別を選択してください');
-                return false;
-            }
-
-            // 送信確認
-            const companyCount = selectedCompanies.length;
-            if (confirm(`${companyCount}社に送客情報を登録しますか？`)) {
-                alert('送客登録が完了しました。\n送客先企業に通知されます。');
-                window.location.href = 'referral_list.html';
+            const data = sampleData[referralId];
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = data[key];
+                    }
+                });
+                updateStatusDisplay();
             }
         }
 
-        // 送客期限の初期設定（30日後）
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date();
-            const thirtyDaysLater = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30);
-            const dateString = thirtyDaysLater.toISOString().split('T')[0];
-            document.getElementById('expiryDate').value = dateString;
-        });
+        // ステータス表示の更新
+        function updateStatusDisplay() {
+            const status = document.getElementById('currentStatus').value;
+            const display = document.getElementById('statusDisplay');
+            
+            const statusConfig = {
+                'no-response': { text: '未対応', class: 'status-no-response' },
+                'sent': { text: '送客済み', class: 'status-sent' },
+                'contacted': { text: '連絡済み', class: 'status-contacted' },
+                'negotiating': { text: '商談中', class: 'status-contacted' },
+                'estimate': { text: '見積提出', class: 'status-estimate' },
+                'contracted': { text: '成約', class: 'status-contracted' },
+                'not-contracted': { text: '失注', class: 'status-not-contracted' },
+                'cancelled': { text: 'キャンセル', class: 'status-not-contracted' }
+            };
+
+            if (statusConfig[status]) {
+                display.innerHTML = `<span class="status-badge ${statusConfig[status].class}">${statusConfig[status].text}</span>`;
+            } else {
+                display.innerHTML = '';
+            }
+        }
+
+        // 戻るボタン
+        function goBack() {
+            window.location.href = 'referral_list.html';
+        }
+
+        // 一時保存
+        function saveDraft() {
+            if (validateForm()) {
+                alert('送客情報を一時保存しました。');
+            }
+        }
+
+        // 保存
+        function saveReferral() {
+            if (validateForm()) {
+                const action = isEditMode ? '更新' : '登録';
+                if (confirm(`送客情報を${action}しますか？`)) {
+                    alert(`送客情報を${action}しました。`);
+                    goBack();
+                }
+            }
+        }
+
+        // 削除
+        function deleteReferral() {
+            if (confirm('この送客情報を削除しますか？\n削除した情報は復元できません。')) {
+                alert('送客情報を削除しました。');
+                goBack();
+            }
+        }
+
+        // バリデーション
+        function validateForm() {
+            const requiredFields = ['customerName', 'customerPhone', 'companyName', 'currentStatus', 'propertyType', 'referralSource'];
+            let isValid = true;
+
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#d32f2f';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#ced4da';
+                }
+            });
+
+            if (!isValid) {
+                alert('必須項目を入力してください。');
+            }
+
+            return isValid;
+        }
     </script>
 </body>
 </html>

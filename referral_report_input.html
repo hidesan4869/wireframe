@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>送客報告入力 - メーカー向けポータル</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .company-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            margin-top: 60px;
+            padding: 30px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        /* 期限アラート */
+        .deadline-alert {
+            background: #fff3e0;
+            border: 1px solid #ffb74d;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .deadline-alert.urgent {
+            background: #ffebee;
+            border-color: #e57373;
+        }
+
+        .deadline-text {
+            color: #f57c00;
+            font-weight: 500;
+        }
+
+        .deadline-text.urgent {
+            color: #d32f2f;
+        }
+
+        /* ボタン */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f57c00;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+        }
+
+        /* フォームセクション */
+        .form-container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f5f5f5;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a4a4a;
+            margin-bottom: 8px;
+        }
+
+        .required {
+            color: #d32f2f;
+            margin-left: 3px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            padding: 10px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4a4a4a;
+            box-shadow: 0 0 0 2px rgba(74, 74, 74, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #7a7a7a;
+            margin-top: 5px;
+        }
+
+        /* ラジオボタンスタイル */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .radio-item:hover {
+            background: #f8f8f8;
+        }
+
+        .radio-item.selected {
+            border-color: #4a4a4a;
+            background: #f8f8f8;
+        }
+
+        .radio-item input[type="radio"] {
+            margin: 0;
+        }
+
+        .radio-label {
+            font-weight: 500;
+        }
+
+        /* 条件付きフィールド */
+        .conditional-fields {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .conditional-fields.show {
+            display: block;
+        }
+
+        /* 送客対象テーブル */
+        .referral-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .referral-table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 2px solid #d0d0d0;
+        }
+
+        .referral-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+
+        .referral-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .customer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .customer-contact {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-reported {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-overdue {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        /* 送客元バッジ */
+        .source-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .source-tour {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .source-catalog {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .source-event {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        /* アクションボタン */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+            
+            .referral-table {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル - メーカー専用画面</h1>
+        <div class="company-info">
+            <span>株式会社山田建設</span>
+            <button class="btn btn-secondary">ログアウト</button>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+        <div class="breadcrumb">
+            ホーム > 送客管理 > 送客報告入力
+        </div>
+
+        <div class="page-header">
+            <h2 class="page-title">📝 送客報告入力</h2>
+        </div>
+
+        <!-- 期限アラート -->
+        <div class="deadline-alert" id="deadlineAlert">
+            <div class="deadline-text" id="deadlineText">
+                ⏰ 送客報告期限: 送客日から3日以内 | 未報告件数: 3件
+            </div>
+            <button class="btn btn-warning" onclick="showOverdueReports()">期限超過を確認</button>
+        </div>
+
+        <div class="form-container">
+            <!-- 送客選択 -->
+            <div class="form-section">
+                <h3 class="section-title">送客報告対象</h3>
+                <div class="help-text">送客日から3日以内に報告が必要な案件を表示しています</div>
+                
+                <table class="referral-table">
+                    <thead>
+                        <tr>
+                            <th>選択</th>
+                            <th>送客ID</th>
+                            <th>顧客情報</th>
+                            <th>送客日</th>
+                            <th>送客媒体</th>
+                            <th>種別</th>
+                            <th>報告期限</th>
+                            <th>状況</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="pending-report">
+                            <td>
+                                <input type="radio" name="referral" value="REF-2025-0156" onchange="selectReferral(this)" required>
+                            </td>
+                            <td>REF-2025-0156</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">山田 太郎</div>
+                                    <div class="customer-contact">090-1234-5678</div>
+                                </div>
+                            </td>
+                            <td>2025-08-25</td>
+                            <td><span class="source-badge source-tour">見学予約</span></td>
+                            <td>注文住宅</td>
+                            <td>2025-08-28</td>
+                            <td><span class="status-badge status-pending">報告待ち</span></td>
+                        </tr>
+                        <tr class="overdue-report">
+                            <td>
+                                <input type="radio" name="referral" value="REF-2025-0154" onchange="selectReferral(this)" required>
+                            </td>
+                            <td>REF-2025-0154</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">佐藤 花子</div>
+                                    <div class="customer-contact">080-9876-5432</div>
+                                </div>
+                            </td>
+                            <td>2025-08-22</td>
+                            <td><span class="source-badge source-catalog">資料請求</span></td>
+                            <td>土地</td>
+                            <td>2025-08-25</td>
+                            <td><span class="status-badge status-overdue">期限超過</span></td>
+                        </tr>
+                        <tr class="pending-report">
+                            <td>
+                                <input type="radio" name="referral" value="REF-2025-0153" onchange="selectReferral(this)" required>
+                            </td>
+                            <td>REF-2025-0153</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">鈴木 一郎</div>
+                                    <div class="customer-contact">070-1111-2222</div>
+                                </div>
+                            </td>
+                            <td>2025-08-26</td>
+                            <td><span class="source-badge source-event">イベント予約</span></td>
+                            <td>新築戸建て</td>
+                            <td>2025-08-29</td>
+                            <td><span class="status-badge status-pending">報告待ち</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 送客報告詳細 -->
+            <div class="form-section">
+                <h3 class="section-title">送客報告詳細</h3>
+                
+                <form id="referralReportForm" onsubmit="submitReport(event)">
+                    <!-- 基本情報 -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">選択中の送客ID</label>
+                            <input type="text" id="selectedReferralId" class="form-input" readonly style="background: #f5f5f5;" placeholder="送客を選択してください">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">顧客名</label>
+                            <input type="text" id="selectedCustomerName" class="form-input" readonly style="background: #f5f5f5;">
+                        </div>
+                    </div>
+
+                    <!-- 送客種別 -->
+                    <div class="form-group">
+                        <label class="form-label">送客種別 <span class="required">*</span></label>
+                        <div class="radio-group">
+                            <div class="radio-item" onclick="selectReferralType('initial')">
+                                <input type="radio" name="referralType" value="initial" id="initial" required>
+                                <label for="initial" class="radio-label">初回送客</label>
+                            </div>
+                            <div class="radio-item" onclick="selectReferralType('existing')">
+                                <input type="radio" name="referralType" value="existing" id="existing" required>
+                                <label for="existing" class="radio-label">初回送客ではない</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 既存顧客の場合の追加情報 -->
+                    <div id="existingCustomerFields" class="conditional-fields">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">他のポータルサイト名 <span class="required">*</span></label>
+                                <input type="text" class="form-input" name="otherPortalSite" placeholder="例: SUUMO、HOME'S、アットホーム">
+                                <div class="help-text">顧客が利用している他のポータルサイトがあれば記入</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">他サイトでの送客日時</label>
+                                <input type="datetime-local" class="form-input" name="otherSiteDate">
+                                <div class="help-text">他のポータルサイトから送客された日時（分かる場合）</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">既存接点の詳細</label>
+                            <textarea class="form-textarea" name="existingContactDetails" placeholder="どのような経緯で既に接触していたかを記入してください"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 送客状況 -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">送客受付状況 <span class="required">*</span></label>
+                            <select class="form-select" name="receptionStatus" required onchange="toggleScheduledContactDate(this)">
+                                <option value="">選択してください</option>
+                                <option value="accepted">正常に受け付けました</option>
+                                <option value="contacted">既に送客済みでした</option>
+                                <option value="duplicate">重複案件でした</option>
+                                <option value="unsuitable">対象外案件でした</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="scheduledContactGroup" style="display: none;">
+                            <label class="form-label">対応予定日時 <span class="required">*</span></label>
+                            <input type="datetime-local" class="form-input" name="scheduledContactDate" id="scheduledContactDate">
+                            <div class="help-text">顧客への初回連絡予定日時</div>
+                        </div>
+                    </div>
+
+                    <!-- 備考 -->
+                    <div class="form-group">
+                        <label class="form-label">報告メモ・特記事項</label>
+                        <textarea class="form-textarea" name="reportMemo" rows="4" placeholder="送客に関する詳細情報、特記事項があれば記入してください"></textarea>
+                    </div>
+
+                    <!-- アクションボタン -->
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">下書き保存</button>
+                        <button type="submit" class="btn btn-success">送客報告を提出</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 送客選択時の処理
+        function selectReferral(radio) {
+            const row = radio.closest('tr');
+            const referralId = radio.value;
+            const customerName = row.querySelector('.customer-name').textContent;
+            
+            document.getElementById('selectedReferralId').value = referralId;
+            document.getElementById('selectedCustomerName').value = customerName;
+            
+            // 他の選択をリセット
+            document.querySelectorAll('input[name="referralType"]').forEach(r => {
+                r.checked = false;
+                r.closest('.radio-item').classList.remove('selected');
+            });
+            
+            // 条件付きフィールドを非表示
+            document.getElementById('existingCustomerFields').classList.remove('show');
+        }
+
+        // 送客種別選択時の処理
+        function selectReferralType(type) {
+            // ラジオボタンをチェック
+            document.getElementById(type).checked = true;
+            
+            // スタイル更新
+            document.querySelectorAll('.radio-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            document.getElementById(type).closest('.radio-item').classList.add('selected');
+            
+            // 条件付きフィールドの表示/非表示
+            const existingFields = document.getElementById('existingCustomerFields');
+            if (type === 'existing') {
+                existingFields.classList.add('show');
+                // 必須項目を設定
+                existingFields.querySelector('[name="otherPortalSite"]').required = true;
+            } else {
+                existingFields.classList.remove('show');
+                // 必須項目を解除
+                existingFields.querySelector('[name="otherPortalSite"]').required = false;
+            }
+        }
+
+        // 受付状況変更時の対応予定日時フィールド表示制御
+        function toggleScheduledContactDate(select) {
+            const scheduledContactGroup = document.getElementById('scheduledContactGroup');
+            const scheduledContactDate = document.getElementById('scheduledContactDate');
+            
+            if (select.value === 'accepted') {
+                scheduledContactGroup.style.display = 'block';
+                scheduledContactDate.required = true;
+            } else {
+                scheduledContactGroup.style.display = 'none';
+                scheduledContactDate.required = false;
+                scheduledContactDate.value = ''; // 値をクリア
+            }
+        }
+
+        // フォーム送信
+        function submitReport(event) {
+            event.preventDefault();
+            
+            // バリデーション
+            const selectedReferral = document.querySelector('input[name="referral"]:checked');
+            if (!selectedReferral) {
+                alert('送客対象を選択してください。');
+                return false;
+            }
+
+            const referralType = document.querySelector('input[name="referralType"]:checked');
+            if (!referralType) {
+                alert('送客種別を選択してください。');
+                return false;
+            }
+
+            const receptionStatus = document.querySelector('[name="receptionStatus"]').value;
+            if (!receptionStatus) {
+                alert('送客受付状況を選択してください。');
+                return false;
+            }
+
+            // 既存顧客の場合の追加バリデーション
+            if (referralType.value === 'existing') {
+                const otherPortalSite = document.querySelector('[name="otherPortalSite"]').value;
+                if (!otherPortalSite) {
+                    alert('既存顧客の場合、他のポータルサイト名を入力してください。');
+                    return false;
+                }
+            }
+
+            // 正常受付の場合の追加バリデーション
+            if (receptionStatus === 'accepted') {
+                const scheduledContactDate = document.querySelector('[name="scheduledContactDate"]').value;
+                if (!scheduledContactDate) {
+                    alert('正常受付の場合、対応予定日時を入力してください。');
+                    return false;
+                }
+            }
+
+            // 確認ダイアログ
+            if (confirm('送客報告を提出しますか？\n提出後は修正できません。')) {
+                alert('送客報告を提出しました。\n運営者に通知されます。');
+                // フォームリセット
+                document.getElementById('referralReportForm').reset();
+                document.getElementById('selectedReferralId').value = '';
+                document.getElementById('selectedCustomerName').value = '';
+                document.getElementById('existingCustomerFields').classList.remove('show');
+                document.getElementById('scheduledContactGroup').style.display = 'none';
+                
+                // 報告済みに更新（実際の実装では画面リロード）
+                updateReportStatus(selectedReferral.value);
+            }
+        }
+
+        // 下書き保存
+        function saveDraft() {
+            alert('下書きを保存しました。');
+        }
+
+        // 期限超過確認
+        function showOverdueReports() {
+            alert('期限超過の送客報告があります。\n・REF-2025-0154（佐藤 花子）: 1日超過\n\n至急報告をお願いします。');
+        }
+
+        // 報告詳細表示
+        function viewReport(referralId) {
+            alert(`送客報告 ${referralId} の詳細を表示します。`);
+        }
+
+        // 報告状況更新（デモ用）
+        function updateReportStatus(referralId) {
+            const row = document.querySelector(`input[value="${referralId}"]`).closest('tr');
+            const statusBadge = row.querySelector('.status-badge');
+            statusBadge.textContent = '報告済み';
+            statusBadge.className = 'status-badge status-reported';
+        }
+
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 期限超過件数チェック
+            const overdueCount = document.querySelectorAll('.overdue-report').length;
+            if (overdueCount > 0) {
+                const deadlineAlert = document.getElementById('deadlineAlert');
+                const deadlineText = document.getElementById('deadlineText');
+                deadlineAlert.classList.add('urgent');
+                deadlineText.classList.add('urgent');
+                deadlineText.innerHTML = `🚨 期限超過: ${overdueCount}件 | 至急報告してください`;
+            }
+        });
+    </script>
+</body>
+</html>

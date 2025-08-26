@@ -57,6 +57,9 @@
             margin-top: 60px;
             padding: 30px;
             overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .breadcrumb {
@@ -425,7 +428,11 @@
                             <div class="form-group full-width">
                                 <label class="form-label">住所 <span class="required">*</span></label>
                                 <input type="text" id="address" class="form-input" 
-                                       placeholder="例：東京都新宿区西新宿1-1-1 新宿ビル5階" 
+                                       placeholder="例：東京都新宿区西新宿1-1-1" 
+                                       required maxlength="200"
+                                       oninput="updatePreview()">
+                                <input type="text" id="address" class="form-input" 
+                                       placeholder="新宿ビル5階" 
                                        required maxlength="200"
                                        oninput="updatePreview()">
                                 <div class="error-message" id="addressError"></div>
@@ -536,7 +543,6 @@
                             <span class="required">*</span> 必須項目は必ず入力してください。
                         </div>
                         <div class="form-actions">
-                            <button type="button" class="btn btn-secondary" onclick="clearForm()">リセット</button>
                             <button type="submit" class="btn btn-primary">登録</button>
                         </div>
                     </div>

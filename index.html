@@ -59,6 +59,27 @@
             font-size: 14px;
         }
 
+        .user-type-selector {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .user-type-selector:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .toggle-arrow {
+            margin-left: 5px;
+            font-size: 12px;
+            transition: transform 0.2s ease;
+        }
+
+
         /* サイドバー */
         .sidebar {
             width: 280px;
@@ -145,6 +166,23 @@
             background: #e8e8e8;
             color: #2c2c2c;
             font-weight: 500;
+        }
+
+        /* ユーザータイプ別表示制御 */
+        .admin-only {
+            display: block;
+        }
+
+        .manufacturer-only {
+            display: none;
+        }
+
+        .manufacturer-view .admin-only {
+            display: none;
+        }
+
+        .manufacturer-view .manufacturer-only {
+            display: block;
         }
 
         /* メインコンテンツ */
@@ -525,21 +563,21 @@
         <header class="header">
             <h1>🏠 不動産ポータル管理システム</h1>
             <div class="user-info">
-                <span>管理者さん</span>
+                <span>田中 太郎</span>
                 <button class="btn btn-secondary">ログアウト</button>
             </div>
         </header>
 
         <!-- サイドバー -->
         <nav class="sidebar">
-            <div class="nav-item">
+            <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this); showDashboard();">
                     📊 ダッシュボード
                 </div>
             </div>
 
             <!-- カタログ請求管理 -->
-            <div class="nav-item">
+            <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
                     📋 カタログ請求管理
                     <span class="arrow">▶</span>
@@ -583,7 +621,7 @@
             </div>
 
             <!-- イベント予約管理 -->
-            <div class="nav-item">
+            <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
                     🎪 イベント予約管理
                     <span class="arrow">▶</span>
@@ -602,7 +640,7 @@
             </div>
 
             <!-- 見学予約管理 -->
-            <div class="nav-item">
+            <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
                     👁️ 見学予約管理
                     <span class="arrow">▶</span>
@@ -621,17 +659,20 @@
             </div>
 
             <!-- 契約企業情報 -->
-            <div class="nav-item">
+            <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
-                    🏢 契約企業情報
+                    🏢 契約企業管理
                     <span class="arrow">▶</span>
                 </div>
                 <div class="nav-subitems">
-                    <div class="nav-subitem" onclick="showContent('company-list', event)">
+                    <div class="nav-subitem" onclick="window.location.href='company_list.html'">
                         📋 企業一覧
                     </div>
-                    <div class="nav-subitem" onclick="showContent('company-register', event)">
+                    <div class="nav-subitem" onclick="window.location.href='company_register.html'">
                         ➕ 企業登録
+                    </div>
+                    <div class="nav-subitem" onclick="window.location.href='company_member_management.html'">
+                        👥 メンバー管理
                     </div>
                     <div class="nav-subitem" onclick="showContent('contract-management', event)">
                         📄 契約管理
@@ -640,7 +681,7 @@
             </div>
 
             <!-- 会員管理 -->
-            <div class="nav-item">
+            <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
                     👤 会員管理
                     <span class="arrow">▶</span>
@@ -659,7 +700,7 @@
             </div>
 
             <!-- 物件管理 -->
-            <div class="nav-item">
+            <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
                     🏠 物件管理
                     <span class="arrow">▶</span>
@@ -699,7 +740,7 @@
             </div>
 
             <!-- 請求書管理 -->
-            <div class="nav-item">
+            <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
                     💰 請求書管理
                     <span class="arrow">▶</span>
@@ -711,9 +752,13 @@
                     <div class="nav-subitem" onclick="window.location.href='invoice_create.html'">
                         ➕ 請求書作成
                     </div>
-                    <div class="nav-subitem" onclick="window.location.href='payment_status.html'">
-                        💳 支払状況管理
-                    </div>
+                </div>
+            </div>
+
+            <!-- メーカー専用ダッシュボード -->
+            <div class="nav-item manufacturer-only">
+                <div class="nav-header" onclick="toggleNav(this); showManufacturerDashboard();">
+                    📊 メーカーダッシュボード
                 </div>
             </div>
 
@@ -727,17 +772,38 @@
                     <div class="nav-subitem" onclick="window.location.href='referral_list.html'">
                         📋 送客一覧
                     </div>
-                    <div class="nav-subitem" onclick="window.location.href='referral_register.html'">
-                        ➕ 送客登録
+                    
+                    <!-- 運営者向け -->
+                    <div class="nav-subitem" onclick="toggleSubNav(this)">
+                        👨‍💼 運営者向け
+                        <span class="arrow">▶</span>
                     </div>
-                    <div class="nav-subitem" onclick="window.location.href='monthly_reports.html'">
-                        📊 月次報告
+                    <div class="sub-subitems">
+                        <div class="sub-subitem" onclick="window.location.href='referral_report_management.html'">送客報告管理</div>
+                        <div class="sub-subitem" onclick="window.location.href='monthly_report_management.html'" style="padding: 8px 20px; font-size: 13px;">月次報告管理</div>
+                    </div>
+
+                    <!-- 企業向け -->
+                    <div class="nav-subitem" onclick="toggleSubNav(this)">
+                        🏭 企業向け
+                        <span class="arrow">▶</span>
+                    </div>
+                    <div class="sub-subitems">
+                        <div class="sub-subitem" onclick="window.location.href='referral_report_input.html'">送客報告入力</div>
+                        <div class="sub-subitem" onclick="toggleSubNav(this)">
+                            📊 月次報告管理
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="sub-sub-subitems" style="margin-left: 20px; background: #ffffff;">
+                            <div class="sub-subitem" onclick="window.location.href='monthly_report_input.html'" style="padding: 8px 20px; font-size: 13px;">月次報告入力</div>
+                            <div class="sub-subitem" onclick="window.location.href='monthly_report_history.html'" style="padding: 8px 20px; font-size: 13px;">履歴</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- システム管理 -->
-            <div class="nav-item">
+            <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
                     ⚙️ システム管理
                     <span class="arrow">▶</span>
@@ -1390,6 +1456,73 @@
                 window.location.href = `company_register.html?edit=${companyId}`;
             }
         }
+
+        // ユーザータイプ切り替え
+        function toggleUserType() {
+            const body = document.body;
+            const currentUserType = document.getElementById('currentUserType');
+            const isManufacturerView = body.classList.contains('manufacturer-view');
+
+            if (isManufacturerView) {
+                // 管理者モードに切り替え
+                body.classList.remove('manufacturer-view');
+                currentUserType.textContent = '管理者';
+                showDashboard();
+            } else {
+                // メーカーモードに切り替え
+                body.classList.add('manufacturer-view');
+                currentUserType.textContent = 'メーカー';
+                showManufacturerDashboard();
+            }
+        }
+
+        // メーカーダッシュボード表示関数
+        function showManufacturerDashboard() {
+            // 全てのコンテンツを非表示
+            document.querySelectorAll('.page-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // メーカー用ダッシュボードを表示（一時的に通常のダッシュボードを使用）
+            const dashboard = document.getElementById('dashboard-content');
+            dashboard.style.display = 'block';
+            dashboard.innerHTML = `
+                <div class="page-header">
+                    <h2 class="page-title">メーカーダッシュボード</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">15</div>
+                        <div class="stat-label">担当顧客数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">今月の成約</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2</div>
+                        <div class="stat-label">未報告案件</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">87%</div>
+                        <div class="stat-label">報告提出率</div>
+                    </div>
+                </div>
+                <div style="text-align: center; padding: 50px; color: #7a7a7a;">
+                    <h3>メーカー専用メニューから項目を選択してください</h3>
+                    <p>送客報告の入力や月次報告を行うことができます</p>
+                </div>
+            `;
+            
+            // パンくずリストを更新
+            document.getElementById('breadcrumb').innerHTML = 'ホーム > メーカーダッシュボード';
+            
+            // ナビゲーションのアクティブ状態をクリア
+            document.querySelectorAll('.nav-subitem, .sub-subitem').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+
 
         // 初期状態：ダッシュボードを表示
         document.addEventListener('DOMContentLoaded', function() {

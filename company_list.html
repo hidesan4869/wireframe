@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>契約企業一覧 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            margin-top: 60px;
+            padding: 30px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ボタン */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* 統計カード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-number.warning {
+            color: #f57c00;
+        }
+
+        .stat-label {
+            color: #7a7a7a;
+            font-size: 14px;
+        }
+
+        /* 検索・フィルター */
+        .search-filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* データテーブル */
+        .data-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .table-header {
+            background: #f5f5f5;
+            padding: 20px 25px;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        .sort-select {
+            padding: 6px 10px;
+            border: 1px solid #c0c0c0;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 2px solid #d0d0d0;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .sort-arrow {
+            margin-left: 5px;
+            color: #6a6a6a;
+            font-size: 10px;
+        }
+
+        tbody td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* カテゴリバッジ */
+        .category-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            background: #e8e8ff;
+            color: #5555aa;
+            display: inline-block;
+            margin: 1px;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            color: #2c2c2c;
+            font-weight: 500;
+        }
+
+        /* アクションメニュー */
+        .action-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-button {
+            background: #4a4a4a;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+            background: #3a3a3a;
+            transform: scale(1.1);
+        }
+
+        .action-popover {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 8px 0;
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .action-popover.show {
+            display: block;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #2c2c2c;
+            transition: background 0.2s ease;
+        }
+
+        .action-item:hover {
+            background: #f5f5f5;
+        }
+
+        .action-item-icon {
+            font-size: 16px;
+            width: 18px;
+            text-align: center;
+        }
+
+        /* アクションアイテムの色分け */
+        .action-item.detail:hover {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .action-item.edit:hover {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .action-item.member:hover {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <h1 onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+        <div class="user-info">
+            <span>田中 太郎さん（運営者）</span>
+            <button class="btn btn-secondary">ログアウト</button>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+        <div class="breadcrumb">
+            <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 契約企業管理 > 企業一覧
+        </div>
+
+        <div class="page-header">
+            <h2 class="page-title">🏢 企業一覧</h2>
+            <div class="action-buttons">
+                <button class="btn btn-secondary">CSVエクスポート</button>
+                <button class="btn btn-primary" onclick="window.location.href='company_register.html'">新規企業登録</button>
+            </div>
+        </div>
+
+        <!-- 統計カード -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">47</div>
+                <div class="stat-label">登録企業数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">12</div>
+                <div class="stat-label">今月新規登録</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">停止中</div>
+            </div>
+        </div>
+
+        <!-- 検索・フィルター -->
+        <div class="search-filter-section">
+            <div class="search-controls">
+                <input type="text" id="companySearchBox" class="search-input" placeholder="企業名、ID、電話番号、メールアドレスで検索..." onkeyup="searchCompanies()">
+                <button class="btn btn-secondary" onclick="clearSearch()">クリア</button>
+            </div>
+        </div>
+
+        <!-- データテーブル -->
+        <div class="data-table">
+            <div class="table-header">
+                <h3 class="table-title">企業リスト</h3>
+                <div class="table-controls">
+                    <select class="sort-select" onchange="sortTable(this.value)">
+                        <option value="id_asc">ID (昇順)</option>
+                        <option value="id_desc">ID (降順)</option>
+                        <option value="name_asc">企業名 (昇順)</option>
+                        <option value="name_desc">企業名 (降順)</option>
+                        <option value="date_asc">登録日 (昇順)</option>
+                        <option value="date_desc">登録日 (降順)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <table id="companyTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTableByColumn(0)">ID <span class="sort-arrow"></span></th>
+                        <th onclick="sortTableByColumn(1)">企業名 <span class="sort-arrow"></span></th>
+                        <th onclick="sortTableByColumn(2)">代表者名 <span class="sort-arrow"></span></th>
+                        <th onclick="sortTableByColumn(3)">住所 <span class="sort-arrow"></span></th>
+                        <th onclick="sortTableByColumn(4)">電話番号 <span class="sort-arrow"></span></th>
+                        <th onclick="sortTableByColumn(5)">メールアドレス <span class="sort-arrow"></span></th>
+                        <th onclick="sortTableByColumn(6)">取り扱い種別<span class="sort-arrow"></span></th>
+                        <th onclick="sortTableByColumn(7)">登録日 <span class="sort-arrow"></span></th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>C001</td>
+                        <td>
+                            <div style="font-weight: 600;">株式会社山田建設</div>
+                            <small style="color: #7a7a7a;">カブシキガイシャヤマダケンセツ</small>
+                        </td>
+                        <td>山田 太郎</td>
+                        <td>
+                            <div>〒160-0023</div>
+                            <div>東京都新宿区西新宿1-1-1</div>
+                        </td>
+                        <td>03-1234-5678</td>
+                        <td>info@yamada-kensetsu.co.jp</td>
+                        <td>
+                            <span class="category-badge">注文住宅</span>
+                            <span class="category-badge">新築戸建て</span>
+                        </td>
+                        <td>2025-01-15</td>
+                        <td>
+                            <div class="action-menu">
+                                <button class="action-button" onclick="toggleActionMenu(this, 'C001')">⋮</button>
+                                <div class="action-popover">
+                                    <div class="action-item detail" onclick="openDetailModal('C001')">
+                                        <span class="action-item-icon">📄</span>
+                                        <span>詳細</span>
+                                    </div>
+                                    <div class="action-item edit" onclick="editCompany('C001')">
+                                        <span class="action-item-icon">✏️</span>
+                                        <span>編集</span>
+                                    </div>
+                                    <div class="action-item member" onclick="manageMembers('C001')">
+                                        <span class="action-item-icon">👥</span>
+                                        <span>メンバー管理</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>C002</td>
+                        <td>
+                            <div style="font-weight: 600;">田中不動産株式会社</div>
+                            <small style="color: #7a7a7a;">タナカフドウサンカブシキガイシャ</small>
+                        </td>
+                        <td>田中 花子</td>
+                        <td>
+                            <div>〒530-0001</div>
+                            <div>大阪府大阪市北区梅田2-2-2</div>
+                        </td>
+                        <td>06-9876-5432</td>
+                        <td>contact@tanaka-fudosan.co.jp</td>
+                        <td>
+                            <span class="category-badge">土地</span>
+                            <span class="category-badge">新築マンション</span>
+                            <span class="category-badge">中古マンション</span>
+                        </td>
+                        <td>2025-02-20</td>
+                        <td>
+                            <div class="action-menu">
+                                <button class="action-button" onclick="toggleActionMenu(this, 'C002')">⋮</button>
+                                <div class="action-popover">
+                                    <div class="action-item detail" onclick="openDetailModal('C002')">
+                                        <span class="action-item-icon">📄</span>
+                                        <span>詳細</span>
+                                    </div>
+                                    <div class="action-item edit" onclick="editCompany('C002')">
+                                        <span class="action-item-icon">✏️</span>
+                                        <span>編集</span>
+                                    </div>
+                                    <div class="action-item member" onclick="manageMembers('C002')">
+                                        <span class="action-item-icon">👥</span>
+                                        <span>メンバー管理</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>C003</td>
+                        <td>
+                            <div style="font-weight: 600;">佐藤ハウジング</div>
+                            <small style="color: #7a7a7a;">サトウハウジング</small>
+                        </td>
+                        <td>佐藤 一郎</td>
+                        <td>
+                            <div>〒460-0008</div>
+                            <div>愛知県名古屋市中区錦3-3-3</div>
+                        </td>
+                        <td>052-1111-2222</td>
+                        <td>sales@sato-housing.com</td>
+                        <td>
+                            <span class="category-badge">注文住宅</span>
+                            <span class="category-badge">新築戸建て</span>
+                            <span class="category-badge">中古戸建</span>
+                        </td>
+                        <td>2025-03-10</td>
+                        <td>
+                            <div class="action-menu">
+                                <button class="action-button" onclick="toggleActionMenu(this, 'C003')">⋮</button>
+                                <div class="action-popover">
+                                    <div class="action-item detail" onclick="openDetailModal('C003')">
+                                        <span class="action-item-icon">📄</span>
+                                        <span>詳細</span>
+                                    </div>
+                                    <div class="action-item edit" onclick="editCompany('C003')">
+                                        <span class="action-item-icon">✏️</span>
+                                        <span>編集</span>
+                                    </div>
+                                    <div class="action-item member" onclick="manageMembers('C003')">
+                                        <span class="action-item-icon">👥</span>
+                                        <span>メンバー管理</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>C004</td>
+                        <td>
+                            <div style="font-weight: 600;">鈴木工務店有限会社</div>
+                            <small style="color: #7a7a7a;">スズキコウムテンユウゲンガイシャ</small>
+                        </td>
+                        <td>鈴木 美咲</td>
+                        <td>
+                            <div>〒812-0013</div>
+                            <div>福岡県福岡市博多区駅東4-4-4</div>
+                        </td>
+                        <td>092-3333-4444</td>
+                        <td>office@suzuki-koumuten.co.jp</td>
+                        <td>
+                            <span class="category-badge">注文住宅</span>
+                            <span class="category-badge">新築戸建て</span>
+                        </td>
+                        <td>2025-04-05</td>
+                        <td>
+                            <div class="action-menu">
+                                <button class="action-button" onclick="toggleActionMenu(this, 'C004')">⋮</button>
+                                <div class="action-popover">
+                                    <div class="action-item detail" onclick="openDetailModal('C004')">
+                                        <span class="action-item-icon">📄</span>
+                                        <span>詳細</span>
+                                    </div>
+                                    <div class="action-item edit" onclick="editCompany('C004')">
+                                        <span class="action-item-icon">✏️</span>
+                                        <span>編集</span>
+                                    </div>
+                                    <div class="action-item member" onclick="manageMembers('C004')">
+                                        <span class="action-item-icon">👥</span>
+                                        <span>メンバー管理</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>C005</td>
+                        <td>
+                            <div style="font-weight: 600;">高橋デベロップメント株式会社</div>
+                            <small style="color: #7a7a7a;">タカハシデベロップメントカブシキガイシャ</small>
+                        </td>
+                        <td>高橋 健太</td>
+                        <td>
+                            <div>〒060-0042</div>
+                            <div>北海道札幌市中央区大通西5-5-5</div>
+                        </td>
+                        <td>011-5555-6666</td>
+                        <td>info@takahashi-dev.jp</td>
+                        <td>
+                            <span class="category-badge">土地</span>
+                            <span class="category-badge">新築マンション</span>
+                            <span class="category-badge">中古マンション</span>
+                            <span class="category-badge">中古戸建</span>
+                        </td>
+                        <td>2025-05-12</td>
+                        <td>
+                            <div class="action-menu">
+                                <button class="action-button" onclick="toggleActionMenu(this, 'C005')">⋮</button>
+                                <div class="action-popover">
+                                    <div class="action-item detail" onclick="openDetailModal('C005')">
+                                        <span class="action-item-icon">📄</span>
+                                        <span>詳細</span>
+                                    </div>
+                                    <div class="action-item edit" onclick="editCompany('C005')">
+                                        <span class="action-item-icon">✏️</span>
+                                        <span>編集</span>
+                                    </div>
+                                    <div class="action-item member" onclick="manageMembers('C005')">
+                                        <span class="action-item-icon">👥</span>
+                                        <span>メンバー管理</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- 詳細モーダル -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">企業詳細情報</h3>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">企業ID</div>
+                        <div class="detail-value" id="modal-company-id">C001</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">企業名</div>
+                        <div class="detail-value" id="modal-company-name">株式会社山田建設</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">代表者名</div>
+                        <div class="detail-value" id="modal-representative">山田 太郎</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">電話番号</div>
+                        <div class="detail-value" id="modal-phone">03-1234-5678</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">メールアドレス</div>
+                        <div class="detail-value" id="modal-email">info@yamada-kensetsu.co.jp</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">登録日</div>
+                        <div class="detail-value" id="modal-registration-date">2025-01-15</div>
+                    </div>
+                </div>
+
+                <div class="detail-item" style="margin-top: 20px;">
+                    <div class="detail-label">住所</div>
+                    <div class="detail-value" id="modal-address">〒160-0023 東京都新宿区西新宿1-1-1</div>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                    <button class="btn btn-secondary" onclick="closeModal()">閉じる</button>
+                    <button class="btn btn-primary" onclick="editCompanyFromModal()">編集する</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCompanyId = null;
+
+        // 詳細モーダル表示
+        function openDetailModal(companyId) {
+            currentCompanyId = companyId;
+            document.getElementById('modal-company-id').textContent = companyId;
+            
+            // サンプルデータ（実際の実装では APIから取得）
+            const companyData = {
+                'C001': {
+                    name: '株式会社山田建設',
+                    representative: '山田 太郎',
+                    phone: '03-1234-5678',
+                    email: 'info@yamada-kensetsu.co.jp',
+                    address: '〒160-0023 東京都新宿区西新宿1-1-1',
+                    registrationDate: '2025-01-15'
+                }
+            };
+
+            const data = companyData[companyId] || companyData['C001'];
+            document.getElementById('modal-company-name').textContent = data.name;
+            document.getElementById('modal-representative').textContent = data.representative;
+            document.getElementById('modal-phone').textContent = data.phone;
+            document.getElementById('modal-email').textContent = data.email;
+            document.getElementById('modal-address').textContent = data.address;
+            document.getElementById('modal-registration-date').textContent = data.registrationDate;
+
+            document.getElementById('detailModal').classList.add('show');
+        }
+
+        // モーダル閉じる
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('show');
+        }
+
+        // モーダルから編集画面へ
+        function editCompanyFromModal() {
+            closeModal();
+            editCompany(currentCompanyId);
+        }
+
+        // 企業編集
+        function editCompany(companyId) {
+            window.location.href = 'company_edit.html?edit=' + companyId;
+        }
+
+        // メンバー管理
+        function manageMembers(companyId) {
+            window.location.href = 'company_member_management.html?company=' + companyId;
+        }
+
+        // 企業検索
+        function searchCompanies() {
+            const searchTerm = document.getElementById('companySearchBox').value.toLowerCase();
+            const table = document.getElementById('companyTable');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            Array.from(rows).forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                let found = false;
+                
+                Array.from(cells).forEach(cell => {
+                    if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                        found = true;
+                    }
+                });
+                
+                row.style.display = found ? '' : 'none';
+            });
+        }
+
+        // 検索クリア
+        function clearSearch() {
+            document.getElementById('companySearchBox').value = '';
+            searchCompanies();
+        }
+
+        // テーブルソート
+        function sortTable(sortType) {
+            const table = document.getElementById('companyTable');
+            const tbody = table.getElementsByTagName('tbody')[0];
+            const rows = Array.from(tbody.getElementsByTagName('tr'));
+            
+            const [field, order] = sortType.split('_');
+            const columnIndex = {
+                'id': 0,
+                'name': 1,
+                'date': 7
+            }[field];
+
+            rows.sort((a, b) => {
+                const aValue = a.cells[columnIndex].textContent.trim();
+                const bValue = b.cells[columnIndex].textContent.trim();
+                
+                const comparison = aValue.localeCompare(bValue);
+                return order === 'asc' ? comparison : -comparison;
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        // カラムクリックでソート
+        function sortTableByColumn(columnIndex) {
+            // 簡易実装（実際の実装では より詳細なソート処理）
+            console.log('Sorting by column:', columnIndex);
+        }
+
+        // アクションメニューの切り替え
+        function toggleActionMenu(button, companyId) {
+            const popover = button.nextElementSibling;
+            const isVisible = popover.classList.contains('show');
+            
+            // 他のポップオーバーを全て閉じる
+            document.querySelectorAll('.action-popover').forEach(p => {
+                p.classList.remove('show');
+            });
+            
+            // クリックされたポップオーバーの表示切り替え
+            if (!isVisible) {
+                popover.classList.add('show');
+            }
+        }
+
+        // ドキュメントクリックでポップオーバーを閉じる
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.action-menu')) {
+                document.querySelectorAll('.action-popover').forEach(popover => {
+                    popover.classList.remove('show');
+                });
+            }
+        });
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

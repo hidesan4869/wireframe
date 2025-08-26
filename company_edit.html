@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>契約企業編集 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            margin-top: 60px;
+            padding: 30px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        /* ボタン */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f57c00;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+        }
+
+        /* カード */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* フォーム */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a4a4a;
+        }
+
+        .required {
+            color: #dc3545;
+            margin-left: 4px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            padding: 10px 14px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4a4a4a;
+            box-shadow: 0 0 0 2px rgba(74, 74, 74, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-input[readonly] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        /* ステータスバッジ */
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-block;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-suspended {
+            background: #f5f5f5;
+            color: #6a6a6a;
+        }
+
+        /* 企業種別バッジ */
+        .company-type-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .type-manufacturer {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .type-builder {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .type-agency {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        /* アクションボタン */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        /* アラート */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #e7f3ff;
+            color: #004085;
+            border-left: 4px solid #004085;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #856404;
+        }
+
+        /* 契約情報セクション */
+        .contract-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4a4a4a;
+        }
+
+        .contract-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .contract-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .contract-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        /* ファイルアップロード */
+        .file-upload {
+            border: 2px dashed #ced4da;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-upload:hover {
+            border-color: #4a4a4a;
+            background: #f8f9fa;
+        }
+
+        .file-upload.dragover {
+            border-color: #2e7d32;
+            background: #e8f5e8;
+        }
+
+        /* チェックボックス・ラジオボタン */
+        .checkbox-group,
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-item,
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"],
+        .radio-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <h1 onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+        <div class="user-info">
+            <span>田中 太郎さん（運営者）</span>
+            <button class="btn btn-secondary">ログアウト</button>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+        <div class="breadcrumb">
+            <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 
+            <a href="company_list.html" style="color: #6a6a6a; text-decoration: none;">契約企業管理</a> > 
+            <span id="breadcrumbTitle">企業編集</span>
+        </div>
+
+        <div class="page-header">
+            <h2 class="page-title" id="pageTitle">🏢 契約企業編集</h2>
+            <button class="btn btn-secondary" onclick="goBack()">一覧に戻る</button>
+        </div>
+
+        <!-- アラート（編集モード時） -->
+        <div class="alert alert-info" id="editAlert">
+            企業ID: <span id="currentCompanyId">COMP-001</span> の情報を編集中です。
+        </div>
+
+        <!-- 基本情報 -->
+        <div class="card">
+            <h3 class="card-title">🏢 基本情報</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">企業ID</label>
+                    <input type="text" class="form-input" id="companyId" value="COMP-001" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">企業ステータス <span class="required">*</span></label>
+                    <select class="form-select" id="companyStatus" onchange="updateStatusDisplay()">
+                        <option value="active" selected>契約中</option>
+                        <option value="inactive">契約終了</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">企業名 <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="companyName" value="株式会社山田建設">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">フリガナ<span class="required">*</span></label>
+                    <input type="text" class="form-input" id="representativeName" value="カブシキガイシャヤマダ">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">代表者名 <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="representativeName" value="山田 太郎">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">郵便番号 <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="postalCode" value="100-0001" pattern="\d{3}-\d{4}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">都道府県 <span class="required">*</span></label>
+                    <select class="form-select" id="prefecture">
+                        <option value="">選択してください</option>
+                        <option value="tokyo" selected>東京都</option>
+                        <option value="kanagawa">神奈川県</option>
+                        <option value="chiba">千葉県</option>
+                        <option value="saitama">埼玉県</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group full-width">
+                <label class="form-label">住所 <span class="required">*</span></label>
+                <input type="text" class="form-input" id="address" value="千代田区千代田1-1-1 山田ビル5F">
+                <input type="text" class="form-input" id="address" value="山田ビル5F">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">電話番号 <span class="required">*</span></label>
+                    <input type="tel" class="form-input" id="phoneNumber" value="03-1234-5678">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">メールアドレス <span class="required">*</span></label>
+                    <input type="email" class="form-input" id="email" value="info@yamada-kensetsu.co.jp">
+                </div>
+            </div>
+            <div class="form-group full-width">
+                <label class="form-label">インボイス登録番号<span class="required"></span></label>
+                <span>T <input type="text" class="form-input" id="address" value=""></span>
+            </div>
+        </div>
+
+        <!-- 取扱いカテゴリ -->
+        <div class="card">
+            <h3 class="card-title">🏷️ 取扱いカテゴリ</h3>
+            <div class="form-group">
+                <label class="form-label">取扱いカテゴリ <span class="required">*</span></label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="categoryCustomHome" value="custom_home" checked>
+                        <label for="categoryCustomHome">注文住宅</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="categoryLand" value="land">
+                        <label for="categoryLand">土地</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="categoryNewHouse" value="new_house" checked>
+                        <label for="categoryNewHouse">新築戸建て</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="categoryUsedHouse" value="used_house">
+                        <label for="categoryUsedHouse">中古戸建て</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="categoryNewApartment" value="new_apartment">
+                        <label for="categoryNewApartment">新築マンション</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="categoryUsedApartment" value="used_apartment">
+                        <label for="categoryUsedApartment">中古マンション</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ファイル管理 -->
+        <div class="card">
+            <h3 class="card-title">📁 ファイル管理</h3>
+            <div class="form-group">
+                <label class="form-label">契約書類</label>
+                <div class="file-upload" onclick="document.getElementById('contractFile').click()">
+                    <input type="file" id="contractFile" accept=".pdf,.doc,.docx" style="display: none;" onchange="handleFileUpload(this, 'contract')">
+                    <p>📄 契約書類をアップロード</p>
+                    <small>形式: PDF, DOC, DOCX</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- アクションボタン -->
+        <div class="action-buttons">
+            <button class="btn btn-success" onclick="saveCompany()">保存</button>
+        </div>
+    </main>
+
+    <script>
+        // URLパラメータから編集モードを判定
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('edit');
+        const isEditMode = !!editId;
+
+        // 初期化処理
+        window.onload = function() {
+            if (isEditMode) {
+                document.getElementById('pageTitle').textContent = '🏢 契約企業編集';
+                document.getElementById('breadcrumbTitle').textContent = '企業編集';
+                document.getElementById('currentCompanyId').textContent = editId;
+                loadCompanyData(editId);
+            } else {
+                document.getElementById('pageTitle').textContent = '➕ 新規企業登録';
+                document.getElementById('breadcrumbTitle').textContent = '企業登録';
+                document.getElementById('editAlert').style.display = 'none';
+                document.getElementById('deleteBtn').style.display = 'none';
+                document.getElementById('suspendBtn').style.display = 'none';
+                document.getElementById('companyId').value = '自動生成';
+            }
+            
+            updateStatusDisplay();
+            updateTypeDisplay();
+        };
+
+        // 企業データの読み込み（編集モード時）
+        function loadCompanyData(companyId) {
+            console.log('Loading company data for:', companyId);
+            // 実際の実装では、APIから企業データを取得
+        }
+
+        // ステータス表示の更新
+        function updateStatusDisplay() {
+            const status = document.getElementById('companyStatus').value;
+            const display = document.getElementById('statusDisplay');
+            
+            const statusConfig = {
+                'active': { text: '契約中', class: 'status-active' },
+                'inactive': { text: '契約終了', class: 'status-inactive' },
+                'pending': { text: '審査中', class: 'status-pending' },
+                'suspended': { text: '一時停止', class: 'status-suspended' }
+            };
+
+            const typeDisplay = display.querySelector('.company-type-badge');
+            display.innerHTML = '';
+            
+            if (statusConfig[status]) {
+                const statusBadge = document.createElement('span');
+                statusBadge.className = `status-badge ${statusConfig[status].class}`;
+                statusBadge.textContent = statusConfig[status].text;
+                display.appendChild(statusBadge);
+            }
+            
+            if (typeDisplay) {
+                display.appendChild(typeDisplay.cloneNode(true));
+            }
+        }
+
+        // 企業種別表示の更新
+        function updateTypeDisplay() {
+            const type = document.getElementById('companyType').value;
+            const display = document.getElementById('statusDisplay');
+            
+            const typeConfig = {
+                'manufacturer': { text: 'ハウスメーカー', class: 'type-manufacturer' },
+                'builder': { text: '工務店', class: 'type-builder' },
+                'agency': { text: '不動産業者', class: 'type-agency' }
+            };
+
+            // 既存のtype badgeを削除
+            const existingType = display.querySelector('.company-type-badge');
+            if (existingType) {
+                existingType.remove();
+            }
+
+            if (typeConfig[type]) {
+                const typeBadge = document.createElement('span');
+                typeBadge.className = `company-type-badge ${typeConfig[type].class}`;
+                typeBadge.textContent = typeConfig[type].text;
+                display.appendChild(typeBadge);
+            }
+        }
+
+        // ファイルアップロード処理
+        function handleFileUpload(input, type) {
+            const file = input.files[0];
+            if (file) {
+                console.log(`Uploading ${type} file:`, file.name);
+                // 実際の実装では、ファイルアップロード処理を実行
+                alert(`${file.name} をアップロードしました。`);
+            }
+        }
+
+        // 戻るボタン
+        function goBack() {
+            window.location.href = 'company_list.html';
+        }
+
+        // 一時保存
+        function saveDraft() {
+            if (validateBasicForm()) {
+                alert('企業情報を一時保存しました。');
+            }
+        }
+
+        // 保存
+        function saveCompany() {
+            if (validateForm()) {
+                const action = isEditMode ? '更新' : '登録';
+                if (confirm(`企業情報を${action}しますか？`)) {
+                    alert(`企業情報を${action}しました。`);
+                    goBack();
+                }
+            }
+        }
+
+        // 削除
+        function deleteCompany() {
+            if (confirm('この企業情報を削除しますか？\n削除した情報は復元できません。')) {
+                if (confirm('本当に削除してもよろしいですか？')) {
+                    alert('企業情報を削除しました。');
+                    goBack();
+                }
+            }
+        }
+
+        // 一時停止
+        function suspendCompany() {
+            const currentStatus = document.getElementById('companyStatus').value;
+            const action = currentStatus === 'suspended' ? '再開' : '一時停止';
+            
+            if (confirm(`この企業を${action}しますか？`)) {
+                document.getElementById('companyStatus').value = currentStatus === 'suspended' ? 'active' : 'suspended';
+                updateStatusDisplay();
+                alert(`企業を${action}しました。`);
+            }
+        }
+
+        // 基本バリデーション
+        function validateBasicForm() {
+            const requiredFields = ['companyName', 'representativeName', 'phoneNumber', 'email', 'postalCode', 'prefecture', 'address'];
+            let isValid = true;
+
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#d32f2f';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#ced4da';
+                }
+            });
+
+            return isValid;
+        }
+
+        // 完全バリデーション
+        function validateForm() {
+            if (!validateBasicForm()) {
+                alert('必須項目を入力してください。');
+                return false;
+            }
+
+            // カテゴリ選択チェック
+            const categories = document.querySelectorAll('input[type="checkbox"][id^="category"]:checked');
+            if (categories.length === 0) {
+                alert('取扱いカテゴリを1つ以上選択してください。');
+                return false;
+            }
+
+            // メールアドレス形式チェック
+            const email = document.getElementById('email').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && !emailRegex.test(email)) {
+                alert('正しいメールアドレスを入力してください。');
+                return false;
+            }
+
+            // 郵便番号形式チェック
+            const postalCode = document.getElementById('postalCode').value;
+            const postalCodeRegex = /^\d{3}-\d{4}$/;
+            if (postalCode && !postalCodeRegex.test(postalCode)) {
+                alert('郵便番号は000-0000の形式で入力してください。');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>

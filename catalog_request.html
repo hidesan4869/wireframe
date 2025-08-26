@@ -57,6 +57,9 @@
             margin-top: 60px;
             padding: 30px;
             overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .breadcrumb {
@@ -459,30 +462,6 @@
                     <div class="stat-number">152</div>
                     <div class="stat-label">今月の請求数</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number">28</div>
-                    <div class="stat-label">未対応</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">45</div>
-                    <div class="stat-label">処理中</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">79</div>
-                    <div class="stat-label">発送済み</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">3.2日</div>
-                    <div class="stat-label">平均処理時間</div>
-                </div>
-            </div>
-
-            <!-- タブナビゲーション -->
-            <div class="tab-nav">
-                <div class="tab-item active" onclick="switchTab('all')">全て (152)</div>
-                <div class="tab-item" onclick="switchTab('custom-home')">注文住宅 (68)</div>
-                <div class="tab-item" onclick="switchTab('land')">土地 (42)</div>
-                <div class="tab-item" onclick="switchTab('new-house')">新築戸建て (42)</div>
             </div>
 
             <!-- フィルター -->
@@ -543,17 +522,11 @@
             <div class="data-table">
                 <div class="table-header">
                     <h3 class="table-title">請求リスト</h3>
-                    <div class="table-controls">
-                        <span class="selected-count">0件選択中</span>
-                    </div>
                 </div>
                 
                 <table id="requestTable">
                     <thead>
                         <tr>
-                            <th class="checkbox-cell">
-                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
-                            </th>
                             <th>請求ID</th>
                             <th>請求日時</th>
                             <th>氏名</th>
@@ -568,9 +541,6 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
                             <td>CR2025001</td>
                             <td>2025-08-25 10:30</td>
                             <td>山田 太郎</td>
@@ -585,9 +555,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
                             <td>CR2025002</td>
                             <td>2025-08-25 11:15</td>
                             <td>佐藤 花子</td>
@@ -602,9 +569,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
                             <td>CR2025003</td>
                             <td>2025-08-25 12:00</td>
                             <td>鈴木 一郎</td>
@@ -619,9 +583,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
                             <td>CR2025004</td>
                             <td>2025-08-25 13:45</td>
                             <td>田中 美咲</td>
@@ -636,9 +597,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
                             <td>CR2025005</td>
                             <td>2025-08-25 14:20</td>
                             <td>高橋 健太</td>
@@ -653,9 +611,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
                             <td>CR2025006</td>
                             <td>2025-08-25 15:00</td>
                             <td>伊藤 真由美</td>
@@ -671,14 +626,6 @@
                         </tr>
                     </tbody>
                 </table>
-                
-                <!-- 一括操作 -->
-                <div class="bulk-actions">
-                    <span class="selected-count">0件選択中</span>
-                    <button class="btn btn-secondary" onclick="bulkUpdateStatus('processing')">処理中に変更</button>
-                    <button class="btn btn-success" onclick="bulkUpdateStatus('completed')">発送済みに変更</button>
-                    <button class="btn btn-secondary" onclick="bulkExport()">選択をエクスポート</button>
-                </div>
             </div>
         </main>
     </div>

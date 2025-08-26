@@ -57,6 +57,9 @@
             margin-top: 60px;
             padding: 30px;
             overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .breadcrumb {
@@ -578,9 +581,6 @@
                 <table id="memberTable">
                     <thead>
                         <tr>
-                            <th class="checkbox-cell">
-                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
-                            </th>
                             <th>会員ID</th>
                             <th>会員情報</th>
                             <th>メールアドレス</th>
@@ -595,9 +595,6 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
                             <td>M001234</td>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -611,7 +608,7 @@
                             <td>090-1234-5678</td>
                             <td>30代</td>
                             <td>東京都新宿区</td>
-                            <td><span class="status-badge status-premium">プレミアム</span></td>
+                            <td><span class="status-badge status-premium">アクティブ</span></td>
                             <td>2024-01-15</td>
                             <td>2025-08-24</td>
                             <td>
@@ -619,9 +616,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
                             <td>M001235</td>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -643,9 +637,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
                             <td>M001236</td>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -667,9 +658,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
                             <td>M001237</td>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -691,9 +679,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
                             <td>M001238</td>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -715,9 +700,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
                             <td>M001239</td>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -740,14 +722,6 @@
                         </tr>
                     </tbody>
                 </table>
-                
-                <!-- 一括操作 -->
-                <div class="bulk-actions">
-                    <span class="selected-count">0件選択中</span>
-                    <button class="btn btn-secondary" onclick="bulkSendMail()">一括メール送信</button>
-                    <button class="btn btn-secondary" onclick="bulkUpdateStatus('inactive')">休眠に変更</button>
-                    <button class="btn btn-secondary" onclick="bulkExport()">選択をエクスポート</button>
-                </div>
             </div>
         </main>
     </div>
@@ -791,7 +765,7 @@
                 <div class="detail-grid">
                     <div class="detail-label">ステータス:</div>
                     <div class="detail-value" id="detailStatus">
-                        <span class="status-badge status-premium">プレミアム</span>
+                        <span class="status-badge status-premium">アクティブ</span>
                     </div>
                     
                     <div class="detail-label">登録日:</div>

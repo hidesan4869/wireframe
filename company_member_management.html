@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企業メンバー管理 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            margin-top: 60px;
+            padding: 30px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        /* ボタン */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f57c00;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* 企業情報カード */
+        .company-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .company-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .company-name {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .company-status {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .company-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border-left: 4px solid #4a4a4a;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c2c2c;
+        }
+
+        /* 統計カード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-number.primary {
+            color: #4a4a4a;
+        }
+
+        .stat-number.success {
+            color: #2e7d32;
+        }
+
+        .stat-number.warning {
+            color: #f57c00;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #7a7a7a;
+        }
+
+        /* フィルター */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .filter-input,
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* データテーブル */
+        .data-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .table-header {
+            background: #f5f5f5;
+            padding: 20px 25px;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 2px solid #d0d0d0;
+        }
+
+        tbody td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* ステータスバッジ */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .member-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .member-inactive {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .member-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        /* 役職バッジ */
+        .role-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .role-admin {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .role-manager {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .role-staff {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        /* メンバー情報 */
+        .member-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .member-name {
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .member-contact {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a4a4a;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px;
+            }
+            
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <h1 onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+        <div class="user-info">
+            <span>田中 太郎さん（運営者）</span>
+            <button class="btn btn-secondary">ログアウト</button>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+        <div class="breadcrumb">
+            <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 
+            <a href="company_list.html" style="color: #6a6a6a; text-decoration: none;">企業管理</a> > 
+            メンバー管理
+        </div>
+
+        <!-- 企業情報 -->
+        <div class="company-card">
+            <div class="company-header">
+                <div>
+                    <h2 class="company-name">株式会社山田建設</h2>
+                    <span class="company-status status-active">契約中</span>
+                </div>
+                <button class="btn btn-secondary" onclick="goBack()">企業一覧に戻る</button>
+            </div>
+        </div>
+
+        <div class="page-header">
+            <h3 class="page-title">👥 メンバー管理</h3>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showAddModal()">メンバー追加</button>
+            </div>
+        </div>
+
+        <!-- 統計カード -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number primary">12</div>
+                <div class="stat-label">総メンバー数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number success">10</div>
+                <div class="stat-label">アクティブ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">1</div>
+                <div class="stat-label">停止中</div>
+            </div>
+        </div>
+
+        <!-- フィルター -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">メンバー名</label>
+                    <input type="text" class="filter-input" placeholder="メンバー名で検索">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">役職</label>
+                    <select class="filter-select">
+                        <option value="">全て</option>
+                        <option value="admin">管理者</option>
+                        <option value="manager">マネージャー</option>
+                        <option value="staff">スタッフ</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">ステータス</label>
+                    <select class="filter-select">
+                        <option value="">全て</option>
+                        <option value="active">アクティブ</option>
+                        <option value="pending">招待中</option>
+                        <option value="inactive">停止中</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="display: flex; align-items: flex-end;">
+                    <button class="btn btn-primary" onclick="applyFilters()" style="width: 100%;">検索</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- データテーブル -->
+        <div class="data-table">
+            <div class="table-header">
+                <h4 class="table-title">メンバー一覧</h4>
+                <span style="font-size: 14px; color: #7a7a7a;">全12名</span>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>メンバー情報</th>
+                        <th>役職</th>
+                        <th>ステータス</th>
+                        <th>最終ログイン</th>
+                        <th>登録日</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="member-info">
+                                <div class="member-name">山田 次郎</div>
+                                <div class="member-contact">yamada.jiro@yamada-kensetsu.co.jp</div>
+                                <div class="member-contact">090-1111-2222</div>
+                            </div>
+                        </td>
+                        <td><span class="role-badge role-admin">管理者</span></td>
+                        <td><span class="status-badge member-active">アクティブ</span></td>
+                        <td>2025-08-26 09:30</td>
+                        <td>2024-04-01</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="editMember('M001')">編集</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="member-info">
+                                <div class="member-name">山田 花子</div>
+                                <div class="member-contact">yamada.hanako@yamada-kensetsu.co.jp</div>
+                                <div class="member-contact">080-2222-3333</div>
+                            </div>
+                        </td>
+                        <td><span class="role-badge role-manager">マネージャー</span></td>
+                        <td><span class="status-badge member-active">アクティブ</span></td>
+                        <td>2025-08-25 16:45</td>
+                        <td>2024-04-15</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="editMember('M002')">編集</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="member-info">
+                                <div class="member-name">佐藤 一郎</div>
+                                <div class="member-contact">sato.ichiro@yamada-kensetsu.co.jp</div>
+                                <div class="member-contact">070-3333-4444</div>
+                            </div>
+                        </td>
+                        <td><span class="role-badge role-staff">スタッフ</span></td>
+                        <td><span class="status-badge member-active">アクティブ</span></td>
+                        <td>2025-08-26 08:15</td>
+                        <td>2024-05-01</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="editMember('M003')">編集</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="member-info">
+                                <div class="member-name">田中 美咲</div>
+                                <div class="member-contact">tanaka.misaki@yamada-kensetsu.co.jp</div>
+                                <div class="member-contact">080-4444-5555</div>
+                            </div>
+                        </td>
+                        <td><span class="role-badge role-staff">スタッフ</span></td>
+                        <td><span class="status-badge member-pending">招待中</span></td>
+                        <td>-</td>
+                        <td>2025-08-20</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="editMember('M004')">編集</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="member-info">
+                                <div class="member-name">鈴木 健太</div>
+                                <div class="member-contact">suzuki.kenta@yamada-kensetsu.co.jp</div>
+                                <div class="member-contact">090-5555-6666</div>
+                            </div>
+                        </td>
+                        <td><span class="role-badge role-staff">スタッフ</span></td>
+                        <td><span class="status-badge member-inactive">停止中</span></td>
+                        <td>2025-07-30 14:20</td>
+                        <td>2024-06-15</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="editMember('M005')">編集</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- メンバー追加・編集モーダル -->
+    <div id="memberModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">メンバー追加</h3>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">氏名 <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="memberName" placeholder="氏名を入力">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">メールアドレス <span class="required">*</span></label>
+                    <input type="email" class="form-input" id="memberEmail" placeholder="メールアドレスを入力">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">電話番号</label>
+                    <input type="tel" class="form-input" id="memberPhone" placeholder="電話番号を入力">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">役職 <span class="required">*</span></label>
+                    <select class="form-select" id="memberRole">
+                        <option value="">選択してください</option>
+                        <option value="admin">管理者</option>
+                        <option value="manager">マネージャー</option>
+                        <option value="staff">スタッフ</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">備考</label>
+                    <textarea class="form-textarea" id="memberNotes" placeholder="備考があれば入力してください"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+                <button class="btn btn-primary" onclick="saveMember()" id="saveBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isEditMode = false;
+        let currentMemberId = null;
+
+        // メンバー追加モーダル表示
+        function showAddModal() {
+            isEditMode = false;
+            currentMemberId = null;
+            document.getElementById('modalTitle').textContent = 'メンバー追加';
+            document.getElementById('saveBtn').textContent = '招待送信';
+            clearForm();
+            document.getElementById('memberModal').classList.add('show');
+        }
+
+        // メンバー編集モーダル表示
+        function editMember(memberId) {
+            isEditMode = true;
+            currentMemberId = memberId;
+            document.getElementById('modalTitle').textContent = 'メンバー編集';
+            document.getElementById('saveBtn').textContent = '更新';
+            loadMemberData(memberId);
+            document.getElementById('memberModal').classList.add('show');
+        }
+
+        // メンバーデータ読み込み
+        function loadMemberData(memberId) {
+            // サンプルデータ
+            const memberData = {
+                'M001': {
+                    name: '山田 次郎',
+                    email: 'yamada.jiro@yamada-kensetsu.co.jp',
+                    phone: '090-1111-2222',
+                    role: 'admin',
+                    notes: '代表取締役社長'
+                },
+                'M002': {
+                    name: '山田 花子',
+                    email: 'yamada.hanako@yamada-kensetsu.co.jp',
+                    phone: '080-2222-3333',
+                    role: 'manager',
+                    notes: '営業部長'
+                }
+            };
+
+            const data = memberData[memberId];
+            if (data) {
+                document.getElementById('memberName').value = data.name;
+                document.getElementById('memberEmail').value = data.email;
+                document.getElementById('memberPhone').value = data.phone;
+                document.getElementById('memberRole').value = data.role;
+                document.getElementById('memberNotes').value = data.notes;
+            }
+        }
+
+        // フォームクリア
+        function clearForm() {
+            document.getElementById('memberName').value = '';
+            document.getElementById('memberEmail').value = '';
+            document.getElementById('memberPhone').value = '';
+            document.getElementById('memberRole').value = '';
+            document.getElementById('memberNotes').value = '';
+        }
+
+        // モーダル閉じる
+        function closeModal() {
+            document.getElementById('memberModal').classList.remove('show');
+        }
+
+        // メンバー保存
+        function saveMember() {
+            if (validateForm()) {
+                const action = isEditMode ? '更新' : '招待送信';
+                if (confirm(`メンバー情報を${action}しますか？`)) {
+                    alert(`メンバー情報を${action}しました。`);
+                    closeModal();
+                    location.reload(); // 実際の実装では部分更新
+                }
+            }
+        }
+
+        // バリデーション
+        function validateForm() {
+            const name = document.getElementById('memberName').value;
+            const email = document.getElementById('memberEmail').value;
+            const role = document.getElementById('memberRole').value;
+
+            if (!name || !email || !role) {
+                alert('必須項目を入力してください。');
+                return false;
+            }
+
+            // メールアドレス形式チェック
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('正しいメールアドレスを入力してください。');
+                return false;
+            }
+
+            return true;
+        }
+
+        // メンバーステータス切り替え
+        function toggleMemberStatus(memberId) {
+            const currentStatus = ''; // 実際の実装では現在のステータスを取得
+            const newStatus = currentStatus === 'active' ? '停止' : '有効化';
+            
+            if (confirm(`このメンバーを${newStatus}しますか？`)) {
+                alert(`メンバーを${newStatus}しました。`);
+                location.reload(); // 実際の実装では部分更新
+            }
+        }
+
+        // 招待再送信
+        function resendInvitation(memberId) {
+            if (confirm('このメンバーに招待メールを再送信しますか？')) {
+                alert('招待メールを再送信しました。');
+            }
+        }
+
+        // 一括通知送信
+        function sendBulkNotification() {
+            if (confirm('全アクティブメンバーに通知を送信しますか？')) {
+                alert('10名のメンバーに通知を送信しました。');
+            }
+        }
+
+        // フィルター適用
+        function applyFilters() {
+            console.log('フィルターを適用中...');
+            alert('フィルターが適用されました。');
+        }
+
+        // 戻るボタン
+        function goBack() {
+            window.location.href = 'company_list.html';
+        }
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('memberModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
