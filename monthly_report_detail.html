@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月次報告詳細 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 60px;
+            width: 280px;
+            height: calc(100vh - 60px);
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+            z-index: 999;
+        }
+
+        .sidebar-section {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #7a7a7a;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 10px 15px;
+            color: #4a4a4a;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .sidebar-nav a:hover {
+            background: #f0f0f0;
+            color: #2c2c2c;
+        }
+
+        .sidebar-nav a.active {
+            background: #e8e8e8;
+            color: #2c2c2c;
+            font-weight: 600;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* 報告ヘッダー */
+        .report-header {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .report-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .report-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c2c2c;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c62828;
+        }
+
+        .btn-warning {
+            background: #f57c00;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e65100;
+        }
+
+        .report-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            color: #7a7a7a;
+            margin-bottom: 5px;
+        }
+
+        .meta-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        /* ステータスバッジ */
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-approved {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-rejected {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .status-revision {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        /* サマリーカード */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .summary-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .summary-label {
+            color: #7a7a7a;
+            font-size: 12px;
+        }
+
+        /* 送客詳細テーブル */
+        .detail-section {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px 25px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f8f8f8;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 13px;
+        }
+
+        tbody td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .customer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .customer-contact {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        /* チェックボックス */
+        .checkbox-cell {
+            width: 40px;
+            text-align: center;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* 承認/却下ボタン */
+        .action-cell {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* 証跡書類セクション */
+        .evidence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .evidence-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .evidence-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .evidence-info {
+            flex: 1;
+        }
+
+        .evidence-name {
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 5px;
+        }
+
+        .evidence-status {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        .evidence-verified {
+            color: #2e7d32;
+        }
+
+        .evidence-pending {
+            color: #f57c00;
+        }
+
+        .evidence-missing {
+            color: #d32f2f;
+        }
+
+        /* コメントセクション */
+        .comment-section {
+            padding: 20px;
+        }
+
+        .comment-box {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .comment-date {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        .comment-text {
+            color: #4a4a4a;
+            line-height: 1.5;
+        }
+
+        .comment-form {
+            margin-top: 20px;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        /* 承認履歴 */
+        .history-timeline {
+            padding: 20px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-marker {
+            width: 12px;
+            height: 12px;
+            background: #4a4a4a;
+            border-radius: 50%;
+            margin-top: 5px;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child) .timeline-marker::after {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 5px;
+            width: 2px;
+            height: 30px;
+            background: #d0d0d0;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 5px;
+        }
+
+        .timeline-meta {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        /* プログレスバー */
+        .progress-section {
+            padding: 20px;
+            background: #f8f8f8;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50 0%, #2e7d32 100%);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #6a6a6a;
+        }
+
+        /* 警告メッセージ */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            color: #e65100;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            border-left: 4px solid #d32f2f;
+            color: #c62828;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            border-left: 4px solid #2e7d32;
+            color: #1b5e20;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a4a4a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="monthly_report_list.html">月次報告管理</a> > 
+                月次報告詳細
+            </div>
+
+            <!-- 警告メッセージ -->
+            <div class="alert alert-warning">
+                ⚠️ この報告には承認が必要な項目が 3件 含まれています
+            </div>
+
+            <!-- 報告ヘッダー -->
+            <div class="report-header">
+                <div class="report-title-row">
+                    <div>
+                        <h2 class="report-title">山田建設 - 2025年8月度 月次報告</h2>
+                        <div style="margin-top: 10px;">
+                            <span class="status-badge status-pending">承認待ち</span>
+                        </div>
+                    </div>
+                    <div class="report-actions">
+                        <button class="btn btn-success" onclick="approveAll()">
+                            ✅ 一括承認
+                        </button>
+                        <button class="btn btn-warning" onclick="requestRevision()">
+                            📝 修正依頼
+                        </button>
+                        <button class="btn btn-danger" onclick="rejectReport()">
+                            ❌ 却下
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="report-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">報告対象期間</span>
+                        <span class="meta-value">2025年8月1日 - 8月31日</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">提出日時</span>
+                        <span class="meta-value">2025年9月1日 09:30</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">報告送客数</span>
+                        <span class="meta-value">15件</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">成約数</span>
+                        <span class="meta-value">3件</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- サマリー -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-number">5</div>
+                    <div class="summary-label">未対応</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">3</div>
+                    <div class="summary-label">商談中</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">2</div>
+                    <div class="summary-label">見積提出</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">3</div>
+                    <div class="summary-label">成約</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">1</div>
+                    <div class="summary-label">失注</div>
+                </div>
+                <div class="summary-card" style="background: #fff3e0;">
+                    <div class="summary-number">1</div>
+                    <div class="summary-label" style="color: #f57c00;">営業停止</div>
+                </div>
+            </div>
+
+            <!-- 送客詳細 -->
+            <div class="detail-section">
+                <div class="section-header">
+                    <h3 class="section-title">📋 送客詳細</h3>
+                    <span style="font-size: 14px; color: #7a7a7a;">全15件</span>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="checkbox-cell">
+                                <input type="checkbox" id="selectAll" onchange="toggleAll(this)">
+                            </th>
+                            <th>送客ID</th>
+                            <th>顧客情報</th>
+                            <th>送客日</th>
+                            <th>初回送客</th>
+                            <th>現在ステータス</th>
+                            <th>報告ステータス</th>
+                            <th>契約金額</th>
+                            <th>必須書類</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 成約案件（要確認） -->
+                        <tr style="background: #fff3e0;">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="referral-check">
+                            </td>
+                            <td style="font-weight: 600;">REF-001</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">山田 太郎</div>
+                                    <div class="customer-contact">090-1234-5678</div>
+                                </div>
+                            </td>
+                            <td>2025-08-01</td>
+                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
+                            <td><span class="status-badge status-approved">成約</span></td>
+                            <td><span class="status-badge status-approved">成約</span></td>
+                            <td style="font-weight: 600;">¥35,000,000</td>
+                            <td>
+                                <span style="color: #2e7d32;">✓ 誓約書</span>
+                            </td>
+                            <td>
+                                <div class="action-cell">
+                                    <button class="btn btn-success btn-sm" onclick="approveReferral('REF-001')">承認</button>
+                                    <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-001')">詳細</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- 通常の報告 -->
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="referral-check">
+                            </td>
+                            <td style="font-weight: 600;">REF-002</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">佐藤 花子</div>
+                                    <div class="customer-contact">080-9876-5432</div>
+                                </div>
+                            </td>
+                            <td>2025-08-05</td>
+                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
+                            <td><span class="status-badge status-pending">商談中</span></td>
+                            <td><span class="status-badge status-pending">商談中</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>
+                                <div class="action-cell">
+                                    <button class="btn btn-success btn-sm" onclick="approveReferral('REF-002')">承認</button>
+                                    <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-002')">詳細</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- 営業停止（重複）案件 -->
+                        <tr style="background: #f8f8f8;">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="referral-check">
+                            </td>
+                            <td style="font-weight: 600;">REF-003</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">鈴木 一郎</div>
+                                    <div class="customer-contact">070-1111-2222</div>
+                                </div>
+                            </td>
+                            <td>2025-08-10</td>
+                            <td><span style="color: #999;">-</span></td>
+                            <td><span class="status-badge status-pending">営業停止</span></td>
+                            <td><span class="status-badge status-pending">営業停止</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>
+                                <div class="action-cell">
+                                    <button class="btn btn-success btn-sm" onclick="approveReferral('REF-003')">承認</button>
+                                    <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-003')">詳細</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- その他の送客 -->
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="referral-check">
+                            </td>
+                            <td style="font-weight: 600;">REF-004</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">田中 美咲</div>
+                                    <div class="customer-contact">090-3333-4444</div>
+                                </div>
+                            </td>
+                            <td>2025-08-12</td>
+                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
+                            <td><span class="status-badge status-estimate">見積提出</span></td>
+                            <td><span class="status-badge status-estimate">見積提出</span></td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>
+                                <div class="action-cell">
+                                    <button class="btn btn-success btn-sm" onclick="approveReferral('REF-004')">承認</button>
+                                    <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-004')">詳細</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 証跡書類 -->
+            <div class="detail-section">
+                <div class="section-header">
+                    <h3 class="section-title">📁 証跡書類</h3>
+                    <button class="btn btn-primary btn-sm">書類アップロード</button>
+                </div>
+                
+                <div class="evidence-grid">
+                    <div class="evidence-card">
+                        <div class="evidence-icon">📄</div>
+                        <div class="evidence-info">
+                            <div class="evidence-name">誓約書_REF001_山田太郎.pdf</div>
+                            <div class="evidence-status evidence-verified">✓ 確認済み</div>
+                        </div>
+                    </div>
+                    
+                    <div class="evidence-card">
+                        <div class="evidence-icon">📊</div>
+                        <div class="evidence-info">
+                            <div class="evidence-name">見積書_REF004_田中美咲.pdf</div>
+                            <div class="evidence-status evidence-pending">確認待ち</div>
+                        </div>
+                    </div>
+                    
+                    <div class="evidence-card">
+                        <div class="evidence-icon">🏗️</div>
+                        <div class="evidence-info">
+                            <div class="evidence-name">着工報告書_REF001.pdf</div>
+                            <div class="evidence-status evidence-missing">未提出</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 進捗状況 -->
+            <div class="detail-section">
+                <div class="section-header">
+                    <h3 class="section-title">📈 進捗状況</h3>
+                </div>
+                
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 73%;">
+                            73% 完了
+                        </div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>未対応: 5件</span>
+                        <span>商談中: 3件</span>
+                        <span>見積: 2件</span>
+                        <span>成約: 3件</span>
+                        <span>失注: 2件</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- コメント・承認履歴 -->
+            <div class="detail-section">
+                <div class="section-header">
+                    <h3 class="section-title">💬 コメント・承認履歴</h3>
+                </div>
+                
+                <div class="comment-section">
+                    <!-- 承認履歴 -->
+                    <div class="history-timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">月次報告提出</div>
+                                <div class="timeline-meta">山田建設 - 2025年9月1日 09:30</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">データ整合性チェック開始</div>
+                                <div class="timeline-meta">システム - 2025年9月1日 10:00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- コメント -->
+                    <div class="comment-box">
+                        <div class="comment-header">
+                            <span class="comment-author">山田建設 担当者</span>
+                            <span class="comment-date">2025年9月1日 09:30</span>
+                        </div>
+                        <div class="comment-text">
+                            8月度の月次報告を提出いたします。REF-003については他社様との重複案件のため営業停止としております。
+                        </div>
+                    </div>
+
+                    <!-- コメント入力 -->
+                    <div class="comment-form">
+                        <textarea class="form-textarea" placeholder="コメントを入力..."></textarea>
+                        <div style="margin-top: 10px; text-align: right;">
+                            <button class="btn btn-primary">コメント送信</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 承認モーダル -->
+    <div id="approvalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">承認確認</h3>
+                <button class="close" onclick="closeModal('approvalModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>選択した送客を承認しますか？</p>
+                <div class="form-group">
+                    <label class="form-label">承認コメント（任意）</label>
+                    <textarea class="form-textarea" placeholder="承認に関するコメントを入力..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('approvalModal')">キャンセル</button>
+                <button class="btn btn-success" onclick="confirmApproval()">承認する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修正依頼モーダル -->
+    <div id="revisionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">修正依頼</h3>
+                <button class="close" onclick="closeModal('revisionModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">修正が必要な項目</label>
+                    <div style="margin-bottom: 10px;">
+                        <label><input type="checkbox"> 成約案件の証跡書類不足</label>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><input type="checkbox"> ステータス変更の根拠不明</label>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <label><input type="checkbox"> 契約金額の記載漏れ</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">修正依頼内容</label>
+                    <textarea class="form-textarea" rows="5" placeholder="修正が必要な内容を具体的に記載してください..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('revisionModal')">キャンセル</button>
+                <button class="btn btn-warning" onclick="sendRevision()">修正依頼を送信</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全選択/解除
+        function toggleAll(checkbox) {
+            const checkboxes = document.querySelectorAll('.referral-check');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+        }
+
+        // 一括承認
+        function approveAll() {
+            const checked = document.querySelectorAll('.referral-check:checked');
+            if (checked.length === 0) {
+                alert('承認する項目を選択してください');
+                return;
+            }
+            document.getElementById('approvalModal').classList.add('show');
+        }
+
+        // 個別承認
+        function approveReferral(id) {
+            console.log('Approving:', id);
+            document.getElementById('approvalModal').classList.add('show');
+        }
+
+        // 承認確定
+        function confirmApproval() {
+            alert('承認が完了しました');
+            closeModal('approvalModal');
+            // 実際の実装では、ここでAPIを呼び出して承認処理を実行
+            location.reload();
+        }
+
+        // 修正依頼
+        function requestRevision() {
+            document.getElementById('revisionModal').classList.add('show');
+        }
+
+        // 修正依頼送信
+        function sendRevision() {
+            alert('修正依頼を送信しました');
+            closeModal('revisionModal');
+        }
+
+        // 却下
+        function rejectReport() {
+            if (confirm('この月次報告を却下しますか？\n却下理由を記載してください。')) {
+                const reason = prompt('却下理由:');
+                if (reason) {
+                    alert('月次報告を却下しました');
+                    location.href = 'monthly_report_list.html';
+                }
+            }
+        }
+
+        // 詳細表示
+        function viewDetails(id) {
+            console.log('Viewing details for:', id);
+            // 実際の実装では、送客詳細ページへ遷移
+        }
+
+        // モーダルを閉じる
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+    </script>
+</body>
+</html>

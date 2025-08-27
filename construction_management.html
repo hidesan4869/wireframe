@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>着工管理 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+
+        .btn-warning {
+            background: #f57c00;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e65100;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* 統計カード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7a7a7a;
+            font-size: 14px;
+        }
+
+        /* フィルター */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .filter-input, .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* データテーブル */
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 13px;
+        }
+
+        tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* ステータスバッジ */
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .status-planned {
+            background: #f5f5f5;
+            color: #6a6a6a;
+        }
+
+        .status-started {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-in-progress {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-completed {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-delayed {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        /* 書類ステータス */
+        .doc-status {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .doc-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .doc-verified {
+            color: #2e7d32;
+        }
+
+        .doc-pending {
+            color: #f57c00;
+        }
+
+        .doc-missing {
+            color: #d32f2f;
+        }
+
+        /* プログレスバー */
+        .progress-bar {
+            width: 100px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50 0%, #2e7d32 100%);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: #6a6a6a;
+            margin-top: 2px;
+        }
+
+        /* カスタマー情報 */
+        .customer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .customer-contact {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        /* 日付情報 */
+        .date-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .date-label {
+            font-size: 11px;
+            color: #7a7a7a;
+        }
+
+        .date-value {
+            font-size: 13px;
+            color: #2c2c2c;
+        }
+
+        /* アラート */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            color: #e65100;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            color: #0d47a1;
+        }
+
+        /* タイムライン */
+        .timeline-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #d0d0d0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -29px;
+            width: 12px;
+            height: 12px;
+            background: #4a4a4a;
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px #d0d0d0;
+        }
+
+        .timeline-marker.completed {
+            background: #2e7d32;
+        }
+
+        .timeline-marker.current {
+            background: #f57c00;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 2px #d0d0d0;
+            }
+            50% {
+                box-shadow: 0 0 0 5px rgba(245, 124, 0, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 0 2px #d0d0d0;
+            }
+        }
+
+        .timeline-content {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 5px;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: #7a7a7a;
+            margin-bottom: 10px;
+        }
+
+        .timeline-description {
+            font-size: 13px;
+            color: #4a4a4a;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a4a4a;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        /* ファイルアップロード */
+        .file-upload {
+            border: 2px dashed #c0c0c0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .file-upload:hover {
+            border-color: #4a4a4a;
+            background: #f8f8f8;
+        }
+
+        .file-upload-icon {
+            font-size: 32px;
+            color: #7a7a7a;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-text {
+            color: #4a4a4a;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="referral_list.html">送客管理</a> > 
+                着工管理
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">🏗️ 着工管理</h2>
+                <button class="btn btn-primary" onclick="exportReport()">
+                    📊 レポート出力
+                </button>
+            </div>
+
+            <!-- アラート -->
+            <div class="alert alert-warning">
+                ⚠️ 3件の案件で着工報告書の提出が遅れています
+            </div>
+
+            <!-- 統計カード -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">23</div>
+                    <div class="stat-label">成約済み案件</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">着工予定</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">着工中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">完成済み</div>
+                </div>
+                <div class="stat-card" style="background: #ffebee;">
+                    <div class="stat-number" style="color: #d32f2f;">2</div>
+                    <div class="stat-label" style="color: #d32f2f;">遅延案件</div>
+                </div>
+            </div>
+
+            <!-- フィルター -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">顧客名</label>
+                        <input type="text" class="filter-input" placeholder="顧客名で検索">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">企業名</label>
+                        <select class="filter-select">
+                            <option value="">全て</option>
+                            <option value="山田建設">山田建設</option>
+                            <option value="田中不動産">田中不動産</option>
+                            <option value="佐藤ハウジング">佐藤ハウジング</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">着工状態</label>
+                        <select class="filter-select">
+                            <option value="">全て</option>
+                            <option value="planned">着工予定</option>
+                            <option value="started">着工中</option>
+                            <option value="completed">完成済み</option>
+                            <option value="delayed">遅延</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">期間</label>
+                        <input type="date" class="filter-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- データテーブル -->
+            <div class="data-table">
+                <div class="table-header">
+                    <h3 class="table-title">着工案件一覧</h3>
+                    <span style="font-size: 14px; color: #7a7a7a;">全23件</span>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>送客ID</th>
+                            <th>顧客情報</th>
+                            <th>企業名</th>
+                            <th>契約日</th>
+                            <th>契約金額</th>
+                            <th>着工状態</th>
+                            <th>進捗率</th>
+                            <th>着工日程</th>
+                            <th>必須書類</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 着工中案件 -->
+                        <tr>
+                            <td style="font-weight: 600;">REF-004</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">佐藤 花子</div>
+                                    <div class="customer-contact">080-9876-5432</div>
+                                </div>
+                            </td>
+                            <td>田中不動産</td>
+                            <td>2025-07-15</td>
+                            <td style="font-weight: 600;">¥28,500,000</td>
+                            <td><span class="status-badge status-in-progress">着工中</span></td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 65%;"></div>
+                                </div>
+                                <div class="progress-text">65% 完了</div>
+                            </td>
+                            <td>
+                                <div class="date-info">
+                                    <div class="date-label">着工日</div>
+                                    <div class="date-value">2025-08-01</div>
+                                    <div class="date-label">完成予定</div>
+                                    <div class="date-value">2025-12-15</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="doc-status">
+                                    <div class="doc-item doc-verified">✓ 誓約書</div>
+                                    <div class="doc-item doc-verified">✓ 着工報告書</div>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-004')">詳細</button>
+                                <button class="btn btn-success btn-sm" onclick="updateProgress('REF-004')">進捗更新</button>
+                            </td>
+                        </tr>
+
+                        <!-- 着工予定案件 -->
+                        <tr>
+                            <td style="font-weight: 600;">REF-012</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">山田 太郎</div>
+                                    <div class="customer-contact">090-1234-5678</div>
+                                </div>
+                            </td>
+                            <td>山田建設</td>
+                            <td>2025-08-01</td>
+                            <td style="font-weight: 600;">¥35,000,000</td>
+                            <td><span class="status-badge status-planned">着工予定</span></td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%;"></div>
+                                </div>
+                                <div class="progress-text">未着工</div>
+                            </td>
+                            <td>
+                                <div class="date-info">
+                                    <div class="date-label">着工予定</div>
+                                    <div class="date-value">2025-09-15</div>
+                                    <div class="date-label">完成予定</div>
+                                    <div class="date-value">2026-02-28</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="doc-status">
+                                    <div class="doc-item doc-verified">✓ 誓約書</div>
+                                    <div class="doc-item doc-pending">⚠️ 着工報告書待ち</div>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-012')">詳細</button>
+                                <button class="btn btn-warning btn-sm" onclick="startConstruction('REF-012')">着工開始</button>
+                            </td>
+                        </tr>
+
+                        <!-- 遅延案件 -->
+                        <tr style="background: #fff3e0;">
+                            <td style="font-weight: 600;">REF-008</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">鈴木 一郎</div>
+                                    <div class="customer-contact">070-1111-2222</div>
+                                </div>
+                            </td>
+                            <td>佐藤ハウジング</td>
+                            <td>2025-06-20</td>
+                            <td style="font-weight: 600;">¥42,000,000</td>
+                            <td><span class="status-badge status-delayed">遅延</span></td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 45%; background: linear-gradient(90deg, #ff9800 0%, #f57c00 100%);"></div>
+                                </div>
+                                <div class="progress-text" style="color: #f57c00;">45% (遅延中)</div>
+                            </td>
+                            <td>
+                                <div class="date-info">
+                                    <div class="date-label">着工日</div>
+                                    <div class="date-value">2025-07-01</div>
+                                    <div class="date-label" style="color: #d32f2f;">完成予定(遅延)</div>
+                                    <div class="date-value" style="color: #d32f2f;">2025-11-30</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="doc-status">
+                                    <div class="doc-item doc-verified">✓ 誓約書</div>
+                                    <div class="doc-item doc-missing">❌ 着工報告書遅延</div>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-008')">詳細</button>
+                                <button class="btn btn-danger btn-sm" onclick="reportIssue('REF-008')">問題報告</button>
+                            </td>
+                        </tr>
+
+                        <!-- 完成済み案件 -->
+                        <tr style="background: #e8f5e8;">
+                            <td style="font-weight: 600;">REF-001</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">田中 美咲</div>
+                                    <div class="customer-contact">090-3333-4444</div>
+                                </div>
+                            </td>
+                            <td>鈴木工務店</td>
+                            <td>2025-03-10</td>
+                            <td style="font-weight: 600;">¥31,200,000</td>
+                            <td><span class="status-badge status-completed">完成済み</span></td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 100%;"></div>
+                                </div>
+                                <div class="progress-text" style="color: #2e7d32;">100% 完了</div>
+                            </td>
+                            <td>
+                                <div class="date-info">
+                                    <div class="date-label">着工日</div>
+                                    <div class="date-value">2025-04-01</div>
+                                    <div class="date-label" style="color: #2e7d32;">完成日</div>
+                                    <div class="date-value" style="color: #2e7d32;">2025-08-20</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="doc-status">
+                                    <div class="doc-item doc-verified">✓ 誓約書</div>
+                                    <div class="doc-item doc-verified">✓ 着工報告書</div>
+                                    <div class="doc-item doc-verified">✓ 完成報告書</div>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-001')">詳細</button>
+                                <button class="btn btn-secondary btn-sm" onclick="downloadReport('REF-001')">報告書DL</button>
+                            </td>
+                        </tr>
+
+                        <!-- その他の着工中案件 -->
+                        <tr>
+                            <td style="font-weight: 600;">REF-015</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">高橋 健太</div>
+                                    <div class="customer-contact">080-5555-6666</div>
+                                </div>
+                            </td>
+                            <td>山田建設</td>
+                            <td>2025-07-25</td>
+                            <td style="font-weight: 600;">¥38,900,000</td>
+                            <td><span class="status-badge status-started">着工中</span></td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 30%;"></div>
+                                </div>
+                                <div class="progress-text">30% 完了</div>
+                            </td>
+                            <td>
+                                <div class="date-info">
+                                    <div class="date-label">着工日</div>
+                                    <div class="date-value">2025-08-15</div>
+                                    <div class="date-label">完成予定</div>
+                                    <div class="date-value">2026-01-31</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="doc-status">
+                                    <div class="doc-item doc-verified">✓ 誓約書</div>
+                                    <div class="doc-item doc-verified">✓ 着工報告書</div>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-015')">詳細</button>
+                                <button class="btn btn-success btn-sm" onclick="updateProgress('REF-015')">進捗更新</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- タイムライン例 -->
+            <div class="timeline-container">
+                <div class="table-header" style="background: none; padding: 0; margin-bottom: 20px;">
+                    <h3 class="table-title">📅 着工スケジュール (REF-004: 佐藤 花子様)</h3>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker completed"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">契約締結</div>
+                            <div class="timeline-date">2025年7月15日</div>
+                            <div class="timeline-description">
+                                契約金額: ¥28,500,000<br>
+                                誓約書受領済み
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker completed"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">着工開始</div>
+                            <div class="timeline-date">2025年8月1日</div>
+                            <div class="timeline-description">
+                                施工業者: 田中建設<br>
+                                建築確認番号: R5-1234567
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker completed"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">基礎工事完了</div>
+                            <div class="timeline-date">2025年8月20日</div>
+                            <div class="timeline-description">
+                                進捗率: 25%<br>
+                                検査合格
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker current"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">上棟工事中</div>
+                            <div class="timeline-date">2025年8月27日 (現在)</div>
+                            <div class="timeline-description">
+                                進捗率: 65%<br>
+                                天候による遅延なし
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">内装工事予定</div>
+                            <div class="timeline-date">2025年10月1日 (予定)</div>
+                            <div class="timeline-description">
+                                予定進捗率: 80%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">完成・引き渡し予定</div>
+                            <div class="timeline-date">2025年12月15日 (予定)</div>
+                            <div class="timeline-description">
+                                完成検査・引き渡し
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 進捗更新モーダル -->
+    <div id="progressModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">進捗更新</h3>
+                <button class="close" onclick="closeModal('progressModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">進捗率 (%)</label>
+                    <input type="number" class="form-input" min="0" max="100" value="65">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">現在の工事段階</label>
+                    <select class="form-select">
+                        <option value="foundation">基礎工事</option>
+                        <option value="frame" selected>上棟工事</option>
+                        <option value="interior">内装工事</option>
+                        <option value="exterior">外装工事</option>
+                        <option value="finishing">仕上げ工事</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">進捗メモ</label>
+                    <textarea class="form-textarea" placeholder="進捗に関するメモを入力..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">工事写真アップロード</label>
+                    <div class="file-upload">
+                        <div class="file-upload-icon">📷</div>
+                        <div class="file-upload-text">クリックまたはドラッグ&ドロップでファイルを選択</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('progressModal')">キャンセル</button>
+                <button class="btn btn-success" onclick="saveProgress()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 着工開始モーダル -->
+    <div id="startModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">着工開始登録</h3>
+                <button class="close" onclick="closeModal('startModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">実際の着工日</label>
+                    <input type="date" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">施工業者名</label>
+                    <input type="text" class="form-input" placeholder="施工業者名を入力">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">建築確認番号</label>
+                    <input type="text" class="form-input" placeholder="建築確認番号を入力">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">着工報告書アップロード *必須</label>
+                    <div class="file-upload">
+                        <div class="file-upload-icon">📄</div>
+                        <div class="file-upload-text">着工報告書をアップロード</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">備考</label>
+                    <textarea class="form-textarea" placeholder="備考を入力..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('startModal')">キャンセル</button>
+                <button class="btn btn-warning" onclick="confirmStart()">着工開始</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 詳細表示
+        function viewDetails(id) {
+            console.log('Viewing details for:', id);
+            // 実際の実装では、詳細ページへ遷移
+        }
+
+        // 進捗更新
+        function updateProgress(id) {
+            console.log('Updating progress for:', id);
+            document.getElementById('progressModal').classList.add('show');
+        }
+
+        // 進捗保存
+        function saveProgress() {
+            alert('進捗を更新しました');
+            closeModal('progressModal');
+        }
+
+        // 着工開始
+        function startConstruction(id) {
+            console.log('Starting construction for:', id);
+            document.getElementById('startModal').classList.add('show');
+        }
+
+        // 着工開始確認
+        function confirmStart() {
+            alert('着工を開始しました');
+            closeModal('startModal');
+        }
+
+        // 問題報告
+        function reportIssue(id) {
+            const issue = prompt('問題の詳細を入力してください:');
+            if (issue) {
+                alert('問題を報告しました');
+            }
+        }
+
+        // レポートダウンロード
+        function downloadReport(id) {
+            alert(`${id}の完成報告書をダウンロードします`);
+        }
+
+        // レポート出力
+        function exportReport() {
+            alert('着工管理レポートを出力します');
+        }
+
+        // モーダルを閉じる
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+    </script>
+</body>
+</html>

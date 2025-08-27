@@ -578,6 +578,10 @@
 
             <div class="page-header">
                 <h2 class="page-title">📊 送客一覧</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="window.location.href='referral_register.html'">➕ 新規送客登録</button>
+                    <button class="btn btn-secondary" onclick="window.location.href='monthly_report_list.html'">📋 月次報告管理</button>
+                </div>
             </div>
 
             <!-- 統計カード -->
@@ -587,8 +591,16 @@
                     <div class="stat-label">総送客数</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-number">32</div>
+                    <div class="stat-label">未対応</div>
+                </div>
+                <div class="stat-card">
                     <div class="stat-number">45</div>
                     <div class="stat-label">商談中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">28</div>
+                    <div class="stat-label">見積提出済</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">23</div>
@@ -597,6 +609,14 @@
                 <div class="stat-card">
                     <div class="stat-number">15</div>
                     <div class="stat-label">失注</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">営業停止</div>
+                </div>
+                <div class="stat-card" style="background: #fff3e0;">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label" style="color: #f57c00;">承認待ち</div>
                 </div>
             </div>
 
@@ -631,11 +651,18 @@
                         <label class="filter-label">ステータス</label>
                         <select class="filter-select" id="statusFilter">
                             <option value="">全て</option>
+                            <option value="未対応">未対応</option>
+                            <option value="アプローチ中">アプローチ中</option>
                             <option value="商談中">商談中</option>
                             <option value="見積提出">見積提出</option>
+                            <option value="成約前確認">成約前確認</option>
                             <option value="成約">成約</option>
-                            <option value="失注">失注</option>
-                            <option value="失注">キャンセル</option>
+                            <option value="失注（他決）">失注（他決）</option>
+                            <option value="失注（予算）">失注（予算）</option>
+                            <option value="失注（時期）">失注（時期）</option>
+                            <option value="失注（その他）">失注（その他）</option>
+                            <option value="見込みなし">見込みなし</option>
+                            <option value="営業停止">営業停止（重複）</option>
                         </select>
                     </div>
                     <div class="filter-group">
@@ -672,19 +699,22 @@
                 <table id="referralTable">
                     <thead>
                         <tr>
+                            <th>送客ID</th>
                             <th>顧客情報</th>
                             <th>送客先企業</th>
                             <th>送客日時</th>
                             <th>初回送客</th>
                             <th>物件種別</th>
-                            <th>進捗状況</th>
-                            <th>送客媒体</th>
+                            <th>ステータス</th>
+                            <th>月次報告</th>
+                            <th>送客元</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- 1対1の送客関係 -->
+                        <!-- 月次報告承認済みの送客 -->
                         <tr>
+                            <td style="font-weight: 600;">REF-001</td>
                             <td>
                                 <div class="customer-info">
                                     <div class="customer-name">山田 太郎</div>
@@ -695,17 +725,21 @@
                             <td>
                                 <div class="company-name">株式会社山田建設</div>
                             </td>
-                            <td>2025-08-25</td>
-                            <td>初回</td>
+                            <td>2025-08-01</td>
+                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
                             <td><span class="property-type-badge">注文住宅</span></td>
                             <td><span class="status-badge status-estimate">見積提出</span></td>
+                            <td>
+                                <span style="color: #2e7d32; font-size: 12px;">✓ 承認済(8月)</span>
+                            </td>
                             <td><span class="source-badge">見学予約</span></td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editReferral('REF-001')">編集</button>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-001')">詳細</button>
                             </td>
                         </tr>
                         
                         <tr class="row-non-initial">
+                            <td style="font-weight: 600;">REF-002</td>
                             <td>
                                 <div class="customer-info">
                                     <div class="customer-name">山田 太郎</div>
@@ -716,17 +750,21 @@
                             <td>
                                 <div class="company-name">田中ハウジング</div>
                             </td>
-                            <td>2025-08-25</td>
-                            <td>-</td>
+                            <td>2025-08-01</td>
+                            <td><span style="color: #999;">-</span></td>
                             <td><span class="property-type-badge">注文住宅</span></td>
                             <td><span class="status-badge status-contacted">商談中</span></td>
+                            <td>
+                                <span style="color: #2e7d32; font-size: 12px;">✓ 承認済(8月)</span>
+                            </td>
                             <td><span class="source-badge">見学予約</span></td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editReferral('REF-002')">編集</button>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-002')">詳細</button>
                             </td>
                         </tr>
                         
                         <tr class="row-non-initial">
+                            <td style="font-weight: 600;">REF-003</td>
                             <td>
                                 <div class="customer-info">
                                     <div class="customer-name">山田 太郎</div>
@@ -737,17 +775,22 @@
                             <td>
                                 <div class="company-name">佐藤工務店</div>
                             </td>
-                            <td>2025-08-25</td>
-                            <td>-</td>
+                            <td>2025-08-01</td>
+                            <td><span style="color: #999;">-</span></td>
                             <td><span class="property-type-badge">注文住宅</span></td>
-                            <td><span class="status-badge status-no-response">未対応</span></td>
+                            <td><span class="status-badge status-pending">営業停止</span></td>
+                            <td>
+                                <span style="color: #f57c00; font-size: 12px;">⚠️ 承認待ち</span>
+                            </td>
                             <td><span class="source-badge">見学予約</span></td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editReferral('REF-003')">編集</button>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-003')">詳細</button>
                             </td>
                         </tr>
                         
-                        <tr>
+                        <!-- 成約済み案件 -->
+                        <tr style="background: #e8f5e8;">
+                            <td style="font-weight: 600;">REF-004</td>
                             <td>
                                 <div class="customer-info">
                                     <div class="customer-name">佐藤 花子</div>
@@ -758,17 +801,24 @@
                             <td>
                                 <div class="company-name">田中不動産</div>
                             </td>
-                            <td>2025-08-24</td>
-                            <td>初回</td>
+                            <td>2025-07-15</td>
+                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
                             <td><span class="property-type-badge">土地</span></td>
-                            <td><span class="status-badge status-contracted">成約</span></td>
+                            <td>
+                                <span class="status-badge status-contracted">成約</span>
+                                <br><span style="font-size: 11px; color: #2e7d32;">📝 誓約書済</span>
+                            </td>
+                            <td>
+                                <span style="color: #2e7d32; font-size: 12px;">✓ 承認済(7月)</span>
+                            </td>
                             <td><span class="source-badge">資料請求</span></td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editReferral('REF-004')">編集</button>
+                                <button class="btn btn-success btn-sm" onclick="window.location.href='construction_management.html?id=REF-004'">着工管理</button>
                             </td>
                         </tr>
                         
                         <tr>
+                            <td style="font-weight: 600;">REF-005</td>
                             <td>
                                 <div class="customer-info">
                                     <div class="customer-name">鈴木 一郎</div>
@@ -780,16 +830,20 @@
                                 <div class="company-name">佐藤ハウジング</div>
                             </td>
                             <td>2025-08-23</td>
-                            <td>初回</td>
+                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
                             <td><span class="property-type-badge">新築戸建て</span></td>
                             <td><span class="status-badge status-estimate">見積提出</span></td>
+                            <td>
+                                <span style="color: #f57c00; font-size: 12px;">⚠️ 未報告</span>
+                            </td>
                             <td><span class="source-badge">イベント予約</span></td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editReferral('REF-005')">編集</button>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-005')">詳細</button>
                             </td>
                         </tr>
                         
                         <tr class="row-non-initial">
+                            <td style="font-weight: 600;">REF-006</td>
                             <td>
                                 <div class="customer-info">
                                     <div class="customer-name">鈴木 一郎</div>
@@ -801,16 +855,20 @@
                                 <div class="company-name">鈴木工務店</div>
                             </td>
                             <td>2025-08-23</td>
-                            <td>-</td>
+                            <td><span style="color: #999;">-</span></td>
                             <td><span class="property-type-badge">新築戸建て</span></td>
                             <td><span class="status-badge status-contacted">商談中</span></td>
+                            <td>
+                                <span style="color: #f57c00; font-size: 12px;">⚠️ 未報告</span>
+                            </td>
                             <td><span class="source-badge">イベント予約</span></td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editReferral('REF-006')">編集</button>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-006')">詳細</button>
                             </td>
                         </tr>
                         
                         <tr>
+                            <td style="font-weight: 600;">REF-007</td>
                             <td>
                                 <div class="customer-info">
                                     <div class="customer-name">田中 美咲</div>
@@ -822,16 +880,20 @@
                                 <div class="company-name">鈴木工務店</div>
                             </td>
                             <td>2025-08-22</td>
-                            <td>初回</td>
+                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
                             <td><span class="property-type-badge">注文住宅</span></td>
-                            <td><span class="status-badge status-not-contracted">失注</span></td>
+                            <td><span class="status-badge status-not-contracted">失注(他決)</span></td>
+                            <td>
+                                <span style="color: #f57c00; font-size: 12px;">⚠️ 未報告</span>
+                            </td>
                             <td><span class="source-badge">資料請求</span></td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editReferral('REF-007')">編集</button>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-007')">詳細</button>
                             </td>
                         </tr>
                         
                         <tr class="row-non-initial">
+                            <td style="font-weight: 600;">REF-008</td>
                             <td>
                                 <div class="customer-info">
                                     <div class="customer-name">田中 美咲</div>
@@ -843,16 +905,20 @@
                                 <div class="company-name">山田建設</div>
                             </td>
                             <td>2025-08-22</td>
-                            <td>-</td>
+                            <td><span style="color: #999;">-</span></td>
                             <td><span class="property-type-badge">注文住宅</span></td>
-                            <td><span class="status-badge status-not-contracted">失注</span></td>
+                            <td><span class="status-badge status-not-contracted">失注(予算)</span></td>
+                            <td>
+                                <span style="color: #f57c00; font-size: 12px;">⚠️ 未報告</span>
+                            </td>
                             <td><span class="source-badge">資料請求</span></td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editReferral('REF-008')">編集</button>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-008')">詳細</button>
                             </td>
                         </tr>
                         
                         <tr>
+                            <td style="font-weight: 600;">REF-009</td>
                             <td>
                                 <div class="customer-info">
                                     <div class="customer-name">高橋 健太</div>
@@ -864,16 +930,20 @@
                                 <div class="company-name">山田建設</div>
                             </td>
                             <td>2025-08-21</td>
-                            <td>初回</td>
+                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
                             <td><span class="property-type-badge">土地</span></td>
                             <td><span class="status-badge status-contacted">商談中</span></td>
+                            <td>
+                                <span style="color: #f57c00; font-size: 12px;">⚠️ 未報告</span>
+                            </td>
                             <td><span class="source-badge">見学予約</span></td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editReferral('REF-009')">編集</button>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-009')">詳細</button>
                             </td>
                         </tr>
                         
                         <tr>
+                            <td style="font-weight: 600;">REF-010</td>
                             <td>
                                 <div class="customer-info">
                                     <div class="customer-name">中村 真理子</div>
@@ -885,12 +955,15 @@
                                 <div class="company-name">田中不動産</div>
                             </td>
                             <td>2025-08-20</td>
-                            <td>初回</td>
+                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
                             <td><span class="property-type-badge">新築戸建て</span></td>
                             <td><span class="status-badge status-contacted">商談中</span></td>
+                            <td>
+                                <span style="color: #f57c00; font-size: 12px;">⚠️ 未報告</span>
+                            </td>
                             <td><span class="source-badge">イベント予約</span></td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editReferral('REF-010')">編集</button>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-010')">詳細</button>
                             </td>
                         </tr>
                     </tbody>
@@ -900,56 +973,36 @@
     </div>
 
     <script>
-        // ステータス更新モーダル
-        function updateStatus(referralId) {
-            document.getElementById('modalReferralId').value = referralId;
-            document.getElementById('statusModal').classList.add('show');
-            console.log('Updating status for:', referralId);
-        }
-
-        // モーダルを閉じる
-        function closeModal() {
-            document.getElementById('statusModal').classList.remove('show');
-        }
-
-        // ステータス保存
-        function saveStatus() {
-            const referralId = document.getElementById('modalReferralId').value;
-            const status = document.getElementById('currentStatus').value;
-            const notes = document.getElementById('statusNotes').value;
-
-            if (confirm(`${referralId}のステータスを「${status}」に更新しますか？`)) {
-                alert('ステータスが更新されました');
-                closeModal();
-                location.reload();
-            }
-        }
-
-        // プログレスバー更新
-        function updateProgressBar() {
-            const status = document.getElementById('currentStatus').value;
-            // 実際の実装では、ステータスに応じてプログレスバーを更新
+        // 送客詳細を表示
+        function viewDetails(referralId) {
+            console.log('Viewing details for:', referralId);
+            window.location.href = 'referral_detail.html?id=' + referralId;
         }
 
         // フィルター適用
         function applyFilters() {
             console.log('Applying filters...');
-            // フィルター処理の実装
+            const filters = {
+                customer: document.getElementById('customerFilter').value,
+                company: document.getElementById('companyFilter').value,
+                dateFrom: document.getElementById('dateFromFilter').value,
+                dateTo: document.getElementById('dateToFilter').value,
+                status: document.getElementById('statusFilter').value,
+                property: document.getElementById('propertyFilter').value,
+                source: document.getElementById('sourceFilter').value
+            };
+            console.log('Filters:', filters);
+            // 実際の実装では、ここでAPIを呼び出してフィルタリングしたデータを取得
         }
 
-        // 送客編集
-        function editReferral(referralId) {
-            console.log('Editing referral:', referralId);
-            window.location.href = 'referral_register.html?edit=' + referralId;
-        }
-
-        // モーダル外クリックで閉じる
-        window.onclick = function(event) {
-            const modal = document.getElementById('statusModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
+        // ページロード時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 日付フィルターのデフォルト値を設定
+            const today = new Date();
+            const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            document.getElementById('dateFromFilter').value = lastMonth.toISOString().split('T')[0];
+            document.getElementById('dateToFilter').value = today.toISOString().split('T')[0];
+        });
     </script>
 </body>
 </html>
