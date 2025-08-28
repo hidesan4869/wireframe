@@ -103,21 +103,21 @@
         }
 
         .btn-secondary {
-            background: #6c757d;
+            background: #7a7a7a;
             color: white;
         }
 
         .btn-secondary:hover {
-            background: #5a6268;
+            background: #6a6a6a;
         }
 
         .btn-success {
-            background: #2e7d32;
+            background: #5a5a5a;
             color: white;
         }
 
         .btn-success:hover {
-            background: #1b5e20;
+            background: #4a4a4a;
         }
 
         .btn-sm {
@@ -246,28 +246,28 @@
         }
 
         .status-sent {
-            background: #fff3e0;
-            color: #f57c00;
+            background: #f0f0f0;
+            color: #4a4a4a;
         }
 
         .status-contacted {
-            background: #e3f2fd;
-            color: #1976d2;
+            background: #e8e8e8;
+            color: #2c2c2c;
         }
 
         .status-estimate {
-            background: #f3e5f5;
-            color: #7b1fa2;
+            background: #e0e0e0;
+            color: #333333;
         }
 
         .status-contracted {
-            background: #e8f5e8;
-            color: #2e7d32;
+            background: #d8d8d8;
+            color: #1a1a1a;
         }
 
         .status-not-contracted {
-            background: #ffebee;
-            color: #d32f2f;
+            background: #cccccc;
+            color: #000000;
         }
 
         .status-pending {
@@ -302,8 +302,8 @@
             padding: 3px 8px;
             border-radius: 4px;
             font-size: 11px;
-            background: #e8e8ff;
-            color: #5555aa;
+            background: #e8e8e8;
+            color: #4a4a4a;
             display: inline-block;
         }
 
@@ -325,18 +325,18 @@
         }
 
         .company-status-item.leading {
-            border-left-color: #2e7d32;
-            background: #e8f5e8;
+            border-left-color: #333333;
+            background: #e8e8e8;
         }
 
         .company-status-item.negotiating {
-            border-left-color: #1976d2;
-            background: #e3f2fd;
+            border-left-color: #666666;
+            background: #f0f0f0;
         }
 
         .company-status-item.behind {
-            border-left-color: #f57c00;
-            background: #fff3e0;
+            border-left-color: #999999;
+            background: #f5f5f5;
         }
 
         .company-name-small {
@@ -355,10 +355,10 @@
         .competitive-summary {
             margin-top: 8px;
             padding: 6px 10px;
-            background: #f0f8ff;
+            background: #f0f0f0;
             border-radius: 4px;
             font-size: 12px;
-            color: #1976d2;
+            color: #4a4a4a;
         }
 
         /* プログレス比較 */
@@ -390,7 +390,7 @@
 
         .progress-mini-fill {
             height: 100%;
-            background: linear-gradient(90deg, #4caf50 0%, #2e7d32 100%);
+            background: linear-gradient(90deg, #666666 0%, #333333 100%);
             transition: width 0.3s ease;
         }
 
@@ -547,7 +547,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #f57c00 0%, #1976d2 50%, #2e7d32 100%);
+            background: linear-gradient(90deg, #999999 0%, #666666 50%, #333333 100%);
             transition: width 0.3s ease;
         }
 
@@ -580,43 +580,6 @@
                 <h2 class="page-title">📊 送客一覧</h2>
                 <div style="display: flex; gap: 10px;">
                     <button class="btn btn-primary" onclick="window.location.href='referral_register.html'">➕ 新規送客登録</button>
-                    <button class="btn btn-secondary" onclick="window.location.href='monthly_report_list.html'">📋 月次報告管理</button>
-                </div>
-            </div>
-
-            <!-- 統計カード -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">156</div>
-                    <div class="stat-label">総送客数</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">32</div>
-                    <div class="stat-label">未対応</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">45</div>
-                    <div class="stat-label">商談中</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">28</div>
-                    <div class="stat-label">見積提出済</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">23</div>
-                    <div class="stat-label">成約済み</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">15</div>
-                    <div class="stat-label">失注</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">8</div>
-                    <div class="stat-label">営業停止</div>
-                </div>
-                <div class="stat-card" style="background: #fff3e0;">
-                    <div class="stat-number">12</div>
-                    <div class="stat-label" style="color: #f57c00;">承認待ち</div>
                 </div>
             </div>
 
@@ -703,10 +666,7 @@
                             <th>顧客情報</th>
                             <th>送客先企業</th>
                             <th>送客日時</th>
-                            <th>初回送客</th>
                             <th>物件種別</th>
-                            <th>ステータス</th>
-                            <th>月次報告</th>
                             <th>送客元</th>
                             <th>操作</th>
                         </tr>
@@ -726,12 +686,7 @@
                                 <div class="company-name">株式会社山田建設</div>
                             </td>
                             <td>2025-08-01</td>
-                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
                             <td><span class="property-type-badge">注文住宅</span></td>
-                            <td><span class="status-badge status-estimate">見積提出</span></td>
-                            <td>
-                                <span style="color: #2e7d32; font-size: 12px;">✓ 承認済(8月)</span>
-                            </td>
                             <td><span class="source-badge">見学予約</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-001')">詳細</button>
@@ -751,12 +706,7 @@
                                 <div class="company-name">田中ハウジング</div>
                             </td>
                             <td>2025-08-01</td>
-                            <td><span style="color: #999;">-</span></td>
                             <td><span class="property-type-badge">注文住宅</span></td>
-                            <td><span class="status-badge status-contacted">商談中</span></td>
-                            <td>
-                                <span style="color: #2e7d32; font-size: 12px;">✓ 承認済(8月)</span>
-                            </td>
                             <td><span class="source-badge">見学予約</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-002')">詳細</button>
@@ -776,12 +726,7 @@
                                 <div class="company-name">佐藤工務店</div>
                             </td>
                             <td>2025-08-01</td>
-                            <td><span style="color: #999;">-</span></td>
                             <td><span class="property-type-badge">注文住宅</span></td>
-                            <td><span class="status-badge status-pending">営業停止</span></td>
-                            <td>
-                                <span style="color: #f57c00; font-size: 12px;">⚠️ 承認待ち</span>
-                            </td>
                             <td><span class="source-badge">見学予約</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-003')">詳細</button>
@@ -789,7 +734,7 @@
                         </tr>
                         
                         <!-- 成約済み案件 -->
-                        <tr style="background: #e8f5e8;">
+                        <tr style="">
                             <td style="font-weight: 600;">REF-004</td>
                             <td>
                                 <div class="customer-info">
@@ -802,18 +747,10 @@
                                 <div class="company-name">田中不動産</div>
                             </td>
                             <td>2025-07-15</td>
-                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
                             <td><span class="property-type-badge">土地</span></td>
-                            <td>
-                                <span class="status-badge status-contracted">成約</span>
-                                <br><span style="font-size: 11px; color: #2e7d32;">📝 誓約書済</span>
-                            </td>
-                            <td>
-                                <span style="color: #2e7d32; font-size: 12px;">✓ 承認済(7月)</span>
-                            </td>
                             <td><span class="source-badge">資料請求</span></td>
                             <td>
-                                <button class="btn btn-success btn-sm" onclick="window.location.href='construction_management.html?id=REF-004'">着工管理</button>
+                                <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-007')">詳細</button>
                             </td>
                         </tr>
                         
@@ -830,12 +767,7 @@
                                 <div class="company-name">佐藤ハウジング</div>
                             </td>
                             <td>2025-08-23</td>
-                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
                             <td><span class="property-type-badge">新築戸建て</span></td>
-                            <td><span class="status-badge status-estimate">見積提出</span></td>
-                            <td>
-                                <span style="color: #f57c00; font-size: 12px;">⚠️ 未報告</span>
-                            </td>
                             <td><span class="source-badge">イベント予約</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-005')">詳細</button>
@@ -855,12 +787,7 @@
                                 <div class="company-name">鈴木工務店</div>
                             </td>
                             <td>2025-08-23</td>
-                            <td><span style="color: #999;">-</span></td>
                             <td><span class="property-type-badge">新築戸建て</span></td>
-                            <td><span class="status-badge status-contacted">商談中</span></td>
-                            <td>
-                                <span style="color: #f57c00; font-size: 12px;">⚠️ 未報告</span>
-                            </td>
                             <td><span class="source-badge">イベント予約</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-006')">詳細</button>
@@ -880,12 +807,7 @@
                                 <div class="company-name">鈴木工務店</div>
                             </td>
                             <td>2025-08-22</td>
-                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
                             <td><span class="property-type-badge">注文住宅</span></td>
-                            <td><span class="status-badge status-not-contracted">失注(他決)</span></td>
-                            <td>
-                                <span style="color: #f57c00; font-size: 12px;">⚠️ 未報告</span>
-                            </td>
                             <td><span class="source-badge">資料請求</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-007')">詳細</button>
@@ -905,12 +827,7 @@
                                 <div class="company-name">山田建設</div>
                             </td>
                             <td>2025-08-22</td>
-                            <td><span style="color: #999;">-</span></td>
                             <td><span class="property-type-badge">注文住宅</span></td>
-                            <td><span class="status-badge status-not-contracted">失注(予算)</span></td>
-                            <td>
-                                <span style="color: #f57c00; font-size: 12px;">⚠️ 未報告</span>
-                            </td>
                             <td><span class="source-badge">資料請求</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-008')">詳細</button>
@@ -930,12 +847,7 @@
                                 <div class="company-name">山田建設</div>
                             </td>
                             <td>2025-08-21</td>
-                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
                             <td><span class="property-type-badge">土地</span></td>
-                            <td><span class="status-badge status-contacted">商談中</span></td>
-                            <td>
-                                <span style="color: #f57c00; font-size: 12px;">⚠️ 未報告</span>
-                            </td>
                             <td><span class="source-badge">見学予約</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-009')">詳細</button>
@@ -955,12 +867,7 @@
                                 <div class="company-name">田中不動産</div>
                             </td>
                             <td>2025-08-20</td>
-                            <td><span style="color: #2e7d32; font-weight: 600;">初回</span></td>
                             <td><span class="property-type-badge">新築戸建て</span></td>
-                            <td><span class="status-badge status-contacted">商談中</span></td>
-                            <td>
-                                <span style="color: #f57c00; font-size: 12px;">⚠️ 未報告</span>
-                            </td>
                             <td><span class="source-badge">イベント予約</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-010')">詳細</button>

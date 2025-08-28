@@ -104,12 +104,12 @@
         }
 
         .btn-success {
-            background: #2e7d32;
+            background: #5a5a5a;
             color: white;
         }
 
         .btn-danger {
-            background: #d32f2f;
+            background: #7a7a7a;
             color: white;
         }
 
@@ -157,7 +157,7 @@
         }
 
         .required {
-            color: #dc3545;
+            color: #666666;
             margin-left: 4px;
         }
 
@@ -201,28 +201,28 @@
         }
 
         .status-sent {
-            background: #fff3e0;
-            color: #f57c00;
+            background: #f0f0f0;
+            color: #4a4a4a;
         }
 
         .status-contacted {
-            background: #e3f2fd;
-            color: #1976d2;
+            background: #e8e8e8;
+            color: #2c2c2c;
         }
 
         .status-estimate {
-            background: #f3e5f5;
-            color: #7b1fa2;
+            background: #e0e0e0;
+            color: #333333;
         }
 
         .status-contracted {
-            background: #e8f5e8;
-            color: #2e7d32;
+            background: #d8d8d8;
+            color: #1a1a1a;
         }
 
         .status-not-contracted {
-            background: #ffebee;
-            color: #d32f2f;
+            background: #cccccc;
+            color: #000000;
         }
 
         .status-no-response {
@@ -246,9 +246,9 @@
         }
 
         .alert-info {
-            background: #e7f3ff;
-            color: #004085;
-            border-left: 4px solid #004085;
+            background: #f0f0f0;
+            color: #333333;
+            border-left: 4px solid #666666;
         }
 
         /* 履歴表示 */
@@ -582,10 +582,10 @@
             requiredFields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 if (!field.value.trim()) {
-                    field.style.borderColor = '#d32f2f';
+                    field.style.borderColor = '#999999';
                     isValid = false;
                 } else {
-                    field.style.borderColor = '#ced4da';
+                    field.style.borderColor = '#cccccc';
                 }
             });
 

@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>送客詳細 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* ページヘッダー */
+        .page-header {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 10px;
+        }
+
+        .referral-id {
+            font-size: 16px;
+            color: #666666;
+            font-weight: normal;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+        }
+
+        .btn-secondary {
+            background: #7a7a7a;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #6a6a6a;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #666666;
+            border: 1px solid #cccccc;
+        }
+
+        .btn-outline:hover {
+            background: #f0f0f0;
+        }
+
+        /* 基本情報セクション */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #777777;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        /* ステータスバッジ */
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .status-pending {
+            background: #f0f0f0;
+            color: #4a4a4a;
+        }
+
+        .status-contacted {
+            background: #e0e0e0;
+            color: #2c2c2c;
+        }
+
+        .status-estimate {
+            background: #d5d5d5;
+            color: #1a1a1a;
+        }
+
+        .status-contracted {
+            background: #cccccc;
+            color: #000000;
+        }
+
+        .status-lost {
+            background: #e8e8e8;
+            color: #444444;
+        }
+
+        .status-stopped {
+            background: #f5f5f5;
+            color: #999999;
+        }
+
+        /* セクションカード */
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px 25px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        .section-content {
+            padding: 25px;
+        }
+
+        /* 顧客情報 */
+        .customer-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .customer-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 10px;
+        }
+
+        .contact-item {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .contact-label {
+            font-weight: 500;
+            color: #666666;
+            margin-right: 10px;
+        }
+
+        /* 送客元情報 */
+        .source-badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .source-tour {
+            background: #e0e0e0;
+            color: #333333;
+        }
+
+        .source-catalog {
+            background: #d5d5d5;
+            color: #2c2c2c;
+        }
+
+        .source-event {
+            background: #cccccc;
+            color: #1a1a1a;
+        }
+
+        /* タイムライン */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #d0d0d0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -22px;
+            width: 10px;
+            height: 10px;
+            background: #999999;
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px #d0d0d0;
+        }
+
+        .timeline-marker.current {
+            background: #4a4a4a;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 2px #d0d0d0;
+            }
+            50% {
+                box-shadow: 0 0 0 5px rgba(74, 74, 74, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 0 2px #d0d0d0;
+            }
+        }
+
+        .timeline-content {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #cccccc;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 5px;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: #777777;
+            margin-bottom: 8px;
+        }
+
+        .timeline-description {
+            font-size: 13px;
+            color: #4a4a4a;
+            line-height: 1.4;
+        }
+
+        /* 進捗表示 */
+        .progress-section {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #999999 0%, #666666 100%);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #6a6a6a;
+        }
+
+        /* ファイル管理 */
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .file-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #666666;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .file-meta {
+            font-size: 12px;
+            color: #777777;
+        }
+
+        .file-status {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .file-verified {
+            background: #e0e0e0;
+            color: #2c2c2c;
+        }
+
+        .file-pending {
+            background: #f0f0f0;
+            color: #666666;
+        }
+
+        .file-missing {
+            background: #e8e8e8;
+            color: #999999;
+        }
+
+        /* テーブル */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f8f8f8;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 13px;
+        }
+
+        tbody td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* アラート */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-warning {
+            background: #f0f0f0;
+            border-left: 4px solid #777777;
+            color: #333333;
+        }
+
+        .alert-info {
+            background: #f8f8f8;
+            border-left: 4px solid #666666;
+            color: #2c2c2c;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a4a4a;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        /* 初回送客インジケーター */
+        .initial-indicator {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .initial-yes {
+            background: #e0e0e0;
+            color: #2c2c2c;
+        }
+
+        .initial-no {
+            background: #f5f5f5;
+            color: #999999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="referral_list.html">送客管理</a> > 
+                送客詳細
+            </div>
+
+            <!-- ページヘッダー -->
+            <div class="page-header">
+                <div class="header-row">
+                    <div>
+                        <h2 class="page-title">
+                            山田 太郎 様
+                            <span class="initial-indicator initial-yes">初回送客</span>
+                        </h2>
+                        <div class="referral-id">送客ID: REF-001</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-outline" onclick="printDetail()">📄 印刷</button>
+                        <button class="btn btn-secondary" onclick="exportData()">📊 データ出力</button>
+                        <button class="btn btn-primary" onclick="editReferral()">✏️ 編集</button>
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">現在ステータス</span>
+                        <span class="info-value">
+                            <span class="status-badge status-estimate">見積提出</span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">送客先企業</span>
+                        <span class="info-value">株式会社山田建設</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">送客日</span>
+                        <span class="info-value">2025-08-01</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">物件種別</span>
+                        <span class="info-value">注文住宅</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 顧客情報 -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3 class="section-title">👤 顧客情報</h3>
+                </div>
+                <div class="section-content">
+                    <div class="customer-info">
+                        <div>
+                            <div class="customer-name">山田 太郎</div>
+                            <div class="contact-item">
+                                <span class="contact-label">電話番号:</span>
+                                <span>090-1234-5678</span>
+                            </div>
+                            <div class="contact-item">
+                                <span class="contact-label">メールアドレス:</span>
+                                <span>yamada@example.com</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="contact-item">
+                                <span class="contact-label">希望予算:</span>
+                                <span>3,000万円 ～ 3,500万円</span>
+                            </div>
+                            <div class="contact-item">
+                                <span class="contact-label">希望エリア:</span>
+                                <span>東京都世田谷区</span>
+                            </div>
+                            <div class="contact-item">
+                                <span class="contact-label">建築希望時期:</span>
+                                <span>2025年10月頃</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 送客元情報 -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3 class="section-title">📋 送客元情報</h3>
+                </div>
+                <div class="section-content">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">送客媒体</span>
+                            <span class="info-value">
+                                <span class="source-badge source-tour">見学予約</span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">申し込み日時</span>
+                            <span class="info-value">2025-07-28 14:30</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">見学物件</span>
+                            <span class="info-value">世田谷モデルハウス</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">見学予定日</span>
+                            <span class="info-value">2025-08-01 10:00</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <span class="info-label">顧客要望・備考</span>
+                        <div style="background: #f8f8f8; padding: 12px; border-radius: 6px; margin-top: 8px;">
+                            二世帯住宅を検討中。親世帯との同居を想定した間取りを希望。駐車場2台分確保したい。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 進捗状況 -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3 class="section-title">📈 進捗状況</h3>
+                    <button class="btn btn-outline" onclick="updateProgress()">進捗更新</button>
+                </div>
+                <div class="section-content">
+                    <div class="progress-section">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%;">
+                                60%
+                            </div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>未対応</span>
+                            <span>初回接触</span>
+                            <span>商談中</span>
+                            <span>見積提出</span>
+                            <span>成約</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        ℹ️ 見積書を提出済み。お客様からの返答待ち状態です。
+                    </div>
+                </div>
+            </div>
+
+            <!-- ステータス履歴 -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3 class="section-title">📝 ステータス履歴</h3>
+                </div>
+                <div class="section-content">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker current"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">見積提出</div>
+                                <div class="timeline-date">2025-08-20 15:30</div>
+                                <div class="timeline-description">
+                                    二世帯住宅プランの見積書を提出。総額3,200万円（税込）。
+                                    お客様より「家族で検討します」とのご返答。1週間後に再連絡予定。
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">商談中</div>
+                                <div class="timeline-date">2025-08-10 10:00</div>
+                                <div class="timeline-description">
+                                    詳細打ち合わせ実施。間取りプランを3案提示。
+                                    お客様より「プランAが希望に近い」とのフィードバック。
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">初回接触</div>
+                                <div class="timeline-date">2025-08-02 14:00</div>
+                                <div class="timeline-description">
+                                    電話にて初回コンタクト。見学会参加のお礼と、
+                                    今後の検討スケジュールについてヒアリング実施。
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">送客作成</div>
+                                <div class="timeline-date">2025-08-01 16:00</div>
+                                <div class="timeline-description">
+                                    見学予約から送客作成。初回送客として登録。
+                                    見学時の印象が良好で、具体的な建築意向を確認。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 関連ファイル -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3 class="section-title">📁 関連ファイル</h3>
+                    <button class="btn btn-outline" onclick="uploadFile()">ファイル追加</button>
+                </div>
+                <div class="section-content">
+                    <div class="file-grid">
+                        <div class="file-card">
+                            <div class="file-icon">📋</div>
+                            <div class="file-info">
+                                <div class="file-name">見積書_山田太郎様_20250820.pdf</div>
+                                <div class="file-meta">
+                                    2025-08-20 15:30 | 2.3MB
+                                    <span class="file-status file-verified">確認済み</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="file-card">
+                            <div class="file-icon">🏠</div>
+                            <div class="file-info">
+                                <div class="file-name">間取りプランA_二世帯.dwg</div>
+                                <div class="file-meta">
+                                    2025-08-10 09:45 | 1.8MB
+                                    <span class="file-status file-verified">確認済み</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="file-card">
+                            <div class="file-icon">📷</div>
+                            <div class="file-info">
+                                <div class="file-name">見学会写真_20250801.zip</div>
+                                <div class="file-meta">
+                                    2025-08-01 17:20 | 5.2MB
+                                    <span class="file-status file-pending">確認待ち</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 競合状況（他社送客がある場合） -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3 class="section-title">🏢 競合状況</h3>
+                </div>
+                <div class="section-content">
+                    <div class="alert alert-warning">
+                        ⚠️ 同一顧客に対する他社送客が確認されています。
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>企業名</th>
+                                <th>送客日</th>
+                                <th>初回送客</th>
+                                <th>現在ステータス</th>
+                                <th>最終更新日</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: #f0f0f0;">
+                                <td><strong>株式会社山田建設</strong></td>
+                                <td>2025-08-01</td>
+                                <td><span class="initial-indicator initial-yes">初回</span></td>
+                                <td><span class="status-badge status-estimate">見積提出</span></td>
+                                <td>2025-08-20</td>
+                            </tr>
+                            <tr>
+                                <td>田中ハウジング</td>
+                                <td>2025-08-05</td>
+                                <td><span class="initial-indicator initial-no">-</span></td>
+                                <td><span class="status-badge status-contacted">商談中</span></td>
+                                <td>2025-08-18</td>
+                            </tr>
+                            <tr>
+                                <td>佐藤工務店</td>
+                                <td>2025-08-03</td>
+                                <td><span class="initial-indicator initial-no">-</span></td>
+                                <td><span class="status-badge status-stopped">営業停止</span></td>
+                                <td>2025-08-15</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 進捗更新モーダル -->
+    <div id="progressModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">進捗更新</h3>
+                <button class="close" onclick="closeModal('progressModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">現在ステータス</label>
+                    <select class="form-select">
+                        <option value="未対応">未対応</option>
+                        <option value="アプローチ中">アプローチ中</option>
+                        <option value="商談中">商談中</option>
+                        <option value="見積提出" selected>見積提出</option>
+                        <option value="成約前確認">成約前確認</option>
+                        <option value="成約">成約</option>
+                        <option value="失注(他決)">失注(他決)</option>
+                        <option value="失注(予算)">失注(予算)</option>
+                        <option value="失注(時期)">失注(時期)</option>
+                        <option value="失注(その他)">失注(その他)</option>
+                        <option value="見込みなし">見込みなし</option>
+                        <option value="営業停止">営業停止(重複)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">進捗メモ</label>
+                    <textarea class="form-textarea" rows="4" placeholder="進捗に関する詳細情報を入力してください"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('progressModal')">キャンセル</button>
+                <button class="btn btn-primary" onclick="saveProgress()">更新</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 進捗更新
+        function updateProgress() {
+            document.getElementById('progressModal').classList.add('show');
+        }
+
+        // 進捗保存
+        function saveProgress() {
+            alert('進捗を更新しました');
+            closeModal('progressModal');
+        }
+
+        // 送客編集
+        function editReferral() {
+            window.location.href = 'referral_register.html?edit=REF-001';
+        }
+
+        // データ出力
+        function exportData() {
+            alert('送客データをCSVで出力します');
+        }
+
+        // 印刷
+        function printDetail() {
+            window.print();
+        }
+
+        // ファイルアップロード
+        function uploadFile() {
+            alert('ファイルアップロード画面を開きます');
+        }
+
+        // モーダルを閉じる
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+
+        // URLパラメータから送客IDを取得
+        function getReferralIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id') || 'REF-001';
+        }
+
+        // ページロード時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            const referralId = getReferralIdFromUrl();
+            console.log('Loading referral details for:', referralId);
+            // 実際の実装では、ここでAPIを呼び出して詳細データを取得
+        });
+    </script>
+</body>
+</html>

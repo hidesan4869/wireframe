@@ -121,21 +121,21 @@
         }
 
         .btn-success {
-            background: #2e7d32;
+            background: #5a5a5a;
             color: white;
         }
 
         .btn-success:hover {
-            background: #1b5e20;
+            background: #4a4a4a;
         }
 
         .btn-warning {
-            background: #f57c00;
+            background: #777777;
             color: white;
         }
 
         .btn-warning:hover {
-            background: #e65100;
+            background: #666666;
         }
 
         .btn-sm {
@@ -270,23 +270,23 @@
         }
 
         .status-started {
-            background: #e3f2fd;
-            color: #1976d2;
+            background: #e8e8e8;
+            color: #333333;
         }
 
         .status-in-progress {
-            background: #fff3e0;
-            color: #f57c00;
+            background: #f0f0f0;
+            color: #4a4a4a;
         }
 
         .status-completed {
-            background: #e8f5e8;
-            color: #2e7d32;
+            background: #d8d8d8;
+            color: #1a1a1a;
         }
 
         .status-delayed {
-            background: #ffebee;
-            color: #d32f2f;
+            background: #cccccc;
+            color: #000000;
         }
 
         /* 書類ステータス */
@@ -304,15 +304,15 @@
         }
 
         .doc-verified {
-            color: #2e7d32;
+            color: #333333;
         }
 
         .doc-pending {
-            color: #f57c00;
+            color: #777777;
         }
 
         .doc-missing {
-            color: #d32f2f;
+            color: #999999;
         }
 
         /* プログレスバー */
@@ -326,7 +326,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #4caf50 0%, #2e7d32 100%);
+            background: linear-gradient(90deg, #666666 0%, #444444 100%);
             transition: width 0.3s ease;
         }
 
@@ -381,15 +381,15 @@
         }
 
         .alert-warning {
-            background: #fff3e0;
-            border-left: 4px solid #f57c00;
-            color: #e65100;
+            background: #f5f5f5;
+            border-left: 4px solid #888888;
+            color: #333333;
         }
 
         .alert-info {
-            background: #e3f2fd;
-            border-left: 4px solid #1976d2;
-            color: #0d47a1;
+            background: #f0f0f0;
+            border-left: 4px solid #666666;
+            color: #222222;
         }
 
         /* タイムライン */
@@ -432,11 +432,11 @@
         }
 
         .timeline-marker.completed {
-            background: #2e7d32;
+            background: #555555;
         }
 
         .timeline-marker.current {
-            background: #f57c00;
+            background: #888888;
             animation: pulse 2s infinite;
         }
 
@@ -445,7 +445,7 @@
                 box-shadow: 0 0 0 2px #d0d0d0;
             }
             50% {
-                box-shadow: 0 0 0 5px rgba(245, 124, 0, 0.3);
+                box-shadow: 0 0 0 5px rgba(136, 136, 136, 0.3);
             }
             100% {
                 box-shadow: 0 0 0 2px #d0d0d0;
@@ -619,30 +619,6 @@
                 ⚠️ 3件の案件で着工報告書の提出が遅れています
             </div>
 
-            <!-- 統計カード -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">23</div>
-                    <div class="stat-label">成約済み案件</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">8</div>
-                    <div class="stat-label">着工予定</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">12</div>
-                    <div class="stat-label">着工中</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">3</div>
-                    <div class="stat-label">完成済み</div>
-                </div>
-                <div class="stat-card" style="background: #ffebee;">
-                    <div class="stat-number" style="color: #d32f2f;">2</div>
-                    <div class="stat-label" style="color: #d32f2f;">遅延案件</div>
-                </div>
-            </div>
-
             <!-- フィルター -->
             <div class="filter-section">
                 <div class="filter-row">
@@ -658,20 +634,6 @@
                             <option value="田中不動産">田中不動産</option>
                             <option value="佐藤ハウジング">佐藤ハウジング</option>
                         </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">着工状態</label>
-                        <select class="filter-select">
-                            <option value="">全て</option>
-                            <option value="planned">着工予定</option>
-                            <option value="started">着工中</option>
-                            <option value="completed">完成済み</option>
-                            <option value="delayed">遅延</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">期間</label>
-                        <input type="date" class="filter-input">
                     </div>
                 </div>
             </div>
@@ -689,11 +651,7 @@
                             <th>送客ID</th>
                             <th>顧客情報</th>
                             <th>企業名</th>
-                            <th>契約日</th>
-                            <th>契約金額</th>
-                            <th>着工状態</th>
-                            <th>進捗率</th>
-                            <th>着工日程</th>
+                            <th>着工日</th>
                             <th>必須書類</th>
                             <th>操作</th>
                         </tr>
@@ -710,22 +668,6 @@
                             </td>
                             <td>田中不動産</td>
                             <td>2025-07-15</td>
-                            <td style="font-weight: 600;">¥28,500,000</td>
-                            <td><span class="status-badge status-in-progress">着工中</span></td>
-                            <td>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 65%;"></div>
-                                </div>
-                                <div class="progress-text">65% 完了</div>
-                            </td>
-                            <td>
-                                <div class="date-info">
-                                    <div class="date-label">着工日</div>
-                                    <div class="date-value">2025-08-01</div>
-                                    <div class="date-label">完成予定</div>
-                                    <div class="date-value">2025-12-15</div>
-                                </div>
-                            </td>
                             <td>
                                 <div class="doc-status">
                                     <div class="doc-item doc-verified">✓ 誓約書</div>
@@ -734,7 +676,7 @@
                             </td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-004')">詳細</button>
-                                <button class="btn btn-success btn-sm" onclick="updateProgress('REF-004')">進捗更新</button>
+                                <button class="btn btn-secondary btn-sm" onclick="downloadReport('REF-001')">報告書DL</button>
                             </td>
                         </tr>
 
@@ -749,22 +691,6 @@
                             </td>
                             <td>山田建設</td>
                             <td>2025-08-01</td>
-                            <td style="font-weight: 600;">¥35,000,000</td>
-                            <td><span class="status-badge status-planned">着工予定</span></td>
-                            <td>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 0%;"></div>
-                                </div>
-                                <div class="progress-text">未着工</div>
-                            </td>
-                            <td>
-                                <div class="date-info">
-                                    <div class="date-label">着工予定</div>
-                                    <div class="date-value">2025-09-15</div>
-                                    <div class="date-label">完成予定</div>
-                                    <div class="date-value">2026-02-28</div>
-                                </div>
-                            </td>
                             <td>
                                 <div class="doc-status">
                                     <div class="doc-item doc-verified">✓ 誓約書</div>
@@ -773,7 +699,6 @@
                             </td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-012')">詳細</button>
-                                <button class="btn btn-warning btn-sm" onclick="startConstruction('REF-012')">着工開始</button>
                             </td>
                         </tr>
 
@@ -788,22 +713,6 @@
                             </td>
                             <td>佐藤ハウジング</td>
                             <td>2025-06-20</td>
-                            <td style="font-weight: 600;">¥42,000,000</td>
-                            <td><span class="status-badge status-delayed">遅延</span></td>
-                            <td>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 45%; background: linear-gradient(90deg, #ff9800 0%, #f57c00 100%);"></div>
-                                </div>
-                                <div class="progress-text" style="color: #f57c00;">45% (遅延中)</div>
-                            </td>
-                            <td>
-                                <div class="date-info">
-                                    <div class="date-label">着工日</div>
-                                    <div class="date-value">2025-07-01</div>
-                                    <div class="date-label" style="color: #d32f2f;">完成予定(遅延)</div>
-                                    <div class="date-value" style="color: #d32f2f;">2025-11-30</div>
-                                </div>
-                            </td>
                             <td>
                                 <div class="doc-status">
                                     <div class="doc-item doc-verified">✓ 誓約書</div>
@@ -812,7 +721,6 @@
                             </td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-008')">詳細</button>
-                                <button class="btn btn-danger btn-sm" onclick="reportIssue('REF-008')">問題報告</button>
                             </td>
                         </tr>
 
@@ -827,27 +735,10 @@
                             </td>
                             <td>鈴木工務店</td>
                             <td>2025-03-10</td>
-                            <td style="font-weight: 600;">¥31,200,000</td>
-                            <td><span class="status-badge status-completed">完成済み</span></td>
-                            <td>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 100%;"></div>
-                                </div>
-                                <div class="progress-text" style="color: #2e7d32;">100% 完了</div>
-                            </td>
-                            <td>
-                                <div class="date-info">
-                                    <div class="date-label">着工日</div>
-                                    <div class="date-value">2025-04-01</div>
-                                    <div class="date-label" style="color: #2e7d32;">完成日</div>
-                                    <div class="date-value" style="color: #2e7d32;">2025-08-20</div>
-                                </div>
-                            </td>
                             <td>
                                 <div class="doc-status">
                                     <div class="doc-item doc-verified">✓ 誓約書</div>
                                     <div class="doc-item doc-verified">✓ 着工報告書</div>
-                                    <div class="doc-item doc-verified">✓ 完成報告書</div>
                                 </div>
                             </td>
                             <td>
@@ -867,22 +758,6 @@
                             </td>
                             <td>山田建設</td>
                             <td>2025-07-25</td>
-                            <td style="font-weight: 600;">¥38,900,000</td>
-                            <td><span class="status-badge status-started">着工中</span></td>
-                            <td>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 30%;"></div>
-                                </div>
-                                <div class="progress-text">30% 完了</div>
-                            </td>
-                            <td>
-                                <div class="date-info">
-                                    <div class="date-label">着工日</div>
-                                    <div class="date-value">2025-08-15</div>
-                                    <div class="date-label">完成予定</div>
-                                    <div class="date-value">2026-01-31</div>
-                                </div>
-                            </td>
                             <td>
                                 <div class="doc-status">
                                     <div class="doc-item doc-verified">✓ 誓約書</div>
@@ -891,90 +766,10 @@
                             </td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="viewDetails('REF-015')">詳細</button>
-                                <button class="btn btn-success btn-sm" onclick="updateProgress('REF-015')">進捗更新</button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <!-- タイムライン例 -->
-            <div class="timeline-container">
-                <div class="table-header" style="background: none; padding: 0; margin-bottom: 20px;">
-                    <h3 class="table-title">📅 着工スケジュール (REF-004: 佐藤 花子様)</h3>
-                </div>
-                
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-marker completed"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">契約締結</div>
-                            <div class="timeline-date">2025年7月15日</div>
-                            <div class="timeline-description">
-                                契約金額: ¥28,500,000<br>
-                                誓約書受領済み
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <div class="timeline-marker completed"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">着工開始</div>
-                            <div class="timeline-date">2025年8月1日</div>
-                            <div class="timeline-description">
-                                施工業者: 田中建設<br>
-                                建築確認番号: R5-1234567
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <div class="timeline-marker completed"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">基礎工事完了</div>
-                            <div class="timeline-date">2025年8月20日</div>
-                            <div class="timeline-description">
-                                進捗率: 25%<br>
-                                検査合格
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <div class="timeline-marker current"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">上棟工事中</div>
-                            <div class="timeline-date">2025年8月27日 (現在)</div>
-                            <div class="timeline-description">
-                                進捗率: 65%<br>
-                                天候による遅延なし
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">内装工事予定</div>
-                            <div class="timeline-date">2025年10月1日 (予定)</div>
-                            <div class="timeline-description">
-                                予定進捗率: 80%
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-content">
-                            <div class="timeline-title">完成・引き渡し予定</div>
-                            <div class="timeline-date">2025年12月15日 (予定)</div>
-                            <div class="timeline-description">
-                                完成検査・引き渡し
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </main>
     </div>
@@ -1016,45 +811,6 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeModal('progressModal')">キャンセル</button>
                 <button class="btn btn-success" onclick="saveProgress()">保存</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 着工開始モーダル -->
-    <div id="startModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">着工開始登録</h3>
-                <button class="close" onclick="closeModal('startModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">実際の着工日</label>
-                    <input type="date" class="form-input">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">施工業者名</label>
-                    <input type="text" class="form-input" placeholder="施工業者名を入力">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">建築確認番号</label>
-                    <input type="text" class="form-input" placeholder="建築確認番号を入力">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">着工報告書アップロード *必須</label>
-                    <div class="file-upload">
-                        <div class="file-upload-icon">📄</div>
-                        <div class="file-upload-text">着工報告書をアップロード</div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">備考</label>
-                    <textarea class="form-textarea" placeholder="備考を入力..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('startModal')">キャンセル</button>
-                <button class="btn btn-warning" onclick="confirmStart()">着工開始</button>
             </div>
         </div>
     </div>

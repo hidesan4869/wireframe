@@ -80,8 +80,8 @@
 
         /* 期限アラート */
         .deadline-alert {
-            background: #fff3e0;
-            border: 1px solid #ffb74d;
+            background: #f5f5f5;
+            border: 1px solid #bbbbbb;
             border-radius: 8px;
             padding: 15px 20px;
             margin-bottom: 20px;
@@ -91,17 +91,17 @@
         }
 
         .deadline-alert.urgent {
-            background: #ffebee;
-            border-color: #e57373;
+            background: #e8e8e8;
+            border-color: #999999;
         }
 
         .deadline-text {
-            color: #f57c00;
+            color: #555555;
             font-weight: 500;
         }
 
         .deadline-text.urgent {
-            color: #d32f2f;
+            color: #333333;
         }
 
         /* ボタン */
@@ -129,17 +129,17 @@
         }
 
         .btn-success {
-            background: #2e7d32;
+            background: #5a5a5a;
             color: white;
         }
 
         .btn-warning {
-            background: #f57c00;
+            background: #777777;
             color: white;
         }
 
         .btn-danger {
-            background: #d32f2f;
+            background: #999999;
             color: white;
         }
 
@@ -186,7 +186,7 @@
         }
 
         .required {
-            color: #d32f2f;
+            color: #666666;
             margin-left: 3px;
         }
 
@@ -320,18 +320,18 @@
         }
 
         .status-pending {
-            background: #fff3e0;
-            color: #f57c00;
+            background: #f0f0f0;
+            color: #4a4a4a;
         }
 
         .status-reported {
-            background: #e8f5e8;
-            color: #2e7d32;
+            background: #e0e0e0;
+            color: #2c2c2c;
         }
 
         .status-overdue {
-            background: #ffebee;
-            color: #d32f2f;
+            background: #d5d5d5;
+            color: #1a1a1a;
         }
 
         /* 送客元バッジ */
@@ -345,18 +345,18 @@
         }
 
         .source-tour {
-            background: #e3f2fd;
-            color: #1976d2;
+            background: #e8e8e8;
+            color: #333333;
         }
 
         .source-catalog {
-            background: #f3e5f5;
-            color: #7b1fa2;
+            background: #e0e0e0;
+            color: #444444;
         }
 
         .source-event {
-            background: #e8f5e8;
-            color: #2e7d32;
+            background: #d8d8d8;
+            color: #222222;
         }
 
         /* アクションボタン */
@@ -392,9 +392,9 @@
 <body>
     <!-- ヘッダー -->
     <header class="header">
-        <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル - メーカー専用画面</h1>
+        <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル - 企業向け画面</h1>
         <div class="company-info">
-            <span>株式会社山田建設</span>
+            <span id="companyNameDisplay">未選択</span>
             <button class="btn btn-secondary">ログアウト</button>
         </div>
     </header>
@@ -409,21 +409,37 @@
             <h2 class="page-title">📝 送客報告入力</h2>
         </div>
 
-        <!-- 期限アラート -->
-        <div class="deadline-alert" id="deadlineAlert">
+        <!-- 企業選択セクション -->
+        <div class="form-section" id="companySelectionSection">
+            <h3 class="section-title">企業選択</h3>
+            <div class="form-group">
+                <label class="form-label">報告を行う企業を選択してください <span class="required">*</span></label>
+                <select class="form-select" id="companySelect" onchange="selectCompany(this)">
+                    <option value="">-- 企業を選択 --</option>
+                    <option value="yamada">株式会社山田建設</option>
+                    <option value="tanaka">田中不動産</option>
+                    <option value="sato">佐藤ハウジング</option>
+                    <option value="suzuki">鈴木工務店</option>
+                </select>
+                <div class="help-text">企業を選択すると、その企業の送客対象リストが表示されます</div>
+            </div>
+        </div>
+
+        <!-- 期限アラート（企業選択後に表示） -->
+        <div class="deadline-alert" id="deadlineAlert" style="display: none;">
             <div class="deadline-text" id="deadlineText">
-                ⏰ 送客報告期限: 送客日から3日以内 | 未報告件数: 3件
+                ⏰ 送客報告期限: 送客日から3日以内 | 未報告件数: 0件
             </div>
             <button class="btn btn-warning" onclick="showOverdueReports()">期限超過を確認</button>
         </div>
 
-        <div class="form-container">
+        <div class="form-container" id="reportContainer" style="display: none;">
             <!-- 送客選択 -->
             <div class="form-section">
                 <h3 class="section-title">送客報告対象</h3>
                 <div class="help-text">送客日から3日以内に報告が必要な案件を表示しています</div>
                 
-                <table class="referral-table">
+                <table class="referral-table" id="referralTable" style="display: none;">
                     <thead>
                         <tr>
                             <th>選択</th>
@@ -436,58 +452,8 @@
                             <th>状況</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr class="pending-report">
-                            <td>
-                                <input type="radio" name="referral" value="REF-2025-0156" onchange="selectReferral(this)" required>
-                            </td>
-                            <td>REF-2025-0156</td>
-                            <td>
-                                <div class="customer-info">
-                                    <div class="customer-name">山田 太郎</div>
-                                    <div class="customer-contact">090-1234-5678</div>
-                                </div>
-                            </td>
-                            <td>2025-08-25</td>
-                            <td><span class="source-badge source-tour">見学予約</span></td>
-                            <td>注文住宅</td>
-                            <td>2025-08-28</td>
-                            <td><span class="status-badge status-pending">報告待ち</span></td>
-                        </tr>
-                        <tr class="overdue-report">
-                            <td>
-                                <input type="radio" name="referral" value="REF-2025-0154" onchange="selectReferral(this)" required>
-                            </td>
-                            <td>REF-2025-0154</td>
-                            <td>
-                                <div class="customer-info">
-                                    <div class="customer-name">佐藤 花子</div>
-                                    <div class="customer-contact">080-9876-5432</div>
-                                </div>
-                            </td>
-                            <td>2025-08-22</td>
-                            <td><span class="source-badge source-catalog">資料請求</span></td>
-                            <td>土地</td>
-                            <td>2025-08-25</td>
-                            <td><span class="status-badge status-overdue">期限超過</span></td>
-                        </tr>
-                        <tr class="pending-report">
-                            <td>
-                                <input type="radio" name="referral" value="REF-2025-0153" onchange="selectReferral(this)" required>
-                            </td>
-                            <td>REF-2025-0153</td>
-                            <td>
-                                <div class="customer-info">
-                                    <div class="customer-name">鈴木 一郎</div>
-                                    <div class="customer-contact">070-1111-2222</div>
-                                </div>
-                            </td>
-                            <td>2025-08-26</td>
-                            <td><span class="source-badge source-event">イベント予約</span></td>
-                            <td>新築戸建て</td>
-                            <td>2025-08-29</td>
-                            <td><span class="status-badge status-pending">報告待ち</span></td>
-                        </tr>
+                    <tbody id="referralTableBody">
+                        <!-- JavaScriptで動的に生成 -->
                     </tbody>
                 </table>
             </div>
@@ -580,6 +546,112 @@
     </main>
 
     <script>
+        // サンプルデータ
+        const companyData = {
+            yamada: {
+                name: '株式会社山田建設',
+                referrals: [
+                    { id: 'REF-2025-0156', customer: '山田 太郎', contact: '090-1234-5678', date: '2025-08-25', source: 'tour', sourceText: '見学予約', type: '注文住宅', deadline: '2025-08-28', status: 'pending' },
+                    { id: 'REF-2025-0154', customer: '佐藤 花子', contact: '080-9876-5432', date: '2025-08-22', source: 'catalog', sourceText: '資料請求', type: '土地', deadline: '2025-08-25', status: 'overdue' },
+                    { id: 'REF-2025-0153', customer: '鈴木 一郎', contact: '070-1111-2222', date: '2025-08-26', source: 'event', sourceText: 'イベント予約', type: '新築戸建て', deadline: '2025-08-29', status: 'pending' }
+                ]
+            },
+            tanaka: {
+                name: '田中不動産',
+                referrals: [
+                    { id: 'REF-2025-0201', customer: '田中 美咲', contact: '090-3333-4444', date: '2025-08-24', source: 'tour', sourceText: '見学予約', type: '土地', deadline: '2025-08-27', status: 'pending' },
+                    { id: 'REF-2025-0202', customer: '伊藤 健二', contact: '080-4444-5555', date: '2025-08-23', source: 'catalog', sourceText: '資料請求', type: '注文住宅', deadline: '2025-08-26', status: 'overdue' }
+                ]
+            },
+            sato: {
+                name: '佐藤ハウジング',
+                referrals: [
+                    { id: 'REF-2025-0301', customer: '高橋 和子', contact: '070-5555-6666', date: '2025-08-26', source: 'event', sourceText: 'イベント予約', type: '新築戸建て', deadline: '2025-08-29', status: 'pending' },
+                    { id: 'REF-2025-0302', customer: '渡辺 正男', contact: '090-6666-7777', date: '2025-08-27', source: 'tour', sourceText: '見学予約', type: '注文住宅', deadline: '2025-08-30', status: 'pending' }
+                ]
+            },
+            suzuki: {
+                name: '鈴木工務店',
+                referrals: [
+                    { id: 'REF-2025-0401', customer: '小林 涼子', contact: '080-7777-8888', date: '2025-08-25', source: 'catalog', sourceText: '資料請求', type: '土地', deadline: '2025-08-28', status: 'pending' }
+                ]
+            }
+        };
+
+        // 企業選択時の処理
+        function selectCompany(select) {
+            const companyId = select.value;
+            
+            if (!companyId) {
+                // 企業未選択時は送客リストを非表示
+                document.getElementById('reportContainer').style.display = 'none';
+                document.getElementById('deadlineAlert').style.display = 'none';
+                document.getElementById('companyNameDisplay').textContent = '未選択';
+                return;
+            }
+            
+            // 企業データ取得
+            const company = companyData[companyId];
+            if (!company) return;
+            
+            // ヘッダーの企業名を更新
+            document.getElementById('companyNameDisplay').textContent = company.name;
+            
+            // 送客リストを生成
+            const tbody = document.getElementById('referralTableBody');
+            tbody.innerHTML = '';
+            
+            let pendingCount = 0;
+            let overdueCount = 0;
+            
+            company.referrals.forEach(referral => {
+                const tr = document.createElement('tr');
+                tr.className = referral.status === 'overdue' ? 'overdue-report' : 'pending-report';
+                
+                if (referral.status === 'pending') pendingCount++;
+                if (referral.status === 'overdue') overdueCount++;
+                
+                tr.innerHTML = `
+                    <td>
+                        <input type="radio" name="referral" value="${referral.id}" onchange="selectReferral(this)" required>
+                    </td>
+                    <td>${referral.id}</td>
+                    <td>
+                        <div class="customer-info">
+                            <div class="customer-name">${referral.customer}</div>
+                            <div class="customer-contact">${referral.contact}</div>
+                        </div>
+                    </td>
+                    <td>${referral.date}</td>
+                    <td><span class="source-badge source-${referral.source}">${referral.sourceText}</span></td>
+                    <td>${referral.type}</td>
+                    <td>${referral.deadline}</td>
+                    <td><span class="status-badge status-${referral.status}">${referral.status === 'overdue' ? '期限超過' : '報告待ち'}</span></td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+            
+            // 期限アラート更新
+            const deadlineAlert = document.getElementById('deadlineAlert');
+            const deadlineText = document.getElementById('deadlineText');
+            
+            if (overdueCount > 0) {
+                deadlineAlert.classList.add('urgent');
+                deadlineText.classList.add('urgent');
+                deadlineText.innerHTML = `🚨 期限超過: ${overdueCount}件 | 報告待ち: ${pendingCount}件 | 至急報告してください`;
+            } else {
+                deadlineAlert.classList.remove('urgent');
+                deadlineText.classList.remove('urgent');
+                deadlineText.innerHTML = `⏰ 送客報告期限: 送客日から3日以内 | 未報告件数: ${pendingCount}件`;
+            }
+            
+            // 表示
+            document.getElementById('reportContainer').style.display = 'block';
+            document.getElementById('deadlineAlert').style.display = 'block';
+            document.getElementById('referralTable').style.display = 'table';
+        }
+
         // 送客選択時の処理
         function selectReferral(radio) {
             const row = radio.closest('tr');
@@ -719,15 +791,9 @@
 
         // ページ読み込み時の初期化
         document.addEventListener('DOMContentLoaded', function() {
-            // 期限超過件数チェック
-            const overdueCount = document.querySelectorAll('.overdue-report').length;
-            if (overdueCount > 0) {
-                const deadlineAlert = document.getElementById('deadlineAlert');
-                const deadlineText = document.getElementById('deadlineText');
-                deadlineAlert.classList.add('urgent');
-                deadlineText.classList.add('urgent');
-                deadlineText.innerHTML = `🚨 期限超過: ${overdueCount}件 | 至急報告してください`;
-            }
+            // 初期状態では送客リストを非表示
+            document.getElementById('reportContainer').style.display = 'none';
+            document.getElementById('deadlineAlert').style.display = 'none';
         });
     </script>
 </body>
