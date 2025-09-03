@@ -451,8 +451,7 @@
             <div class="page-header">
                 <h2 class="page-title">カタログ請求者一覧</h2>
                 <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="exportCSV()">CSVエクスポート</button>
-                    <button class="btn btn-primary" onclick="openNewRequestModal()">新規請求登録</button>
+                    <button class="btn btn-primary" onclick="openNewRequestModal()">新規カタログ請求登録</button>
                 </div>
             </div>
 
@@ -467,16 +466,6 @@
             <!-- フィルター -->
             <div class="filter-section">
                 <div class="filter-row">
-                    <div class="filter-group">
-                        <label class="filter-label">ステータス</label>
-                        <select class="filter-select" id="statusFilter" onchange="filterTable()">
-                            <option value="">全て</option>
-                            <option value="new">未対応</option>
-                            <option value="processing">処理中</option>
-                            <option value="completed">発送済み</option>
-                            <option value="hold">保留</option>
-                        </select>
-                    </div>
                     <div class="filter-group">
                         <label class="filter-label">請求期間</label>
                         <select class="filter-select" id="periodFilter" onchange="filterTable()">
@@ -535,7 +524,6 @@
                             <th>物件種別</th>
                             <th>カタログ名</th>
                             <th>企業名</th>
-                            <th>ステータス</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -545,11 +533,10 @@
                             <td>2025-08-25 10:30</td>
                             <td>山田 太郎</td>
                             <td>yamada@example.com</td>
-                            <td>090-1234-5678</td>
+                            <td>09012345678</td>
                             <td>注文住宅</td>
                             <td>モダンハウスカタログ2025</td>
                             <td>株式会社山田建設</td>
-                            <td><span class="status-badge status-new">未対応</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025001')">詳細</button>
                             </td>
@@ -559,11 +546,10 @@
                             <td>2025-08-25 11:15</td>
                             <td>佐藤 花子</td>
                             <td>sato@example.com</td>
-                            <td>080-9876-5432</td>
+                            <td>08098765432</td>
                             <td>土地</td>
                             <td>都心エリア土地情報</td>
                             <td>田中不動産株式会社</td>
-                            <td><span class="status-badge status-processing">処理中</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025002')">詳細</button>
                             </td>
@@ -573,11 +559,10 @@
                             <td>2025-08-25 12:00</td>
                             <td>鈴木 一郎</td>
                             <td>suzuki@example.com</td>
-                            <td>070-1111-2222</td>
+                            <td>07011112222</td>
                             <td>新築戸建て</td>
                             <td>ファミリー向け新築特集</td>
                             <td>佐藤ハウジング</td>
-                            <td><span class="status-badge status-completed">発送済み</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025003')">詳細</button>
                             </td>
@@ -587,11 +572,10 @@
                             <td>2025-08-25 13:45</td>
                             <td>田中 美咲</td>
                             <td>tanaka@example.com</td>
-                            <td>090-3333-4444</td>
+                            <td>09033334444</td>
                             <td>注文住宅</td>
                             <td>エコハウスコレクション</td>
                             <td>株式会社山田建設</td>
-                            <td><span class="status-badge status-new">未対応</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025004')">詳細</button>
                             </td>
@@ -601,11 +585,10 @@
                             <td>2025-08-25 14:20</td>
                             <td>高橋 健太</td>
                             <td>takahashi@example.com</td>
-                            <td>080-5555-6666</td>
+                            <td>08055556666</td>
                             <td>土地</td>
                             <td>郊外土地活用ガイド</td>
                             <td>田中不動産株式会社</td>
-                            <td><span class="status-badge status-hold">保留</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025005')">詳細</button>
                             </td>
@@ -615,11 +598,10 @@
                             <td>2025-08-25 15:00</td>
                             <td>伊藤 真由美</td>
                             <td>ito@example.com</td>
-                            <td>070-7777-8888</td>
+                            <td>07077778888</td>
                             <td>新築戸建て</td>
                             <td>スマートホーム最新情報</td>
                             <td>佐藤ハウジング</td>
-                            <td><span class="status-badge status-processing">処理中</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025006')">詳細</button>
                             </td>
@@ -640,16 +622,11 @@
             <div class="modal-body">
                 <h4 style="margin-bottom: 15px; color: #4a4a4a;">請求情報</h4>
                 <div class="detail-grid">
-                    <div class="detail-label">請求ID:</div>
-                    <div class="detail-value" id="detailRequestId">CR2025001</div>
+                    <div class="detail-label">ID:</div>
+                    <div class="detail-value" id="detailRequestId">10001</div>
                     
                     <div class="detail-label">請求日時:</div>
                     <div class="detail-value" id="detailRequestDate">2025-08-25 10:30</div>
-                    
-                    <div class="detail-label">ステータス:</div>
-                    <div class="detail-value" id="detailStatus">
-                        <span class="status-badge status-new">未対応</span>
-                    </div>
                 </div>
 
                 <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">お客様情報</h4>
@@ -664,13 +641,22 @@
                     <div class="detail-value" id="detailEmail">yamada@example.com</div>
                     
                     <div class="detail-label">電話番号:</div>
-                    <div class="detail-value" id="detailPhone">090-1234-5678</div>
+                    <div class="detail-value" id="detailPhone">09012345678</div>
                     
                     <div class="detail-label">郵便番号:</div>
                     <div class="detail-value" id="detailZip">100-0001</div>
                     
                     <div class="detail-label">住所:</div>
                     <div class="detail-value" id="detailAddress">東京都千代田区千代田1-1-1</div>
+                    
+                    <div class="detail-label">年齢:</div>
+                    <div class="detail-value">30歳</div>
+                    <div class="detail-label">建設予定地:</div>
+                    <div class="detail-value">東京都ほげほげほげ1-1-1</div>
+                    <div class="detail-label">土地の有無:</div>
+                    <div class="detail-value">なし</div>
+                    <div class="detail-label">メルマガ・メール配信希望:</div>
+                    <div class="detail-value">あり</div>
                 </div>
 
                 <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">カタログ情報</h4>
@@ -680,38 +666,14 @@
                     
                     <div class="detail-label">カタログ名:</div>
                     <div class="detail-value" id="detailCatalogName">モダンハウスカタログ2025</div>
+                    <div class="detail-label">お問い合わせコード:</div>
+                    <div class="detail-value" id="detailCatalogName">FZ1234567890</div>
                     
                     <div class="detail-label">企業名:</div>
                     <div class="detail-value" id="detailCompany">株式会社山田建設</div>
-                    
-                    <div class="detail-label">備考:</div>
-                    <div class="detail-value" id="detailNotes">2階建て希望、予算3000万円程度</div>
-                </div>
-
-                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">処理履歴</h4>
-                <div style="background: #f5f5f5; padding: 15px; border-radius: 6px;">
-                    <div style="margin-bottom: 10px;">
-                        <strong>2025-08-25 10:30</strong> - 請求受付
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <strong>2025-08-25 11:00</strong> - 担当者アサイン（田中）
-                    </div>
-                    <div>
-                        <strong>2025-08-25 14:00</strong> - ステータス変更：処理中
-                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <div class="status-change">
-                    <label>ステータス変更:</label>
-                    <select class="filter-select">
-                        <option value="new">未対応</option>
-                        <option value="processing">処理中</option>
-                        <option value="completed">発送済み</option>
-                        <option value="hold">保留</option>
-                    </select>
-                    <button class="btn btn-primary">更新</button>
-                </div>
                 <div>
                     <button class="btn btn-secondary" onclick="closeDetailModal()">閉じる</button>
                 </div>

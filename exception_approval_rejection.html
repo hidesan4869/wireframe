@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>承認却下・修正要求処理 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #777777;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #666666;
+        }
+
+        .btn-warning {
+            background: #888888;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #777777;
+        }
+
+        /* アラート */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-danger {
+            background: #f0f0f0;
+            border-left: 4px solid #999999;
+            color: #333333;
+        }
+
+        .alert-warning {
+            background: #f5f5f5;
+            border-left: 4px solid #777777;
+            color: #444444;
+        }
+
+        .alert-info {
+            background: #f8f8f8;
+            border-left: 4px solid #666666;
+            color: #222222;
+        }
+
+        /* 統計カード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-number.danger {
+            color: #666666;
+        }
+
+        .stat-number.warning {
+            color: #777777;
+        }
+
+        .stat-label {
+            color: #7a7a7a;
+            font-size: 14px;
+        }
+
+        /* データテーブル */
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 13px;
+        }
+
+        tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        tbody tr.rejected {
+            background: #f8f8f8;
+            border-left: 4px solid #999999;
+        }
+
+        tbody tr.revision-required {
+            background: #fafafa;
+            border-left: 4px solid #777777;
+        }
+
+        /* ステータスバッジ */
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .status-pending {
+            background: #f0f0f0;
+            color: #6a6a6a;
+        }
+
+        .status-approved {
+            background: #e8e8e8;
+            color: #333333;
+        }
+
+        .status-rejected {
+            background: #f5f5f5;
+            color: #999999;
+        }
+
+        .status-revision {
+            background: #eeeeee;
+            color: #555555;
+        }
+
+        .status-resubmitted {
+            background: #d8d8d8;
+            color: #2c2c2c;
+        }
+
+        /* 顧客情報 */
+        .customer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .customer-contact {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        /* 拒否理由・修正要求詳細 */
+        .rejection-details {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 13px;
+            color: #666666;
+        }
+
+        /* 日付情報 */
+        .date-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .date-label {
+            font-size: 11px;
+            color: #7a7a7a;
+        }
+
+        .date-value {
+            font-size: 13px;
+            color: #2c2c2c;
+        }
+
+        /* アクションボタン */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 700px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a4a4a;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .required {
+            color: #666666;
+        }
+
+        /* 履歴セクション */
+        .history-section {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-status {
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        .history-date {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        .history-reason {
+            font-size: 13px;
+            color: #666666;
+            margin-top: 5px;
+        }
+
+        /* フィルターセクション */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .filter-input, .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* タブ */
+        .tab-container {
+            margin-bottom: 20px;
+        }
+
+        .tab-nav {
+            display: flex;
+            background: white;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666666;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #2c2c2c;
+            border-bottom-color: #4a4a4a;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="monthly_report_list.html">月次報告管理</a> > 
+                承認例外処理
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">⚠️ 承認例外処理管理</h2>
+                <button class="btn btn-primary" onclick="exportExceptionReport()">
+                    📊 例外レポート出力
+                </button>
+            </div>
+
+            <!-- アラート -->
+            <div class="alert alert-danger">
+                🚨 緊急対応が必要な案件: 却下5件、修正要求8件、期限超過3件
+            </div>
+
+            <!-- 統計カード -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number danger">5</div>
+                    <div class="stat-label">却下案件</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number warning">8</div>
+                    <div class="stat-label">修正要求</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">再提出待ち</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number danger">3</div>
+                    <div class="stat-label">期限超過</div>
+                </div>
+            </div>
+
+            <!-- フィルター -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">企業名</label>
+                        <select class="filter-select" id="companyFilter" onchange="filterData()">
+                            <option value="">全て</option>
+                            <option value="山田建設">山田建設</option>
+                            <option value="田中不動産">田中不動産</option>
+                            <option value="佐藤ハウジング">佐藤ハウジング</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">例外ステータス</label>
+                        <select class="filter-select" id="statusFilter" onchange="filterData()">
+                            <option value="">全て</option>
+                            <option value="rejected">却下</option>
+                            <option value="revision">修正要求</option>
+                            <option value="resubmitted">再提出済み</option>
+                            <option value="overdue">期限超過</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">対象月</label>
+                        <select class="filter-select" id="monthFilter" onchange="filterData()">
+                            <option value="">全て</option>
+                            <option value="2025-08">2025年8月</option>
+                            <option value="2025-07">2025年7月</option>
+                            <option value="2025-06">2025年6月</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">優先度</label>
+                        <select class="filter-select" id="priorityFilter" onchange="filterData()">
+                            <option value="">全て</option>
+                            <option value="urgent">緊急</option>
+                            <option value="high">高</option>
+                            <option value="normal">通常</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- タブナビゲーション -->
+            <div class="tab-container">
+                <div class="tab-nav">
+                    <button class="tab-button active" onclick="switchTab('rejected')">却下案件 (5)</button>
+                    <button class="tab-button" onclick="switchTab('revision')">修正要求 (8)</button>
+                    <button class="tab-button" onclick="switchTab('resubmitted')">再提出済み (3)</button>
+                    <button class="tab-button" onclick="switchTab('overdue')">期限超過 (3)</button>
+                </div>
+
+                <!-- 却下案件タブ -->
+                <div id="rejected-tab" class="tab-content active">
+                    <div class="data-table">
+                        <div class="table-header">
+                            <h3 class="table-title">却下案件一覧</h3>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-sm" onclick="bulkNotify('rejected')">一括通知</button>
+                            </div>
+                        </div>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>選択</th>
+                                    <th>送客ID</th>
+                                    <th>顧客情報</th>
+                                    <th>企業名</th>
+                                    <th>報告月</th>
+                                    <th>却下理由</th>
+                                    <th>却下日時</th>
+                                    <th>担当者</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="rejected">
+                                    <td><input type="checkbox" value="REF-001"></td>
+                                    <td style="font-weight: 600;">REF-001</td>
+                                    <td>
+                                        <div class="customer-info">
+                                            <div class="customer-name">山田 太郎</div>
+                                            <div class="customer-contact">090-1234-5678</div>
+                                        </div>
+                                    </td>
+                                    <td>山田建設</td>
+                                    <td>2025年7月</td>
+                                    <td class="rejection-details" title="契約金額が未入力のため承認できません。正確な金額を入力して再提出してください。">
+                                        契約金額未入力
+                                    </td>
+                                    <td>
+                                        <div class="date-info">
+                                            <div class="date-value">2025-08-15</div>
+                                            <div class="date-label">14:30</div>
+                                        </div>
+                                    </td>
+                                    <td>田中管理者</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-primary btn-sm" onclick="viewRejectionDetail('REF-001')">詳細</button>
+                                            <button class="btn btn-secondary btn-sm" onclick="sendRejectionNotice('REF-001')">通知</button>
+                                            <button class="btn btn-warning btn-sm" onclick="editRejection('REF-001')">修正</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="rejected">
+                                    <td><input type="checkbox" value="REF-005"></td>
+                                    <td style="font-weight: 600;">REF-005</td>
+                                    <td>
+                                        <div class="customer-info">
+                                            <div class="customer-name">佐藤 花子</div>
+                                            <div class="customer-contact">080-9876-5432</div>
+                                        </div>
+                                    </td>
+                                    <td>田中不動産</td>
+                                    <td>2025年7月</td>
+                                    <td class="rejection-details" title="「商談中」から「成約」への急激なステータス変更について、中間経緯の説明が不足しています。">
+                                        ステータス遷移不明
+                                    </td>
+                                    <td>
+                                        <div class="date-info">
+                                            <div class="date-value">2025-08-14</div>
+                                            <div class="date-label">09:15</div>
+                                        </div>
+                                    </td>
+                                    <td>山田管理者</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-primary btn-sm" onclick="viewRejectionDetail('REF-005')">詳細</button>
+                                            <button class="btn btn-secondary btn-sm" onclick="sendRejectionNotice('REF-005')">通知</button>
+                                            <button class="btn btn-warning btn-sm" onclick="editRejection('REF-005')">修正</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 修正要求タブ -->
+                <div id="revision-tab" class="tab-content">
+                    <div class="data-table">
+                        <div class="table-header">
+                            <h3 class="table-title">修正要求案件一覧</h3>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-sm" onclick="bulkNotify('revision')">一括通知</button>
+                                <button class="btn btn-warning btn-sm" onclick="checkRevisionDeadlines()">期限確認</button>
+                            </div>
+                        </div>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>選択</th>
+                                    <th>送客ID</th>
+                                    <th>顧客情報</th>
+                                    <th>企業名</th>
+                                    <th>修正要求内容</th>
+                                    <th>要求日時</th>
+                                    <th>修正期限</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="revision-required">
+                                    <td><input type="checkbox" value="REF-008"></td>
+                                    <td style="font-weight: 600;">REF-008</td>
+                                    <td>
+                                        <div class="customer-info">
+                                            <div class="customer-name">鈴木 一郎</div>
+                                            <div class="customer-contact">070-1111-2222</div>
+                                        </div>
+                                    </td>
+                                    <td>佐藤ハウジング</td>
+                                    <td class="rejection-details" title="見積提出の詳細な金額内訳と、顧客からのフィードバック内容を追記してください。">
+                                        見積詳細の追記要求
+                                    </td>
+                                    <td>
+                                        <div class="date-info">
+                                            <div class="date-value">2025-08-20</div>
+                                            <div class="date-label">11:00</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="date-info">
+                                            <div class="date-value">2025-09-03</div>
+                                            <div class="date-label" style="color: #666666;">期限まで6日</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-primary btn-sm" onclick="viewRevisionDetail('REF-008')">詳細</button>
+                                            <button class="btn btn-secondary btn-sm" onclick="sendRevisionReminder('REF-008')">催促</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 再提出済みタブ -->
+                <div id="resubmitted-tab" class="tab-content">
+                    <div class="data-table">
+                        <div class="table-header">
+                            <h3 class="table-title">再提出済み案件（再承認待ち）</h3>
+                        </div>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>送客ID</th>
+                                    <th>顧客情報</th>
+                                    <th>企業名</th>
+                                    <th>初回提出</th>
+                                    <th>却下/修正要求</th>
+                                    <th>再提出日時</th>
+                                    <th>優先度</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight: 600;">REF-003</td>
+                                    <td>
+                                        <div class="customer-info">
+                                            <div class="customer-name">高橋 美咲</div>
+                                            <div class="customer-contact">090-3333-4444</div>
+                                        </div>
+                                    </td>
+                                    <td>山田建設</td>
+                                    <td>2025-07-31</td>
+                                    <td>
+                                        <div class="date-info">
+                                            <div class="date-value">2025-08-10</div>
+                                            <div class="date-label">修正要求</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="date-info">
+                                            <div class="date-value">2025-08-25</div>
+                                            <div class="date-label">16:45</div>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge status-resubmitted">高</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-primary btn-sm" onclick="reviewResubmission('REF-003')">再承認</button>
+                                            <button class="btn btn-secondary btn-sm" onclick="compareVersions('REF-003')">比較</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 期限超過タブ -->
+                <div id="overdue-tab" class="tab-content">
+                    <div class="alert alert-warning">
+                        ⚠️ 修正期限を超過した案件です。緊急対応が必要です。
+                    </div>
+                    
+                    <div class="data-table">
+                        <div class="table-header">
+                            <h3 class="table-title">期限超過案件</h3>
+                            <div class="action-buttons">
+                                <button class="btn btn-danger btn-sm" onclick="escalateOverdue()">エスカレーション</button>
+                            </div>
+                        </div>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>送客ID</th>
+                                    <th>顧客情報</th>
+                                    <th>企業名</th>
+                                    <th>要求種別</th>
+                                    <th>期限</th>
+                                    <th>超過日数</th>
+                                    <th>最終催促</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #f5f5f5;">
+                                    <td style="font-weight: 600;">REF-012</td>
+                                    <td>
+                                        <div class="customer-info">
+                                            <div class="customer-name">渡辺 健太</div>
+                                            <div class="customer-contact">080-5555-6666</div>
+                                        </div>
+                                    </td>
+                                    <td>鈴木工務店</td>
+                                    <td><span class="status-badge status-rejected">却下</span></td>
+                                    <td>2025-08-20</td>
+                                    <td style="color: #999999; font-weight: 600;">8日超過</td>
+                                    <td>2025-08-26</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="btn btn-danger btn-sm" onclick="emergencyContact('REF-012')">緊急連絡</button>
+                                            <button class="btn btn-warning btn-sm" onclick="extendDeadline('REF-012')">期限延長</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 却下詳細モーダル -->
+    <div id="rejectionDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">却下詳細情報</h3>
+                <button class="close" onclick="closeModal('rejectionDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">送客ID</label>
+                    <input type="text" class="form-input" id="modalReferralId" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">顧客名</label>
+                    <input type="text" class="form-input" id="modalCustomerName" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">却下理由</label>
+                    <textarea class="form-textarea" id="modalRejectionReason" readonly></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">改善点・指示事項</label>
+                    <textarea class="form-textarea" id="modalImprovement"></textarea>
+                </div>
+                
+                <div class="history-section">
+                    <h4 style="margin-bottom: 15px; color: #4a4a4a;">処理履歴</h4>
+                    <div class="history-item">
+                        <div>
+                            <div class="history-status">却下処理</div>
+                            <div class="history-reason">契約金額の入力が不完全</div>
+                        </div>
+                        <div class="history-date">2025-08-15 14:30</div>
+                    </div>
+                    <div class="history-item">
+                        <div>
+                            <div class="history-status">月次報告提出</div>
+                            <div class="history-reason">初回提出</div>
+                        </div>
+                        <div class="history-date">2025-07-31 17:00</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('rejectionDetailModal')">閉じる</button>
+                <button class="btn btn-primary" onclick="sendDetailedRejectionNotice()">詳細通知送信</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 却下理由編集モーダル -->
+    <div id="editRejectionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">却下理由編集</h3>
+                <button class="close" onclick="closeModal('editRejectionModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">却下理由 <span class="required">*</span></label>
+                    <select class="form-select" id="rejectionReasonCategory">
+                        <option value="">選択してください</option>
+                        <option value="missing_data">必須データ未入力</option>
+                        <option value="invalid_status">ステータス遷移不正</option>
+                        <option value="insufficient_evidence">証跡不十分</option>
+                        <option value="data_inconsistency">データ不整合</option>
+                        <option value="other">その他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">詳細理由 <span class="required">*</span></label>
+                    <textarea class="form-textarea" id="rejectionReasonDetail" placeholder="具体的な却下理由を入力してください"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">修正指示・改善点</label>
+                    <textarea class="form-textarea" id="rejectionImprovement" placeholder="企業が修正すべき点を具体的に記載してください"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">対応期限</label>
+                    <input type="date" class="form-input" id="rejectionDeadline">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editRejectionModal')">キャンセル</button>
+                <button class="btn btn-danger" onclick="updateRejection()">却下理由更新</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // タブ切り替え
+        function switchTab(tabName) {
+            // タブボタンの状態更新
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // タブコンテンツの表示切り替え
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // フィルター機能
+        function filterData() {
+            const company = document.getElementById('companyFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const month = document.getElementById('monthFilter').value;
+            const priority = document.getElementById('priorityFilter').value;
+            
+            console.log('フィルター適用:', { company, status, month, priority });
+            // 実際の実装では、これらのフィルター条件に基づいてテーブルデータを更新
+        }
+
+        // 却下詳細表示
+        function viewRejectionDetail(referralId) {
+            document.getElementById('modalReferralId').value = referralId;
+            document.getElementById('modalCustomerName').value = '山田 太郎';
+            document.getElementById('modalRejectionReason').value = '契約金額が未入力のため承認できません。正確な金額を入力して再提出してください。';
+            document.getElementById('rejectionDetailModal').classList.add('show');
+        }
+
+        // 却下理由編集
+        function editRejection(referralId) {
+            document.getElementById('editRejectionModal').classList.add('show');
+        }
+
+        // 却下理由更新
+        function updateRejection() {
+            const category = document.getElementById('rejectionReasonCategory').value;
+            const detail = document.getElementById('rejectionReasonDetail').value;
+            const improvement = document.getElementById('rejectionImprovement').value;
+            const deadline = document.getElementById('rejectionDeadline').value;
+            
+            if (!category || !detail) {
+                alert('必須項目を入力してください。');
+                return;
+            }
+            
+            alert('却下理由を更新しました。企業に通知されます。');
+            closeModal('editRejectionModal');
+        }
+
+        // 却下通知送信
+        function sendRejectionNotice(referralId) {
+            if (confirm('却下通知を送信しますか？')) {
+                alert(`${referralId}の却下通知を企業に送信しました。`);
+            }
+        }
+
+        // 詳細通知送信
+        function sendDetailedRejectionNotice() {
+            alert('詳細な却下理由と改善点を企業に送信しました。');
+            closeModal('rejectionDetailModal');
+        }
+
+        // 修正詳細表示
+        function viewRevisionDetail(referralId) {
+            alert(`${referralId}の修正要求詳細を表示します。`);
+        }
+
+        // 修正催促
+        function sendRevisionReminder(referralId) {
+            if (confirm('修正催促通知を送信しますか？')) {
+                alert(`${referralId}の修正催促を企業に送信しました。`);
+            }
+        }
+
+        // 期限確認
+        function checkRevisionDeadlines() {
+            alert('修正要求の期限状況:\n- 期限3日以内: 2件\n- 期限1週間以内: 4件\n- 期限超過: 1件');
+        }
+
+        // 再提出レビュー
+        function reviewResubmission(referralId) {
+            window.location.href = `monthly_report_detail.html?referral=${referralId}&mode=resubmission`;
+        }
+
+        // バージョン比較
+        function compareVersions(referralId) {
+            alert(`${referralId}の提出版と修正版を比較表示します。`);
+        }
+
+        // 緊急連絡
+        function emergencyContact(referralId) {
+            if (confirm('緊急連絡を実行しますか？\n- 企業担当者にSMS送信\n- 管理者にアラート通知')) {
+                alert('緊急連絡を実行しました。');
+            }
+        }
+
+        // 期限延長
+        function extendDeadline(referralId) {
+            const newDeadline = prompt('新しい期限を入力してください（YYYY-MM-DD）:');
+            if (newDeadline && confirm(`期限を${newDeadline}まで延長しますか？`)) {
+                alert('期限を延長しました。企業に通知されます。');
+            }
+        }
+
+        // エスカレーション
+        function escalateOverdue() {
+            if (confirm('期限超過案件を上位管理者にエスカレーションしますか？')) {
+                alert('上位管理者にエスカレーション通知を送信しました。');
+            }
+        }
+
+        // 一括通知
+        function bulkNotify(type) {
+            const message = type === 'rejected' ? '却下通知' : '修正要求通知';
+            if (confirm(`選択した案件に${message}を一括送信しますか？`)) {
+                alert(`${message}を一括送信しました。`);
+            }
+        }
+
+        // レポート出力
+        function exportExceptionReport() {
+            alert('例外処理レポートを出力します。\n- 却下案件一覧\n- 修正要求一覧\n- 期限超過案件\n- 処理統計');
+        }
+
+        // モーダル操作
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+    </script>
+</body>
+</html>

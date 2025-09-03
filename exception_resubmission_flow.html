@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>再提出フロー管理 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #5a5a5a;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #4a4a4a;
+        }
+
+        .btn-warning {
+            background: #888888;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #777777;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* アラート */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-info {
+            background: #f8f8f8;
+            border-left: 4px solid #666666;
+            color: #222222;
+        }
+
+        .alert-warning {
+            background: #f5f5f5;
+            border-left: 4px solid #777777;
+            color: #444444;
+        }
+
+        /* フローステップ */
+        .flow-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .flow-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 25px;
+        }
+
+        .flow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .flow-steps::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 60px;
+            right: 60px;
+            height: 2px;
+            background: #d0d0d0;
+            z-index: 1;
+        }
+
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #888888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .step-circle.completed {
+            background: #666666;
+            color: white;
+        }
+
+        .step-circle.current {
+            background: #4a4a4a;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(74, 74, 74, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(74, 74, 74, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(74, 74, 74, 0);
+            }
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: #666666;
+            max-width: 100px;
+            line-height: 1.3;
+        }
+
+        .step-label.completed {
+            color: #2c2c2c;
+            font-weight: 500;
+        }
+
+        .step-label.current {
+            color: #2c2c2c;
+            font-weight: 600;
+        }
+
+        /* 詳細情報 */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .detail-section {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .detail-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .detail-label {
+            color: #666666;
+            min-width: 100px;
+        }
+
+        .detail-value {
+            color: #2c2c2c;
+            font-weight: 500;
+        }
+
+        /* データテーブル */
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 13px;
+        }
+
+        tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        tbody tr.resubmission {
+            background: #f0f8ff;
+            border-left: 4px solid #666666;
+        }
+
+        /* ステータスバッジ */
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .status-initial {
+            background: #f0f0f0;
+            color: #6a6a6a;
+        }
+
+        .status-rejected {
+            background: #f5f5f5;
+            color: #999999;
+        }
+
+        .status-revision {
+            background: #eeeeee;
+            color: #555555;
+        }
+
+        .status-resubmitted {
+            background: #e8e8e8;
+            color: #333333;
+        }
+
+        .status-re-approved {
+            background: #d8d8d8;
+            color: #1a1a1a;
+        }
+
+        /* 比較表示 */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .comparison-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .comparison-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        .comparison-date {
+            font-size: 12px;
+            color: #777777;
+        }
+
+        .comparison-content {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .diff-highlight {
+            background: #f0f8ff;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        /* 顧客情報 */
+        .customer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .customer-contact {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        /* アクションボタン */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        /* タイムライン */
+        .timeline-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #d0d0d0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -22px;
+            width: 10px;
+            height: 10px;
+            background: #999999;
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px #d0d0d0;
+        }
+
+        .timeline-marker.resubmission {
+            background: #666666;
+        }
+
+        .timeline-marker.current {
+            background: #4a4a4a;
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-content {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 5px;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: #777777;
+            margin-bottom: 8px;
+        }
+
+        .timeline-description {
+            font-size: 13px;
+            color: #4a4a4a;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 900px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a4a4a;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="exception_approval_rejection.html">例外処理管理</a> > 
+                再提出フロー
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">🔄 再提出フロー管理</h2>
+                <button class="btn btn-primary" onclick="exportResubmissionReport()">
+                    📊 再提出レポート
+                </button>
+            </div>
+
+            <!-- アラート -->
+            <div class="alert alert-info">
+                ℹ️ 現在3件の再提出案件があります。2件は再承認待ち、1件は修正中です。
+            </div>
+
+            <!-- 再提出フロー概要 -->
+            <div class="flow-container">
+                <h3 class="flow-title">再提出処理フロー</h3>
+                <div class="flow-steps">
+                    <div class="flow-step">
+                        <div class="step-circle completed">1</div>
+                        <div class="step-label completed">初回提出</div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-circle completed">2</div>
+                        <div class="step-label completed">却下・修正要求</div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-circle current">3</div>
+                        <div class="step-label current">企業修正・再提出</div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">再承認審査</div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-circle">5</div>
+                        <div class="step-label">最終承認</div>
+                    </div>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-section">
+                        <h4 class="detail-title">現在の状況</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">再提出案件</span>
+                            <span class="detail-value">3件</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">再承認待ち</span>
+                            <span class="detail-value">2件</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">修正中</span>
+                            <span class="detail-value">1件</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">平均処理日数</span>
+                            <span class="detail-value">5.2日</span>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4 class="detail-title">処理統計（今月）</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">初回却下率</span>
+                            <span class="detail-value">12.5%</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">再提出成功率</span>
+                            <span class="detail-value">87.5%</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">複数回却下</span>
+                            <span class="detail-value">2件</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">平均修正時間</span>
+                            <span class="detail-value">2.8日</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 再提出案件一覧 -->
+            <div class="data-table">
+                <div class="table-header">
+                    <h3 class="table-title">再提出案件一覧</h3>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary btn-sm" onclick="bulkReview()">一括レビュー</button>
+                        <button class="btn btn-secondary btn-sm" onclick="prioritySort()">優先度順</button>
+                    </div>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>送客ID</th>
+                            <th>顧客情報</th>
+                            <th>企業名</th>
+                            <th>初回却下理由</th>
+                            <th>再提出日時</th>
+                            <th>修正内容</th>
+                            <th>現在ステータス</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="resubmission">
+                            <td style="font-weight: 600;">REF-003</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">高橋 美咲</div>
+                                    <div class="customer-contact">090-3333-4444</div>
+                                </div>
+                            </td>
+                            <td>山田建設</td>
+                            <td>見積詳細の追記要求</td>
+                            <td>
+                                <div>2025-08-25</div>
+                                <div style="font-size: 11px; color: #7a7a7a;">16:45</div>
+                            </td>
+                            <td>詳細見積書添付<br>顧客フィードバック追記</td>
+                            <td><span class="status-badge status-resubmitted">再承認待ち</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary btn-sm" onclick="reviewResubmission('REF-003')">承認審査</button>
+                                    <button class="btn btn-secondary btn-sm" onclick="compareVersions('REF-003')">変更比較</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="resubmission">
+                            <td style="font-weight: 600;">REF-007</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">伊藤 健二</div>
+                                    <div class="customer-contact">080-4444-5555</div>
+                                </div>
+                            </td>
+                            <td>田中不動産</td>
+                            <td>契約金額未入力</td>
+                            <td>
+                                <div>2025-08-27</div>
+                                <div style="font-size: 11px; color: #7a7a7a;">09:30</div>
+                            </td>
+                            <td>正確な契約金額入力<br>契約書類添付</td>
+                            <td><span class="status-badge status-resubmitted">再承認待ち</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary btn-sm" onclick="reviewResubmission('REF-007')">承認審査</button>
+                                    <button class="btn btn-secondary btn-sm" onclick="compareVersions('REF-007')">変更比較</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr style="background: #fffacd;">
+                            <td style="font-weight: 600;">REF-011</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">中村 和子</div>
+                                    <div class="customer-contact">070-5555-6666</div>
+                                </div>
+                            </td>
+                            <td>佐藤ハウジング</td>
+                            <td>ステータス遷移説明不足</td>
+                            <td>
+                                <div style="color: #888888;">修正中</div>
+                                <div style="font-size: 11px; color: #aaa;">期限: 09-03</div>
+                            </td>
+                            <td>修正進行中...</td>
+                            <td><span class="status-badge status-revision">修正中</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-warning btn-sm" onclick="sendReminder('REF-011')">催促</button>
+                                    <button class="btn btn-secondary btn-sm" onclick="viewOriginal('REF-011')">元版確認</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 詳細タイムライン -->
+            <div class="timeline-container">
+                <h3 class="table-title" style="margin-bottom: 20px;">🕐 再提出処理タイムライン</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker current"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">REF-003 再承認審査開始</div>
+                            <div class="timeline-date">2025-08-28 10:15</div>
+                            <div class="timeline-description">
+                                高橋美咲様の案件について再承認審査を開始しました。
+                                修正内容: 詳細見積書の添付、顧客フィードバックの追記
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker resubmission"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">REF-003 再提出完了</div>
+                            <div class="timeline-date">2025-08-25 16:45</div>
+                            <div class="timeline-description">
+                                山田建設より再提出が完了しました。
+                                修正項目: 見積詳細の追記、顧客との商談経緯の詳細化
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">REF-003 修正要求通知</div>
+                            <div class="timeline-date">2025-08-10 14:20</div>
+                            <div class="timeline-description">
+                                山田建設に修正要求を通知しました。
+                                要求内容: 見積提出の詳細な金額内訳と顧客フィードバック内容の追記
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">REF-003 初回審査・修正要求</div>
+                            <div class="timeline-date">2025-08-05 11:30</div>
+                            <div class="timeline-description">
+                                初回審査において修正要求と判定されました。
+                                理由: 見積提出段階での詳細情報不足
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 変更比較モーダル -->
+    <div id="comparisonModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">変更内容比較: REF-003</h3>
+                <button class="close" onclick="closeModal('comparisonModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="comparison-container">
+                    <div class="comparison-panel">
+                        <div class="comparison-header">
+                            <div class="comparison-title">初回提出版</div>
+                            <div class="comparison-date">2025-07-31 17:00</div>
+                        </div>
+                        <div class="comparison-content">
+                            <p><strong>現在ステータス:</strong> 見積提出</p>
+                            <p><strong>契約金額:</strong> 3,500万円</p>
+                            <p><strong>進捗メモ:</strong> 見積書を提出済み</p>
+                            <p><strong>証跡書類:</strong> 見積書.pdf</p>
+                        </div>
+                    </div>
+                    <div class="comparison-panel">
+                        <div class="comparison-header">
+                            <div class="comparison-title">再提出版</div>
+                            <div class="comparison-date">2025-08-25 16:45</div>
+                        </div>
+                        <div class="comparison-content">
+                            <p><strong>現在ステータス:</strong> 見積提出</p>
+                            <p><strong>契約金額:</strong> 3,500万円</p>
+                            <p><strong>進捗メモ:</strong> <span class="diff-highlight">詳細見積書を提出済み。お客様より「プランAが希望に近い」とのフィードバックを頂戴。次回商談で詳細条件を詰める予定。</span></p>
+                            <p><strong>証跡書類:</strong> 見積書.pdf<span class="diff-highlight">, 詳細見積書.pdf, 商談議事録.pdf</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <strong>主な変更点:</strong>
+                    <ul style="margin: 10px 0 0 20px;">
+                        <li>進捗メモに顧客フィードバックの詳細を追加</li>
+                        <li>証跡書類として詳細見積書と商談議事録を追加</li>
+                        <li>次回商談の具体的な予定を明記</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('comparisonModal')">閉じる</button>
+                <button class="btn btn-success" onclick="approveResubmission()">この修正で承認</button>
+                <button class="btn btn-warning" onclick="requestAdditionalRevision()">追加修正要求</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 再承認審査モーダル -->
+    <div id="reapprovalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">再承認審査</h3>
+                <button class="close" onclick="closeModal('reapprovalModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">送客ID</label>
+                    <input type="text" class="form-input" id="reapprovalReferralId" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">審査結果</label>
+                    <select class="form-select" id="reapprovalDecision">
+                        <option value="">選択してください</option>
+                        <option value="approved">承認</option>
+                        <option value="additional_revision">追加修正要求</option>
+                        <option value="rejected">再却下</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">審査コメント</label>
+                    <textarea class="form-textarea" id="reapprovalComment" placeholder="審査結果の詳細を入力してください"></textarea>
+                </div>
+                <div class="form-group" id="additionalRevisionGroup" style="display: none;">
+                    <label class="form-label">追加修正要求内容</label>
+                    <textarea class="form-textarea" id="additionalRevisionRequest" placeholder="追加で修正が必要な点を具体的に記載してください"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('reapprovalModal')">キャンセル</button>
+                <button class="btn btn-primary" onclick="submitReapproval()">審査結果を登録</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 再承認審査
+        function reviewResubmission(referralId) {
+            document.getElementById('reapprovalReferralId').value = referralId;
+            document.getElementById('reapprovalModal').classList.add('show');
+        }
+
+        // 変更比較
+        function compareVersions(referralId) {
+            document.getElementById('comparisonModal').classList.add('show');
+        }
+
+        // 審査決定変更時の追加フィールド表示制御
+        document.getElementById('reapprovalDecision').addEventListener('change', function() {
+            const decision = this.value;
+            const additionalGroup = document.getElementById('additionalRevisionGroup');
+            
+            if (decision === 'additional_revision') {
+                additionalGroup.style.display = 'block';
+            } else {
+                additionalGroup.style.display = 'none';
+            }
+        });
+
+        // 再承認審査結果提出
+        function submitReapproval() {
+            const referralId = document.getElementById('reapprovalReferralId').value;
+            const decision = document.getElementById('reapprovalDecision').value;
+            const comment = document.getElementById('reapprovalComment').value;
+            
+            if (!decision || !comment) {
+                alert('審査結果とコメントを入力してください。');
+                return;
+            }
+            
+            let message;
+            switch(decision) {
+                case 'approved':
+                    message = '再承認しました。企業に通知されます。';
+                    break;
+                case 'additional_revision':
+                    message = '追加修正要求を送信しました。';
+                    break;
+                case 'rejected':
+                    message = '再却下しました。企業に通知されます。';
+                    break;
+            }
+            
+            alert(message);
+            closeModal('reapprovalModal');
+        }
+
+        // 比較モーダルからの直接承認
+        function approveResubmission() {
+            if (confirm('この修正内容で承認しますか？')) {
+                alert('再承認完了しました。企業に通知されます。');
+                closeModal('comparisonModal');
+            }
+        }
+
+        // 追加修正要求
+        function requestAdditionalRevision() {
+            const additionalRequest = prompt('追加で修正が必要な点を入力してください:');
+            if (additionalRequest) {
+                alert('追加修正要求を送信しました。');
+                closeModal('comparisonModal');
+            }
+        }
+
+        // 催促通知
+        function sendReminder(referralId) {
+            if (confirm(`${referralId}に修正催促を送信しますか？`)) {
+                alert('修正催促を送信しました。');
+            }
+        }
+
+        // 元版確認
+        function viewOriginal(referralId) {
+            alert(`${referralId}の初回提出版を表示します。`);
+        }
+
+        // 一括レビュー
+        function bulkReview() {
+            alert('再提出済みの全案件を一括レビュー画面で開きます。');
+        }
+
+        // 優先度順ソート
+        function prioritySort() {
+            alert('優先度（提出日、修正内容の重要度）順にソートしました。');
+        }
+
+        // レポート出力
+        function exportResubmissionReport() {
+            alert('再提出処理レポートを出力します。\n- 再提出案件一覧\n- 処理時間統計\n- 修正内容分析');
+        }
+
+        // モーダル操作
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+    </script>
+</body>
+</html>

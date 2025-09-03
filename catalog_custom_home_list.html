@@ -413,6 +413,77 @@
                 opacity: 1;
             }
         }
+
+        /* フォームスタイル */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #4a4a4a;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #d32f2f;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .form-textarea {
+            resize: vertical;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
     </style>
 </head>
 <body>
@@ -435,7 +506,6 @@
             <div class="page-header">
                 <h2 class="page-title">🏘️ 注文住宅カタログ一覧</h2>
                 <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="exportCatalog()">エクスポート</button>
                     <button class="btn btn-primary" onclick="window.location.href='catalog_custom_home_register.html'">新規カタログ登録</button>
                 </div>
             </div>
@@ -454,10 +524,6 @@
                     <div class="stat-number">6</div>
                     <div class="stat-label">非公開</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number">342</div>
-                    <div class="stat-label">今月の請求数</div>
-                </div>
             </div>
 
             <!-- 検索・フィルター -->
@@ -474,6 +540,12 @@
                         <option value="">全てのステータス</option>
                         <option value="active">公開中</option>
                         <option value="inactive">非公開</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">全ての種別</option>
+                        <option value="CH">総合</option>
+                        <option value="SH">施工実例集</option>
+                        <option value="CS">商品</option>
                     </select>
                     <button class="btn btn-primary">検索</button>
                 </div>
@@ -492,17 +564,18 @@
                     <div class="catalog-body">
                         <h3 class="catalog-title">モダンハウスカタログ2025</h3>
                         <div class="catalog-company">株式会社山田建設</div>
+                        <div style="font-size: 12px; color: #8a8a8a; margin: 5px 0;">
+                            コード: CH001 | サービス種別: 注文住宅
+                        </div>
                         <p class="catalog-description">
                             最新のデザイントレンドを取り入れたモダンな住宅カタログ。シンプルで機能的な設計を特徴としています。
                         </p>
                         <div class="catalog-meta">
                             <div>
                                 <span class="status-badge status-active">公開中</span>
-                                <div class="catalog-stats">請求数: 125件</div>
                             </div>
                             <div class="catalog-actions">
-                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH001')">編集</button>
-                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH001')">詳細</button>
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal('CH001')">編集</button>
                             </div>
                         </div>
                     </div>
@@ -513,17 +586,18 @@
                     <div class="catalog-body">
                         <h3 class="catalog-title">エコハウスコレクション</h3>
                         <div class="catalog-company">株式会社山田建設</div>
+                        <div style="font-size: 12px; color: #8a8a8a; margin: 5px 0;">
+                            コード: CH002 | サービス種別: 注文住宅
+                        </div>
                         <p class="catalog-description">
                             環境に配慮した省エネ住宅のカタログ。太陽光発電や高断熱材を使用した住宅を紹介。
                         </p>
                         <div class="catalog-meta">
                             <div>
                                 <span class="status-badge status-active">公開中</span>
-                                <div class="catalog-stats">請求数: 89件</div>
                             </div>
                             <div class="catalog-actions">
-                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH002')">編集</button>
-                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH002')">詳細</button>
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal('CH002')">編集</button>
                             </div>
                         </div>
                     </div>
@@ -534,17 +608,18 @@
                     <div class="catalog-body">
                         <h3 class="catalog-title">和モダン住宅特集</h3>
                         <div class="catalog-company">佐藤ハウジング</div>
+                        <div style="font-size: 12px; color: #8a8a8a; margin: 5px 0;">
+                            コード: CH003 | サービス種別: 注文住宅
+                        </div>
                         <p class="catalog-description">
                             日本の伝統美と現代的な快適性を融合させた和モダン住宅のカタログ。
                         </p>
                         <div class="catalog-meta">
                             <div>
                                 <span class="status-badge status-active">公開中</span>
-                                <div class="catalog-stats">請求数: 67件</div>
                             </div>
                             <div class="catalog-actions">
-                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH003')">編集</button>
-                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH003')">詳細</button>
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal('CH003')">編集</button>
                             </div>
                         </div>
                     </div>
@@ -555,17 +630,18 @@
                     <div class="catalog-body">
                         <h3 class="catalog-title">スマートホーム2025</h3>
                         <div class="catalog-company">田中不動産株式会社</div>
+                        <div style="font-size: 12px; color: #8a8a8a; margin: 5px 0;">
+                            コード: CH004 | サービス種別: 注文住宅
+                        </div>
                         <p class="catalog-description">
                             IoT技術を活用した最新のスマートホーム。快適で安全な暮らしを実現。
                         </p>
                         <div class="catalog-meta">
                             <div>
                                 <span class="status-badge status-inactive">非公開</span>
-                                <div class="catalog-stats">請求数: 0件</div>
                             </div>
                             <div class="catalog-actions">
-                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH004')">編集</button>
-                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH004')">詳細</button>
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal('CH004')">編集</button>
                             </div>
                         </div>
                     </div>
@@ -576,17 +652,18 @@
                     <div class="catalog-body">
                         <h3 class="catalog-title">コンパクトハウス</h3>
                         <div class="catalog-company">鈴木工務店有限会社</div>
+                        <div style="font-size: 12px; color: #8a8a8a; margin: 5px 0;">
+                            コード: CH005 | サービス種別: 注文住宅
+                        </div>
                         <p class="catalog-description">
                             限られた敷地を最大限に活用する、都市型コンパクト住宅のカタログ。
                         </p>
                         <div class="catalog-meta">
                             <div>
                                 <span class="status-badge status-active">公開中</span>
-                                <div class="catalog-stats">請求数: 45件</div>
                             </div>
                             <div class="catalog-actions">
-                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH005')">編集</button>
-                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH005')">詳細</button>
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal('CH005')">編集</button>
                             </div>
                         </div>
                     </div>
@@ -597,17 +674,18 @@
                     <div class="catalog-body">
                         <h3 class="catalog-title">ファミリーハウス</h3>
                         <div class="catalog-company">高橋デベロップメント株式会社</div>
+                        <div style="font-size: 12px; color: #8a8a8a; margin: 5px 0;">
+                            コード: CH006 | サービス種別: 注文住宅
+                        </div>
                         <p class="catalog-description">
                             子育て世代に最適な間取りと設備を備えた、ファミリー向け住宅カタログ。
                         </p>
                         <div class="catalog-meta">
                             <div>
                                 <span class="status-badge status-active">公開中</span>
-                                <div class="catalog-stats">請求数: 93件</div>
                             </div>
                             <div class="catalog-actions">
-                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH006')">編集</button>
-                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH006')">詳細</button>
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal('CH006')">編集</button>
                             </div>
                         </div>
                     </div>
@@ -619,13 +697,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>カタログID</th>
+                            <th>カタログコード</th>
                             <th>カタログ名</th>
                             <th>企業名</th>
-                            <th>ステータス</th>
-                            <th>請求数</th>
+                            <th>サービス種別</th>
+                            <th>公開ステータス</th>
                             <th>登録日</th>
-                            <th>更新日</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -634,39 +711,55 @@
                             <td>CH001</td>
                             <td>モダンハウスカタログ2025</td>
                             <td>株式会社山田建設</td>
+                            <td>注文住宅</td>
                             <td><span class="status-badge status-active">公開中</span></td>
-                            <td>125件</td>
-                            <td>2025-01-15</td>
                             <td>2025-08-20</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH001')">編集</button>
-                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH001')">詳細</button>
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal('CH001')">編集</button>
                             </td>
                         </tr>
                         <tr>
                             <td>CH002</td>
                             <td>エコハウスコレクション</td>
                             <td>株式会社山田建設</td>
+                            <td>注文住宅</td>
                             <td><span class="status-badge status-active">公開中</span></td>
-                            <td>89件</td>
-                            <td>2025-02-01</td>
                             <td>2025-08-15</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH002')">編集</button>
-                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH002')">詳細</button>
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal('CH002')">編集</button>
                             </td>
                         </tr>
                         <tr>
                             <td>CH003</td>
                             <td>和モダン住宅特集</td>
                             <td>佐藤ハウジング</td>
+                            <td>注文住宅</td>
                             <td><span class="status-badge status-active">公開中</span></td>
-                            <td>67件</td>
-                            <td>2025-03-10</td>
                             <td>2025-08-10</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="editCatalog('CH003')">編集</button>
-                                <button class="btn btn-secondary btn-sm" onclick="viewCatalog('CH003')">詳細</button>
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal('CH003')">編集</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CH004</td>
+                            <td>スマートホーム2025</td>
+                            <td>田中不動産株式会社</td>
+                            <td>注文住宅</td>
+                            <td><span class="status-badge status-inactive">非公開</span></td>
+                            <td>2025-08-05</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal('CH004')">編集</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CH005</td>
+                            <td>コンパクトハウス</td>
+                            <td>鈴木工務店有限会社</td>
+                            <td>注文住宅</td>
+                            <td><span class="status-badge status-active">公開中</span></td>
+                            <td>2025-07-30</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="openEditModal('CH005')">編集</button>
                             </td>
                         </tr>
                     </tbody>
@@ -675,16 +768,63 @@
         </main>
     </div>
 
-    <!-- 詳細モーダル -->
-    <div id="catalogModal" class="modal">
+    <!-- 編集モーダル -->
+    <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">カタログ詳細</h3>
-                <button class="close" onclick="closeModal()">&times;</button>
+                <h3 class="modal-title">カタログ編集</h3>
+                <button class="close" onclick="closeEditModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <!-- カタログ詳細情報 -->
-                <p>カタログの詳細情報がここに表示されます。</p>
+                <form id="editForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">カタログコード <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="editCatalogCode" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">カタログ名 <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="editCatalogName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">企業 <span class="required">*</span></label>
+                            <select class="form-select" id="editCompany" required>
+                                <option value="">企業を選択してください</option>
+                                <option value="C001">株式会社山田建設</option>
+                                <option value="C002">田中不動産株式会社</option>
+                                <option value="C003">佐藤ハウジング</option>
+                                <option value="C004">鈴木工務店有限会社</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">カテゴリー <span class="required">*</span></label>
+                            <select class="form-select" id="editCategory" required>
+                                <option value="">カテゴリーを選択してください</option>
+                                <option value="総合">総合</option>
+                                <option value="施工実例集">施工実例集</option>
+                                <option value="商品">商品</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">公開ステータス <span class="required">*</span></label>
+                            <select class="form-select" id="editStatus" required>
+                                <option value="active">公開中</option>
+                                <option value="inactive">非公開</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label">カタログ概要 <span class="required">*</span></label>
+                        <textarea class="form-input form-textarea" id="editDescription" required rows="4"></textarea>
+                    </div>
+
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -713,27 +853,152 @@
             console.log('Searching catalogs...');
         }
 
-        // カタログ編集
-        function editCatalog(catalogId) {
-            console.log('Editing catalog:', catalogId);
-            window.location.href = 'catalog_custom_home_register.html?id=' + catalogId;
+        // 編集モーダルを開く
+        function openEditModal(catalogId) {
+            // カタログ情報を取得してフォームに設定
+            const catalogData = getCatalogData(catalogId);
+            if (catalogData) {
+                populateEditForm(catalogData);
+                document.getElementById('editModal').classList.add('show');
+            }
         }
 
-        // カタログ詳細表示
-        function viewCatalog(catalogId) {
-            document.getElementById('catalogModal').classList.add('show');
-            console.log('Viewing catalog:', catalogId);
+        // 編集モーダルを閉じる
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
         }
 
-        // モーダルを閉じる
-        function closeModal() {
-            document.getElementById('catalogModal').classList.remove('show');
+        // カタログデータを取得（模擬データ）
+        function getCatalogData(catalogId) {
+            const catalogData = {
+                'CH001': {
+                    code: 'CH001',
+                    name: 'モダンハウスカタログ2025',
+                    company: 'C001',
+                    category: '総合',
+                    targetCustomer: 'family',
+                    status: 'active',
+                    description: '最新のデザイントレンドを取り入れたモダンな住宅カタログ。シンプルで機能的な設計を特徴としています。',
+                    features: ['省エネ・エコ', '高断熱・高気密']
+                },
+                'CH002': {
+                    code: 'CH002',
+                    name: 'エコハウスコレクション',
+                    company: 'C001',
+                    category: '総合',
+                    targetCustomer: 'family',
+                    status: 'active',
+                    description: '環境に配慮した省エネ住宅のカタログ。太陽光発電や高断熱材を使用した住宅を紹介。',
+                    features: ['省エネ・エコ', '太陽光発電']
+                },
+                'CH003': {
+                    code: 'CH003',
+                    name: '和モダン住宅特集',
+                    company: 'C003',
+                    category: '施工実例集',
+                    targetCustomer: 'senior',
+                    status: 'active',
+                    description: '日本の伝統美と現代的な快適性を融合させた和モダン住宅のカタログ。',
+                    features: ['自然素材使用', '耐震性能']
+                },
+                'CH004': {
+                    code: 'CH004',
+                    name: 'スマートホーム2025',
+                    company: 'C002',
+                    category: '商品',
+                    targetCustomer: 'newlywed',
+                    status: 'inactive',
+                    description: 'IoT技術を活用した最新のスマートホーム。快適で安全な暮らしを実現。',
+                    features: ['スマートホーム']
+                },
+                'CH005': {
+                    code: 'CH005',
+                    name: 'コンパクトハウス',
+                    company: 'C004',
+                    category: '総合',
+                    targetCustomer: 'single',
+                    status: 'active',
+                    description: '限られた敷地を最大限に活用する、都市型コンパクト住宅のカタログ。',
+                    features: ['高断熱・高気密']
+                },
+                'CH006': {
+                    code: 'CH006',
+                    name: 'ファミリーハウス',
+                    company: 'C002',
+                    category: '総合',
+                    targetCustomer: 'family',
+                    status: 'active',
+                    description: '子育て世代に最適な間取りと設備を備えた、ファミリー向け住宅カタログ。',
+                    features: ['耐震性能']
+                }
+            };
+            return catalogData[catalogId] || null;
         }
+
+        // 編集フォームにデータを設定
+        function populateEditForm(data) {
+            document.getElementById('editCatalogCode').value = data.code;
+            document.getElementById('editCatalogName').value = data.name;
+            document.getElementById('editCompany').value = data.company;
+            document.getElementById('editCategory').value = data.category;
+            document.getElementById('editStatus').value = data.status;
+            document.getElementById('editDescription').value = data.description;
+
+            // チェックボックスをリセット
+            document.querySelectorAll('#editModal input[type="checkbox"]').forEach(cb => {
+                cb.checked = data.features && data.features.includes(cb.value);
+            });
+        }
+
+        // 編集フォームの送信処理
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // フォームデータを収集
+            const formData = {
+                code: document.getElementById('editCatalogCode').value,
+                name: document.getElementById('editCatalogName').value,
+                company: document.getElementById('editCompany').value,
+                category: document.getElementById('editCategory').value,
+                status: document.getElementById('editStatus').value,
+                description: document.getElementById('editDescription').value,
+                features: []
+            };
+
+            // 選択された特徴を収集
+            document.querySelectorAll('#editModal input[type="checkbox"]:checked').forEach(cb => {
+                formData.features.push(cb.value);
+            });
+
+            console.log('更新データ:', formData);
+            
+            // API呼び出し処理をここに追加
+            alert('カタログを更新しました');
+            closeEditModal();
+            
+            // ページをリロードして更新を反映
+            // location.reload();
+        });
 
         // エクスポート
         function exportCatalog() {
             alert('カタログデータをエクスポート中...');
         }
+
+        // モーダル外クリックで閉じる
+        window.addEventListener('click', function(event) {
+            const editModal = document.getElementById('editModal');
+            if (event.target === editModal) {
+                closeEditModal();
+            }
+        });
+
+        // ESCキーでモーダルを閉じる
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeEditModal();
+            }
+        });
     </script>
 </body>
 </html>

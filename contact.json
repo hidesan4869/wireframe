@@ -1,0 +1,44 @@
+// [WEB側] 企業掲載に関するお問い合わせ
+company_inquiries {
+  id                   
+  service_type > service_type.id // 注文住宅、新築マンションなどのID
+  
+  // 担当者情報
+  name01             // VARCHAR(255) NOT NULL - 姓(漢字)
+  name02            // VARCHAR(255) NOT NULL - 名(漢字)
+  kana01        // VARCHAR(255) NOT NULL - 姓(カナ)
+  kana01       // VARCHAR(255) NOT NULL - 名(カナ)
+  email                 // VARCHAR(255) NOT NULL - メールアドレス
+  
+  // 会社基本情報
+  has_license           // BOOLEAN - 宅建免許番号有無
+  license_number        // VARCHAR(255) - 宅建免許番号
+  construction_license  // VARCHAR(255) - 建設業許可番号
+  company_name          // VARCHAR(255) NOT NULL - 貴社名
+  department            // VARCHAR(255) - 貴社部署名
+  prefecture            // int NOT NULL - 貴社住所（都道府県）
+  addr01                  // VARCHAR(255) NOT NULL
+  addr02                  // VARCHAR(255) NOT NULL
+  company_phone         // VARCHAR(14) NOT NULL - 貴社代表電話番号
+  company_fax           // VARCHAR(14) - 貴社FAX番号
+  company_website       // VARCHAR(255) - 貴社ホームページ
+  
+  // 賃貸専用項目
+  contact_phone         // VARCHAR(14) - ご担当者連絡先
+  is_franchise          // BOOLEAN - フランチャイズ加盟有無
+  has_used_suumo        // BOOLEAN - 過去SUUMO利用有無
+  publish_timing        // date - 掲載希望時期
+  listing_count         // INT - 希望掲載件数
+  managed_units         // INT - 管理戸数
+  inquiry_type          // VARCHAR(50) - お問い合わせ内容（ラジオ）
+  
+  // 共通項目
+  inquiry_content       // TEXT NOT NULL - お問い合わせ内容
+ }
+
+ // [マスタ] 注文住宅、土地、新築戸建て、中古戸建て、新築マンション、中古マンション、賃貸、リフォーム
+service_type {
+  id
+  name
+  sort_number 
+}
