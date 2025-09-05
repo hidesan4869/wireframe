@@ -446,63 +446,8 @@
                 </div>
             </div>
 
-            <!-- 統計カード -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">142</div>
-                    <div class="stat-label">総予約数</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">89</div>
-                    <div class="stat-label">参加確定</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">35</div>
-                    <div class="stat-label">参加待ち</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">18</div>
-                    <div class="stat-label">キャンセル</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">67</div>
-                    <div class="stat-label">参加済み</div>
-                </div>
-            </div>
-
             <!-- フィルター -->
             <div class="filter-section">
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label class="filter-label">予約ステータス</label>
-                        <select class="filter-select" id="statusFilter" onchange="filterTable()">
-                            <option value="">全て</option>
-                            <option value="confirmed">参加確定</option>
-                            <option value="pending">参加待ち</option>
-                            <option value="cancelled">キャンセル</option>
-                            <option value="attended">参加済み</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">イベント種類</label>
-                        <select class="filter-select" id="eventTypeFilter" onchange="filterTable()">
-                            <option value="">全種類</option>
-                            <option value="viewing">見学会</option>
-                            <option value="seminar">セミナー</option>
-                            <option value="fair">相談会</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">開催日</label>
-                        <select class="filter-select" id="dateFilter" onchange="filterTable()">
-                            <option value="">全期間</option>
-                            <option value="today">今日</option>
-                            <option value="week">今週</option>
-                            <option value="month">今月</option>
-                            <option value="upcoming">今後の予定</option>
-                        </select>
-                    </div>
-                </div>
                 <div class="filter-row">
                     <div class="filter-group" style="grid-column: span 3;">
                         <label class="filter-label">キーワード検索</label>
@@ -529,7 +474,6 @@
                             <th>顧客情報</th>
                             <th>予約日時</th>
                             <th>参加人数</th>
-                            <th>ステータス</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -552,7 +496,6 @@
                             </td>
                             <td>2025-08-25 14:30</td>
                             <td>2名</td>
-                            <td><span class="status-badge status-confirmed">参加確定</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="openReservationModal('EVT001')">詳細</button>
                                 <button class="btn btn-secondary btn-sm" onclick="editReservation('EVT001')">編集</button>
@@ -576,7 +519,6 @@
                             </td>
                             <td>2025-08-24 09:15</td>
                             <td>1名</td>
-                            <td><span class="status-badge status-pending">参加待ち</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="openReservationModal('EVT002')">詳細</button>
                                 <button class="btn btn-secondary btn-sm" onclick="editReservation('EVT002')">編集</button>
@@ -600,7 +542,6 @@
                             </td>
                             <td>2025-08-23 16:45</td>
                             <td>3名</td>
-                            <td><span class="status-badge status-attended">参加済み</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="openReservationModal('EVT003')">詳細</button>
                                 <button class="btn btn-secondary btn-sm" onclick="editReservation('EVT003')">編集</button>
@@ -624,7 +565,6 @@
                             </td>
                             <td>2025-08-22 11:20</td>
                             <td>4名</td>
-                            <td><span class="status-badge status-cancelled">キャンセル</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="openReservationModal('EVT004')">詳細</button>
                                 <button class="btn btn-secondary btn-sm" onclick="editReservation('EVT004')">編集</button>
@@ -648,7 +588,6 @@
                             </td>
                             <td>2025-08-21 15:30</td>
                             <td>2名</td>
-                            <td><span class="status-badge status-confirmed">参加確定</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="openReservationModal('EVT005')">詳細</button>
                                 <button class="btn btn-secondary btn-sm" onclick="editReservation('EVT005')">編集</button>
