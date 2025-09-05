@@ -309,29 +309,91 @@
             padding: 25px;
         }
 
-        .detail-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+        /* フォームスタイル */
+        .form-section {
+            margin-bottom: 30px;
         }
 
-        .detail-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-        }
-
-        .detail-label {
-            font-size: 12px;
-            color: #6a6a6a;
-            margin-bottom: 5px;
-        }
-
-        .detail-value {
-            font-size: 14px;
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
             color: #2c2c2c;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: #4a4a4a;
+            margin-bottom: 5px;
             font-weight: 500;
+        }
+
+        .required {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4a4a4a;
+        }
+
+        .form-input[readonly] {
+            background: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
         }
 
         /* アクションメニュー */
@@ -516,10 +578,7 @@
                             <div class="action-menu">
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C001')">⋮</button>
                                 <div class="action-popover">
-                                    <div class="action-item detail" onclick="openDetailModal('C001')">
-                                        <span class="action-item-icon">📄</span>
-                                        <span>詳細</span>
-                                    </div>
+                                 
                                     <div class="action-item edit" onclick="editCompany('C001')">
                                         <span class="action-item-icon">✏️</span>
                                         <span>編集</span>
@@ -553,10 +612,6 @@
                             <div class="action-menu">
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C002')">⋮</button>
                                 <div class="action-popover">
-                                    <div class="action-item detail" onclick="openDetailModal('C002')">
-                                        <span class="action-item-icon">📄</span>
-                                        <span>詳細</span>
-                                    </div>
                                     <div class="action-item edit" onclick="editCompany('C002')">
                                         <span class="action-item-icon">✏️</span>
                                         <span>編集</span>
@@ -590,10 +645,6 @@
                             <div class="action-menu">
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C003')">⋮</button>
                                 <div class="action-popover">
-                                    <div class="action-item detail" onclick="openDetailModal('C003')">
-                                        <span class="action-item-icon">📄</span>
-                                        <span>詳細</span>
-                                    </div>
                                     <div class="action-item edit" onclick="editCompany('C003')">
                                         <span class="action-item-icon">✏️</span>
                                         <span>編集</span>
@@ -627,10 +678,6 @@
                             <div class="action-menu">
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C004')">⋮</button>
                                 <div class="action-popover">
-                                    <div class="action-item detail" onclick="openDetailModal('C004')">
-                                        <span class="action-item-icon">📄</span>
-                                        <span>詳細</span>
-                                    </div>
                                     <div class="action-item edit" onclick="editCompany('C004')">
                                         <span class="action-item-icon">✏️</span>
                                         <span>編集</span>
@@ -664,10 +711,6 @@
                             <div class="action-menu">
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C005')">⋮</button>
                                 <div class="action-popover">
-                                    <div class="action-item detail" onclick="openDetailModal('C005')">
-                                        <span class="action-item-icon">📄</span>
-                                        <span>詳細</span>
-                                    </div>
                                     <div class="action-item edit" onclick="editCompany('C005')">
                                         <span class="action-item-icon">✏️</span>
                                         <span>編集</span>
@@ -685,50 +728,207 @@
         </div>
     </main>
 
-    <!-- 詳細モーダル -->
-    <div id="detailModal" class="modal">
+    <!-- 編集モーダル -->
+    <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">企業詳細情報</h3>
-                <button class="close" onclick="closeModal()">&times;</button>
+                <h3 class="modal-title">企業情報編集</h3>
+                <button class="close" onclick="closeEditModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <div class="detail-label">企業ID</div>
-                        <div class="detail-value" id="modal-company-id">C001</div>
+                <form id="editForm">
+                    <div class="form-section">
+                        <h4 class="section-title">サービスカテゴリ</h4>
+                        <div class="form-group">
+                            <label class="form-label">サービスカテゴリ <span class="required">*</span></label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="radio" name="serviceCategory" value="注文住宅">
+                                    <span>注文住宅</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="radio" name="serviceCategory" value="土地">
+                                    <span>土地</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="radio" name="serviceCategory" value="新築戸建て">
+                                    <span>新築戸建て</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="radio" name="serviceCategory" value="中古戸建て">
+                                    <span>中古戸建て</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="radio" name="serviceCategory" value="新築マンション">
+                                    <span>新築マンション</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="radio" name="serviceCategory" value="中古マンション">
+                                    <span>中古マンション</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="detail-item">
-                        <div class="detail-label">企業名</div>
-                        <div class="detail-value" id="modal-company-name">株式会社山田建設</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">代表者名</div>
-                        <div class="detail-value" id="modal-representative">山田 太郎</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">電話番号</div>
-                        <div class="detail-value" id="modal-phone">03-1234-5678</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">メールアドレス</div>
-                        <div class="detail-value" id="modal-email">info@yamada-kensetsu.co.jp</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">登録日</div>
-                        <div class="detail-value" id="modal-registration-date">2025-01-15</div>
-                    </div>
-                </div>
 
-                <div class="detail-item" style="margin-top: 20px;">
-                    <div class="detail-label">住所</div>
-                    <div class="detail-value" id="modal-address">〒160-0023 東京都新宿区西新宿1-1-1</div>
-                </div>
+                    <div class="form-section">
+                        <h4 class="section-title">基本情報</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">企業ID</label>
+                                <input type="text" id="edit-company-id" class="form-input" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">企業名 <span class="required">*</span></label>
+                                <input type="text" id="edit-company-name" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">企業名（カナ） <span class="required">*</span></label>
+                                <input type="text" id="edit-company-kana" class="form-input" required pattern="[ァ-ヶー　 ]*">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">代表者名（姓） <span class="required">*</span></label>
+                                <input type="text" id="edit-representative-last" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">代表者名（名） <span class="required">*</span></label>
+                                <input type="text" id="edit-representative-first" class="form-input" required>
+                            </div>
+                        </div>
+                    </div>
 
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
-                    <button class="btn btn-secondary" onclick="closeModal()">閉じる</button>
-                    <button class="btn btn-primary" onclick="editCompanyFromModal()">編集する</button>
-                </div>
+                    <div class="form-section">
+                        <h4 class="section-title">住所情報</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">郵便番号 <span class="required">*</span></label>
+                                <input type="text" id="edit-postal-code" class="form-input" required pattern="\d{7}" maxlength="7" placeholder="例：1600023">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">都道府県 <span class="required">*</span></label>
+                                <select id="edit-prefecture" class="form-input" required>
+                                    <option value="">選択してください</option>
+                                    <option value="北海道">北海道</option>
+                                    <option value="青森県">青森県</option>
+                                    <option value="岩手県">岩手県</option>
+                                    <option value="宮城県">宮城県</option>
+                                    <option value="秋田県">秋田県</option>
+                                    <option value="山形県">山形県</option>
+                                    <option value="福島県">福島県</option>
+                                    <option value="茨城県">茨城県</option>
+                                    <option value="栃木県">栃木県</option>
+                                    <option value="群馬県">群馬県</option>
+                                    <option value="埼玉県">埼玉県</option>
+                                    <option value="千葉県">千葉県</option>
+                                    <option value="東京都">東京都</option>
+                                    <option value="神奈川県">神奈川県</option>
+                                    <option value="新潟県">新潟県</option>
+                                    <option value="富山県">富山県</option>
+                                    <option value="石川県">石川県</option>
+                                    <option value="福井県">福井県</option>
+                                    <option value="山梨県">山梨県</option>
+                                    <option value="長野県">長野県</option>
+                                    <option value="岐阜県">岐阜県</option>
+                                    <option value="静岡県">静岡県</option>
+                                    <option value="愛知県">愛知県</option>
+                                    <option value="三重県">三重県</option>
+                                    <option value="滋賀県">滋賀県</option>
+                                    <option value="京都府">京都府</option>
+                                    <option value="大阪府">大阪府</option>
+                                    <option value="兵庫県">兵庫県</option>
+                                    <option value="奈良県">奈良県</option>
+                                    <option value="和歌山県">和歌山県</option>
+                                    <option value="鳥取県">鳥取県</option>
+                                    <option value="島根県">島根県</option>
+                                    <option value="岡山県">岡山県</option>
+                                    <option value="広島県">広島県</option>
+                                    <option value="山口県">山口県</option>
+                                    <option value="徳島県">徳島県</option>
+                                    <option value="香川県">香川県</option>
+                                    <option value="愛媛県">愛媛県</option>
+                                    <option value="高知県">高知県</option>
+                                    <option value="福岡県">福岡県</option>
+                                    <option value="佐賀県">佐賀県</option>
+                                    <option value="長崎県">長崎県</option>
+                                    <option value="熊本県">熊本県</option>
+                                    <option value="大分県">大分県</option>
+                                    <option value="宮崎県">宮崎県</option>
+                                    <option value="鹿児島県">鹿児島県</option>
+                                    <option value="沖縄県">沖縄県</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">市区町村 <span class="required">*</span></label>
+                                <input type="text" id="edit-city" class="form-input" required placeholder="例：新宿区西新宿">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">番地・ビル名 <span class="required">*</span></label>
+                                <input type="text" id="edit-address-line" class="form-input" required placeholder="例：1-1-1 新宿ビル5階">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4 class="section-title">インボイス情報</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">インボイスステータス <span class="required">*</span></label>
+                                <select id="edit-invoice-status" class="form-input" required onchange="toggleEditInvoiceFields()">
+                                    <option value="0">未登録</option>
+                                    <option value="1">登録済み</option>
+                                    <option value="2">登録予定</option>
+                                    <option value="3">登録不要</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="edit-invoice-number-group" style="display:none;">
+                                <label class="form-label">インボイス登録番号 <span class="required">*</span></label>
+                                <input type="text" id="edit-invoice-number" class="form-input" pattern="T\d{13}" maxlength="14" placeholder="例：T1234567890123">
+                            </div>
+                            <div class="form-group" id="edit-invoice-scheduled-group" style="display:none;">
+                                <label class="form-label">インボイス登録予定 <span class="required">*</span></label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="number" id="edit-invoice-scheduled-year" class="form-input" 
+                                           placeholder="年（例：2024）" 
+                                           min="2024" max="2050"
+                                           style="flex: 1;">
+                                    <select id="edit-invoice-scheduled-month" class="form-input" style="flex: 1;">
+                                        <option value="">月を選択</option>
+                                        <option value="1">1月</option>
+                                        <option value="2">2月</option>
+                                        <option value="3">3月</option>
+                                        <option value="4">4月</option>
+                                        <option value="5">5月</option>
+                                        <option value="6">6月</option>
+                                        <option value="7">7月</option>
+                                        <option value="8">8月</option>
+                                        <option value="9">9月</option>
+                                        <option value="10">10月</option>
+                                        <option value="11">11月</option>
+                                        <option value="12">12月</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4 class="section-title">連絡先情報</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">代表電話番号 <span class="required">*</span></label>
+                                <input type="tel" id="edit-phone" class="form-input" required placeholder="例：03-1234-5678">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">代表メールアドレス <span class="required">*</span></label>
+                                <input type="email" id="edit-email" class="form-input" required placeholder="例：info@example.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -736,48 +936,158 @@
     <script>
         let currentCompanyId = null;
 
-        // 詳細モーダル表示
-        function openDetailModal(companyId) {
+        // サンプルデータ
+        const companiesData = {
+            'C001': {
+                name: '株式会社山田建設',
+                kana: 'カブシキガイシャヤマダケンセツ',
+                representativeLast: '山田',
+                representativeFirst: '太郎',
+                phone: '03-1234-5678',
+                email: 'info@yamada-kensetsu.co.jp',
+                postalCode: '1600023',
+                prefecture: '東京都',
+                city: '新宿区西新宿',
+                addressLine: '1-1-1 新宿ビル5階',
+                serviceCategory: '注文住宅',
+                invoiceStatus: '1',
+                invoiceNumber: 'T1234567890123'
+            },
+            'C002': {
+                name: '田中不動産株式会社',
+                kana: 'タナカフドウサンカブシキガイシャ',
+                representativeLast: '田中',
+                representativeFirst: '花子',
+                phone: '06-9876-5432',
+                email: 'contact@tanaka-fudosan.co.jp',
+                postalCode: '5300001',
+                prefecture: '大阪府',
+                city: '大阪市北区梅田',
+                addressLine: '2-2-2 梅田ビル',
+                serviceCategory: '土地',
+                invoiceStatus: '1',
+                invoiceNumber: 'T9876543210123'
+            },
+            'C003': {
+                name: '佐藤ハウジング',
+                kana: 'サトウハウジング',
+                representativeLast: '佐藤',
+                representativeFirst: '一郎',
+                phone: '052-1111-2222',
+                email: 'sales@sato-housing.com',
+                postalCode: '4600008',
+                prefecture: '愛知県',
+                city: '名古屋市中区錦',
+                addressLine: '3-3-3',
+                serviceCategory: '注文住宅',
+                invoiceStatus: '0',
+                invoiceNumber: ''
+            },
+            'C004': {
+                name: '鈴木工務店有限会社',
+                kana: 'スズキコウムテンユウゲンガイシャ',
+                representativeLast: '鈴木',
+                representativeFirst: '美咲',
+                phone: '092-3333-4444',
+                email: 'office@suzuki-koumuten.co.jp',
+                postalCode: '8120013',
+                prefecture: '福岡県',
+                city: '福岡市博多区駅東',
+                addressLine: '4-4-4',
+                serviceCategory: '注文住宅',
+                invoiceStatus: '2',
+                invoiceNumber: '',
+                invoiceScheduledYear: '2024',
+                invoiceScheduledMonth: '10'
+            },
+            'C005': {
+                name: '高橋デベロップメント株式会社',
+                kana: 'タカハシデベロップメントカブシキガイシャ',
+                representativeLast: '高橋',
+                representativeFirst: '健太',
+                phone: '011-5555-6666',
+                email: 'info@takahashi-dev.jp',
+                postalCode: '0600042',
+                prefecture: '北海道',
+                city: '札幌市中央区大通西',
+                addressLine: '5-5-5 札幌タワー',
+                serviceCategory: '土地',
+                invoiceStatus: '1',
+                invoiceNumber: 'T5555666677778'
+            }
+        };
+
+        // 編集モーダルを開く
+        function openEditModal(companyId) {
             currentCompanyId = companyId;
-            document.getElementById('modal-company-id').textContent = companyId;
+            const data = companiesData[companyId];
             
-            // サンプルデータ（実際の実装では APIから取得）
-            const companyData = {
-                'C001': {
-                    name: '株式会社山田建設',
-                    representative: '山田 太郎',
-                    phone: '03-1234-5678',
-                    email: 'info@yamada-kensetsu.co.jp',
-                    address: '〒160-0023 東京都新宿区西新宿1-1-1',
-                    registrationDate: '2025-01-15'
-                }
-            };
+            if (!data) {
+                alert('企業データが見つかりません');
+                return;
+            }
 
-            const data = companyData[companyId] || companyData['C001'];
-            document.getElementById('modal-company-name').textContent = data.name;
-            document.getElementById('modal-representative').textContent = data.representative;
-            document.getElementById('modal-phone').textContent = data.phone;
-            document.getElementById('modal-email').textContent = data.email;
-            document.getElementById('modal-address').textContent = data.address;
-            document.getElementById('modal-registration-date').textContent = data.registrationDate;
+            // フォームにデータを設定
+            document.getElementById('edit-company-id').value = companyId;
+            document.getElementById('edit-company-name').value = data.name;
+            document.getElementById('edit-company-kana').value = data.kana;
+            document.getElementById('edit-representative-last').value = data.representativeLast;
+            document.getElementById('edit-representative-first').value = data.representativeFirst;
+            document.getElementById('edit-phone').value = data.phone;
+            document.getElementById('edit-email').value = data.email;
+            document.getElementById('edit-postal-code').value = data.postalCode;
+            document.getElementById('edit-prefecture').value = data.prefecture;
+            document.getElementById('edit-city').value = data.city;
+            document.getElementById('edit-address-line').value = data.addressLine;
+            document.getElementById('edit-invoice-status').value = data.invoiceStatus;
+            document.getElementById('edit-invoice-number').value = data.invoiceNumber || '';
+            document.getElementById('edit-invoice-scheduled-year').value = data.invoiceScheduledYear || '';
+            document.getElementById('edit-invoice-scheduled-month').value = data.invoiceScheduledMonth || '';
+            
+            // サービスカテゴリのラジオボタンを設定
+            document.querySelectorAll('input[name="serviceCategory"]').forEach(radio => {
+                radio.checked = radio.value === data.serviceCategory;
+            });
+            
+            // インボイスフィールドの表示切り替え
+            toggleEditInvoiceFields();
 
-            document.getElementById('detailModal').classList.add('show');
+            document.getElementById('editModal').classList.add('show');
         }
 
-        // モーダル閉じる
-        function closeModal() {
-            document.getElementById('detailModal').classList.remove('show');
+        // 編集モーダルを閉じる
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
         }
 
-        // モーダルから編集画面へ
-        function editCompanyFromModal() {
-            closeModal();
-            editCompany(currentCompanyId);
+        // インボイスフィールドの切り替え
+        function toggleEditInvoiceFields() {
+            const status = document.getElementById('edit-invoice-status').value;
+            const numberGroup = document.getElementById('edit-invoice-number-group');
+            const scheduledGroup = document.getElementById('edit-invoice-scheduled-group');
+            
+            // すべてのフィールドを一旦非表示
+            numberGroup.style.display = 'none';
+            scheduledGroup.style.display = 'none';
+            document.getElementById('edit-invoice-number').required = false;
+            document.getElementById('edit-invoice-scheduled-year').required = false;
+            document.getElementById('edit-invoice-scheduled-month').required = false;
+            
+            if (status === '1') {
+                // 登録済みの場合
+                numberGroup.style.display = 'block';
+                document.getElementById('edit-invoice-number').required = true;
+            } else if (status === '2') {
+                // 登録予定の場合
+                scheduledGroup.style.display = 'block';
+                document.getElementById('edit-invoice-scheduled-year').required = true;
+                document.getElementById('edit-invoice-scheduled-month').required = true;
+            }
         }
 
         // 企業編集
         function editCompany(companyId) {
-            window.location.href = 'company_edit.html?edit=' + companyId;
+            openEditModal(companyId);
         }
 
         // メンバー管理
@@ -866,11 +1176,62 @@
             }
         });
 
+        // フォーム送信処理
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // フォームデータを収集
+            const formData = {
+                companyId: document.getElementById('edit-company-id').value,
+                name: document.getElementById('edit-company-name').value,
+                kana: document.getElementById('edit-company-kana').value,
+                representativeLast: document.getElementById('edit-representative-last').value,
+                representativeFirst: document.getElementById('edit-representative-first').value,
+                phone: document.getElementById('edit-phone').value,
+                email: document.getElementById('edit-email').value,
+                postalCode: document.getElementById('edit-postal-code').value,
+                prefecture: document.getElementById('edit-prefecture').value,
+                city: document.getElementById('edit-city').value,
+                addressLine: document.getElementById('edit-address-line').value,
+                serviceCategory: document.querySelector('input[name="serviceCategory"]:checked')?.value || '',
+                invoiceStatus: document.getElementById('edit-invoice-status').value,
+                invoiceNumber: document.getElementById('edit-invoice-number').value,
+                invoiceScheduledYear: document.getElementById('edit-invoice-scheduled-year').value,
+                invoiceScheduledMonth: document.getElementById('edit-invoice-scheduled-month').value
+            };
+            
+            // サンプルデータを更新
+            companiesData[currentCompanyId] = formData;
+            
+            // テーブルの該当行を更新
+            const rows = document.getElementById('companyTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            for (let row of rows) {
+                if (row.cells[0].textContent === currentCompanyId) {
+                    row.cells[1].innerHTML = `
+                        <div style="font-weight: 600;">${formData.name}</div>
+                        <small style="color: #7a7a7a;">${formData.kana}</small>
+                    `;
+                    row.cells[2].textContent = `${formData.representativeLast} ${formData.representativeFirst}`;
+                    row.cells[3].innerHTML = `
+                        <div>〒${formData.postalCode.substr(0,3)}-${formData.postalCode.substr(3)}</div>
+                        <div>${formData.prefecture}${formData.city} ${formData.addressLine}</div>
+                    `;
+                    row.cells[4].textContent = formData.phone;
+                    row.cells[5].textContent = formData.email;
+                    row.cells[6].innerHTML = `<span class="category-badge">${formData.serviceCategory}</span>`;
+                    break;
+                }
+            }
+            
+            alert('企業情報を更新しました');
+            closeEditModal();
+        });
+
         // モーダル外クリックで閉じる
         window.onclick = function(event) {
-            const modal = document.getElementById('detailModal');
-            if (event.target === modal) {
-                closeModal();
+            const editModal = document.getElementById('editModal');
+            if (event.target === editModal) {
+                closeEditModal();
             }
         }
     </script>
