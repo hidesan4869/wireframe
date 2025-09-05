@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企業詳細 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7a7a7a;
+        }
+
+        /* カード */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        /* 情報グリッド */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-item.full-width {
+            grid-column: span 2;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #2c2c2c;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-active {
+            background: #e5e5e5;
+            color: #4a4a4a;
+        }
+
+        .status-inactive {
+            background: #f0f0f0;
+            color: #7a7a7a;
+        }
+
+        .status-scheduled {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        /* 統計表示 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #7a7a7a;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal.show {
+            display: block;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+        
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        /* フォームスタイル */
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        
+        .form-label {
+            font-size: 13px;
+            color: #6a6a6a;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .required {
+            color: #d32f2f;
+        }
+        
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #4a4a4a;
+        }
+        
+        .form-input:readonly {
+            background-color: #f5f5f5;
+            color: #7a7a7a;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 20px;
+            border-top: 1px solid #d0d0d0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > <a href="company_list.html">企業管理</a> > <a href="company_list.html">契約企業一覧</a> > 企業詳細
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">🏢 企業詳細</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="openEditModal()">編集</button>
+                    <a href="company_member_management.html" class="btn btn-primary">メンバー管理</a>
+                    <a href="company_list.html" class="btn btn-secondary">一覧に戻る</a>
+                </div>
+            </div>
+
+            <!-- 基本情報 -->
+            <div class="card">
+                <h3 class="card-title">基本情報</h3>
+                <div class="info-grid">
+                    <div class="info-item full-width">
+                        <span class="info-label">企業ID</span>
+                        <span class="info-value" id="company-id">C001</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">企業名</span>
+                        <span class="info-value" id="company-name">株式会社山田建設</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">企業名（カナ）</span>
+                        <span class="info-value" id="company-name-kana">カブシキガイシャヤマダケンセツ</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">サービスカテゴリ</span>
+                        <span class="info-value" id="service-category">注文住宅</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">ホームページURL</span>
+                        <span class="info-value" id="homepage-url">https://yamada-construction.co.jp</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">メールアドレス</span>
+                        <span class="info-value" id="representative-email">yamada@yamada-construction.co.jp</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">電話番号</span>
+                        <span class="info-value" id="representative-phone">03-1234-5678</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 代表者情報 -->
+            <div class="card">
+                <h3 class="card-title">代表者情報</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">代表者名（姓）</span>
+                        <span class="info-value" id="representative-last-name">山田</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">代表者名（名）</span>
+                        <span class="info-value" id="representative-first-name">太郎</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 住所情報 -->
+            <div class="card">
+                <h3 class="card-title">住所情報</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">郵便番号</span>
+                        <span class="info-value" id="postal-code">160-0023</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">都道府県</span>
+                        <span class="info-value" id="prefecture">東京都</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">市区町村</span>
+                        <span class="info-value" id="city">新宿区</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">町名・番地</span>
+                        <span class="info-value" id="address1">西新宿1-1-1</span>
+                    </div>
+                    
+                    <div class="info-item full-width">
+                        <span class="info-label">建物名・部屋番号</span>
+                        <span class="info-value" id="address2">新宿ビル 10階</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 契約・ステータス情報 -->
+            <div class="card">
+                <h3 class="card-title">契約・ステータス情報</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">契約ステータス</span>
+                        <span class="info-value">
+                            <span class="status-badge status-active" id="contract-status">有効</span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">インボイス制度</span>
+                        <span class="info-value">
+                            <span class="status-badge status-active" id="invoice-status">対応済み</span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">インボイス登録番号</span>
+                        <span class="info-value">
+                            <span class="status-active" id="invoice-number">T1234567890</span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">インボイス登録年月</span>
+                        <span class="info-value">
+                            <span class="status-badge status-active" id="invoice-scheduled-year">2024年11月</span>
+                        </span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">登録日</span>
+                        <span class="info-value" id="registration-date">2024年1月10日</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 企業編集モーダル -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">企業情報編集</h3>
+                <button class="close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="form-section">
+                        <h4 class="section-title">基本情報</h4>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label class="form-label">企業ID</label>
+                                <input type="text" id="edit-company-id" class="form-input" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">企業名 <span class="required">*</span></label>
+                                <input type="text" id="edit-company-name" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">企業名（カナ） <span class="required">*</span></label>
+                                <input type="text" id="edit-company-name-kana" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">サービスカテゴリ <span class="required">*</span></label>
+                                <select id="edit-service-category" class="form-input" required>
+                                    <option value="">選択してください</option>
+                                    <option value="注文住宅">注文住宅</option>
+                                    <option value="建売住宅">建売住宅</option>
+                                    <option value="リフォーム・リノベーション">リフォーム・リノベーション</option>
+                                    <option value="不動産売買">不動産売買</option>
+                                    <option value="賃貸管理">賃貸管理</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">ホームページURL</label>
+                                <input type="url" id="edit-homepage-url" class="form-input" placeholder="https://example.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">メールアドレス <span class="required">*</span></label>
+                                <input type="email" id="edit-representative-email" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">電話番号 <span class="required">*</span></label>
+                                <input type="text" id="edit-representative-phone" class="form-input" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4 class="section-title">代表者情報</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">代表者名（姓） <span class="required">*</span></label>
+                                <input type="text" id="edit-representative-last-name" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">代表者名（名） <span class="required">*</span></label>
+                                <input type="text" id="edit-representative-first-name" class="form-input" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4 class="section-title">住所情報</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">郵便番号</label>
+                                <input type="text" id="edit-postal-code" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">都道府県</label>
+                                <select type="text" id="edit-prefecture" class="form-input">
+                                    <option value="北海道">北海道</option>
+                                    <option value="青森県">青森県</option>
+                                    <option value="岩手県">岩手県</option>
+                                    <option value="宮城県">宮城県</option>
+                                    <option value="秋田県">秋田県</option>
+                                    <option value="山形県">山形県</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">市区町村</label>
+                                <input type="text" id="edit-city" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">番地・ビル名</label>
+                                <input type="text" id="edit-address1" class="form-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4 class="section-title">契約情報</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">契約ステータス <span class="required">*</span></label>
+                                <select id="edit-contract-status" class="form-input" required>
+                                    <option value="有効">アクティブ</option>
+                                    <option value="無効">無効</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">インボイス制度</label>
+                                <select id="edit-invoice-status" class="form-input">
+                                    <option value="対応済み">対応済み</option>
+                                    <option value="登録予定">登録予定</option>
+                                    <option value="未対応">未対応</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URLパラメータから企業IDを取得
+        function getCompanyIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id') || 'C001';
+        }
+
+        // サンプル企業データ
+        const companiesData = {
+            'C001': {
+                companyName: '株式会社山田建設',
+                companyNameKana: 'カブシキガイシャヤマダケンセツ',
+                serviceCategory: '注文住宅',
+                homepageUrl: 'https://yamada-construction.co.jp',
+                representativeLastName: '山田',
+                representativeFirstName: '太郎',
+                representativeEmail: 'yamada@yamada-construction.co.jp',
+                representativePhone: '03-1234-5678',
+                postalCode: '160-0023',
+                prefecture: '東京都',
+                city: '新宿区',
+                address1: '西新宿1-1-1',
+                address2: '新宿ビル 10階',
+                contractStatus: '有効',
+                invoiceStatus: '対応済み',
+                contractStartDate: '2024年1月15日',
+                contractEndDate: '2025年1月14日',
+                registrationDate: '2024年1月10日',
+                lastUpdateDate: '2024年12月15日',
+                stats: {
+                    totalInquiries: 156,
+                    monthlyInquiries: 23,
+                    totalContracts: 12,
+                    monthlyContracts: 2
+                }
+            },
+            'C002': {
+                companyName: '佐藤工務店',
+                companyNameKana: 'サトウコウムテン',
+                serviceCategory: 'リフォーム・リノベーション',
+                homepageUrl: 'https://sato-koumuten.com',
+                representativeLastName: '佐藤',
+                representativeFirstName: '花子',
+                representativeEmail: 'sato@sato-koumuten.com',
+                representativePhone: '03-9876-5432',
+                postalCode: '231-0001',
+                prefecture: '神奈川県',
+                city: '横浜市中区',
+                address1: '太田町6-78',
+                address2: 'ヨコハマタワー 15階',
+                contractStatus: '有効',
+                invoiceStatus: '登録予定',
+                contractStartDate: '2024年3月1日',
+                contractEndDate: '2025年2月28日',
+                registrationDate: '2024年2月25日',
+                lastUpdateDate: '2024年12月10日',
+                stats: {
+                    totalInquiries: 89,
+                    monthlyInquiries: 15,
+                    totalContracts: 8,
+                    monthlyContracts: 1
+                }
+            }
+        };
+
+        // ページ初期化
+        function initializePage() {
+            const companyId = getCompanyIdFromUrl();
+            const companyData = companiesData[companyId];
+            
+            if (!companyData) {
+                alert('企業データが見つかりません');
+                window.location.href = 'company_list.html';
+                return;
+            }
+
+            // 企業情報を表示
+            document.getElementById('company-id').textContent = companyId;
+            document.getElementById('company-name').textContent = companyData.companyName;
+            document.getElementById('company-name-kana').textContent = companyData.companyNameKana;
+            document.getElementById('service-category').textContent = companyData.serviceCategory;
+            document.getElementById('homepage-url').textContent = companyData.homepageUrl || '未設定';
+            document.getElementById('representative-last-name').textContent = companyData.representativeLastName;
+            document.getElementById('representative-first-name').textContent = companyData.representativeFirstName;
+            document.getElementById('representative-email').textContent = companyData.representativeEmail;
+            document.getElementById('representative-phone').textContent = companyData.representativePhone;
+            document.getElementById('postal-code').textContent = companyData.postalCode || '未設定';
+            document.getElementById('prefecture').textContent = companyData.prefecture || '未設定';
+            document.getElementById('city').textContent = companyData.city || '未設定';
+            document.getElementById('address1').textContent = companyData.address1 || '未設定';
+            document.getElementById('address2').textContent = companyData.address2 || '未設定';
+            document.getElementById('contract-start-date').textContent = companyData.contractStartDate;
+            document.getElementById('contract-end-date').textContent = companyData.contractEndDate;
+            document.getElementById('registration-date').textContent = companyData.registrationDate;
+            document.getElementById('last-update-date').textContent = companyData.lastUpdateDate;
+            
+            // ステータス表示
+            const contractStatusElement = document.getElementById('contract-status');
+            contractStatusElement.textContent = companyData.contractStatus;
+            if (companyData.contractStatus === '無効') {
+                contractStatusElement.className = 'status-badge status-inactive';
+            } else if (companyData.contractStatus === '一時停止') {
+                contractStatusElement.className = 'status-badge status-scheduled';
+            }
+            
+            const invoiceStatusElement = document.getElementById('invoice-status');
+            invoiceStatusElement.textContent = companyData.invoiceStatus;
+            if (companyData.invoiceStatus === '登録予定') {
+                invoiceStatusElement.className = 'status-badge status-scheduled';
+            } else if (companyData.invoiceStatus === '未対応') {
+                invoiceStatusElement.className = 'status-badge status-inactive';
+            }
+
+            // 統計情報を表示
+            if (companyData.stats) {
+                document.getElementById('total-inquiries').textContent = companyData.stats.totalInquiries;
+                document.getElementById('monthly-inquiries').textContent = companyData.stats.monthlyInquiries;
+                document.getElementById('total-contracts').textContent = companyData.stats.totalContracts;
+                document.getElementById('monthly-contracts').textContent = companyData.stats.monthlyContracts;
+            }
+
+            // ページタイトルを更新
+            document.querySelector('.page-title').textContent = `🏢 ${companyData.companyName}の詳細`;
+        }
+
+        // 編集モーダルを開く
+        function openEditModal() {
+            const companyId = getCompanyIdFromUrl();
+            const companyData = companiesData[companyId];
+            
+            if (!companyData) {
+                alert('企業データが見つかりません');
+                return;
+            }
+            
+            // フォームにデータを設定
+            document.getElementById('edit-company-id').value = companyId;
+            document.getElementById('edit-company-name').value = companyData.companyName;
+            document.getElementById('edit-company-name-kana').value = companyData.companyNameKana;
+            document.getElementById('edit-service-category').value = companyData.serviceCategory;
+            document.getElementById('edit-homepage-url').value = companyData.homepageUrl || '';
+            document.getElementById('edit-representative-last-name').value = companyData.representativeLastName;
+            document.getElementById('edit-representative-first-name').value = companyData.representativeFirstName;
+            document.getElementById('edit-representative-email').value = companyData.representativeEmail;
+            document.getElementById('edit-representative-phone').value = companyData.representativePhone;
+            document.getElementById('edit-postal-code').value = companyData.postalCode || '';
+            document.getElementById('edit-prefecture').value = companyData.prefecture || '';
+            document.getElementById('edit-city').value = companyData.city || '';
+            document.getElementById('edit-address1').value = companyData.address1 || '';
+            document.getElementById('edit-contract-status').value = companyData.contractStatus;
+            document.getElementById('edit-invoice-status').value = companyData.invoiceStatus;
+            
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        // 編集モーダルを閉じる
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+        }
+
+        // フォーム送信処理
+        document.addEventListener('DOMContentLoaded', function() {
+            // ページ初期化
+            initializePage();
+            
+            // 編集フォームの送信処理
+            document.getElementById('editForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const companyId = getCompanyIdFromUrl();
+                const formData = {
+                    companyName: document.getElementById('edit-company-name').value,
+                    companyNameKana: document.getElementById('edit-company-name-kana').value,
+                    serviceCategory: document.getElementById('edit-service-category').value,
+                    homepageUrl: document.getElementById('edit-homepage-url').value,
+                    representativeLastName: document.getElementById('edit-representative-last-name').value,
+                    representativeFirstName: document.getElementById('edit-representative-first-name').value,
+                    representativeEmail: document.getElementById('edit-representative-email').value,
+                    representativePhone: document.getElementById('edit-representative-phone').value,
+                    postalCode: document.getElementById('edit-postal-code').value,
+                    prefecture: document.getElementById('edit-prefecture').value,
+                    city: document.getElementById('edit-city').value,
+                    address1: document.getElementById('edit-address1').value,
+                    contractStatus: document.getElementById('edit-contract-status').value,
+                    invoiceStatus: document.getElementById('edit-invoice-status').value,
+                    contractStartDate: companiesData[companyId].contractStartDate,
+                    contractEndDate: companiesData[companyId].contractEndDate,
+                    registrationDate: companiesData[companyId].registrationDate,
+                    lastUpdateDate: new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '年').replace(/年(\d{2})年/, '年$1月') + '日',
+                    stats: companiesData[companyId].stats
+                };
+                
+                // データを更新
+                companiesData[companyId] = formData;
+                
+                // ページの表示を更新
+                initializePage();
+                
+                // モーダルを閉じる
+                closeEditModal();
+                
+                alert('企業情報を更新しました');
+            });
+        });
+        
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        };
+    </script>
+</body>
+</html>

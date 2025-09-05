@@ -120,6 +120,220 @@
             font-size: 12px;
         }
 
+        /* アクションメニュー */
+        .action-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-button {
+            background: #4a4a4a;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+            background: #3a3a3a;
+            transform: scale(1.1);
+        }
+
+        .action-popover {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 8px 0;
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .action-popover.show {
+            display: block;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #2c2c2c;
+            transition: background 0.2s ease;
+        }
+
+        .action-item:hover {
+            background: #f5f5f5;
+        }
+
+        .action-item-icon {
+            font-size: 16px;
+            width: 18px;
+            text-align: center;
+        }
+
+        /* アクションアイテムの色分け */
+        .action-item.detail:hover {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .action-item.edit:hover {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .action-item.delete:hover {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .action-item.mail:hover {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        /* フォームスタイル */
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .required {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4a4a4a;
+        }
+
+        .form-input[readonly] {
+            background: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
         /* 統計カード */
         .stats-grid {
             display: grid;
@@ -485,33 +699,6 @@
                 </div>
             </div>
 
-            <!-- 統計カード -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">2,847</div>
-                    <div class="stat-label">総会員数</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">2,384</div>
-                    <div class="stat-label">アクティブ会員</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">187</div>
-                    <div class="stat-label">退会会員</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">94</div>
-                    <div class="stat-label">今月新規登録</div>
-                </div>
-            </div>
-
-            <!-- タブナビゲーション -->
-            <div class="tab-nav">
-                <div class="tab-item active" onclick="switchTab('all')">全て (2,847)</div>
-                <div class="tab-item" onclick="switchTab('active')">アクティブ (2,384)</div>
-                <div class="tab-item" onclick="switchTab('inactive')">退会 (463)</div>
-            </div>
-
             <!-- フィルター -->
             <div class="filter-section">
                 <div class="filter-row">
@@ -532,28 +719,6 @@
                             <option value="month">今月</option>
                             <option value="3months">過去3ヶ月</option>
                             <option value="year">過去1年</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">年代</label>
-                        <select class="filter-select" id="ageFilter" onchange="filterTable()">
-                            <option value="">全年代</option>
-                            <option value="20s">20代</option>
-                            <option value="30s">30代</option>
-                            <option value="40s">40代</option>
-                            <option value="50s">50代</option>
-                            <option value="60plus">60代以上</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">地域</label>
-                        <select class="filter-select" id="regionFilter" onchange="filterTable()">
-                            <option value="">全地域</option>
-                            <option value="tokyo">東京都</option>
-                            <option value="kanagawa">神奈川県</option>
-                            <option value="saitama">埼玉県</option>
-                            <option value="chiba">千葉県</option>
-                            <option value="other">その他</option>
                         </select>
                     </div>
                 </div>
@@ -585,11 +750,8 @@
                             <th>会員情報</th>
                             <th>メールアドレス</th>
                             <th>電話番号</th>
-                            <th>年代</th>
-                            <th>地域</th>
                             <th>ステータス</th>
                             <th>登録日</th>
-                            <th>最終ログイン</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -606,13 +768,18 @@
                             </td>
                             <td>yamada@example.com</td>
                             <td>090-1234-5678</td>
-                            <td>30代</td>
-                            <td>東京都新宿区</td>
                             <td><span class="status-badge status-premium">アクティブ</span></td>
                             <td>2024-01-15</td>
-                            <td>2025-08-24</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('M001234')">詳細</button>
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'M001234')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openDetailPage('M001234')">
+                                            <span class="action-item-icon">👁️</span>
+                                            <span>詳細</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -627,13 +794,22 @@
                             </td>
                             <td>sato@example.com</td>
                             <td>080-9876-5432</td>
-                            <td>40代</td>
-                            <td>神奈川県横浜市</td>
                             <td><span class="status-badge status-active">アクティブ</span></td>
                             <td>2024-02-20</td>
-                            <td>2025-08-23</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('M001235')">詳細</button>
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'M001235')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openDetailPage('M001235')">
+                                            <span class="action-item-icon">👁️</span>
+                                            <span>詳細</span>
+                                        </div>
+                                        <div class="action-item mail" onclick="sendEmail('M001235')">
+                                            <span class="action-item-icon">📧</span>
+                                            <span>メール送信</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -648,13 +824,22 @@
                             </td>
                             <td>suzuki@example.com</td>
                             <td>070-1111-2222</td>
-                            <td>50代</td>
-                            <td>埼玉県大宮市</td>
                             <td><span class="status-badge status-active">アクティブ</span></td>
                             <td>2024-03-10</td>
-                            <td>2025-08-22</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('M001236')">詳細</button>
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'M001236')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openDetailPage('M001236')">
+                                            <span class="action-item-icon">👁️</span>
+                                            <span>詳細</span>
+                                        </div>
+                                        <div class="action-item mail" onclick="sendEmail('M001236')">
+                                            <span class="action-item-icon">📧</span>
+                                            <span>メール送信</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -669,13 +854,26 @@
                             </td>
                             <td>tanaka@example.com</td>
                             <td>090-3333-4444</td>
-                            <td>20代</td>
-                            <td>千葉県千葉市</td>
                             <td><span class="status-badge status-inactive">退会</span></td>
                             <td>2023-12-05</td>
-                            <td>2025-06-15</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('M001237')">詳細</button>
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'M001237')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openDetailPage('M001237')">
+                                            <span class="action-item-icon">👁️</span>
+                                            <span>詳細</span>
+                                        </div>
+                                        <div class="action-item edit" onclick="openEditModal('M001237')">
+                                            <span class="action-item-icon">✏️</span>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item mail" onclick="sendEmail('M001237')">
+                                            <span class="action-item-icon">📧</span>
+                                            <span>メール送信</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -690,13 +888,26 @@
                             </td>
                             <td>takahashi@example.com</td>
                             <td>080-5555-6666</td>
-                            <td>30代</td>
-                            <td>東京都渋谷区</td>
                             <td><span class="status-badge status-inactive">退会</span></td>
                             <td>2024-04-12</td>
-                            <td>2025-08-25</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('M001238')">詳細</button>
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'M001238')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openDetailPage('M001238')">
+                                            <span class="action-item-icon">👁️</span>
+                                            <span>詳細</span>
+                                        </div>
+                                        <div class="action-item edit" onclick="openEditModal('M001238')">
+                                            <span class="action-item-icon">✏️</span>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item mail" onclick="sendEmail('M001238')">
+                                            <span class="action-item-icon">📧</span>
+                                            <span>メール送信</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -711,13 +922,26 @@
                             </td>
                             <td>ito@example.com</td>
                             <td>070-7777-8888</td>
-                            <td>40代</td>
-                            <td>神奈川県川崎市</td>
                             <td><span class="status-badge status-active">アクティブ</span></td>
                             <td>2024-05-18</td>
-                            <td>2025-08-20</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('M001239')">詳細</button>
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'M001239')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openDetailPage('M001239')">
+                                            <span class="action-item-icon">👁️</span>
+                                            <span>詳細</span>
+                                        </div>
+                                        <div class="action-item edit" onclick="openEditModal('M001239')">
+                                            <span class="action-item-icon">✏️</span>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item mail" onclick="sendEmail('M001239')">
+                                            <span class="action-item-icon">📧</span>
+                                            <span>メール送信</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -726,112 +950,306 @@
         </main>
     </div>
 
-    <!-- 詳細モーダル -->
-    <div id="memberModal" class="modal">
+    <!-- 会員編集モーダル -->
+    <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">会員詳細情報</h3>
-                <button class="close" onclick="closeModal()">&times;</button>
+                <h3 class="modal-title">会員情報編集</h3>
+                <button class="close" onclick="closeEditModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <h4 style="margin-bottom: 15px; color: #4a4a4a;">基本情報</h4>
-                <div class="detail-grid">
-                    <div class="detail-label">会員ID:</div>
-                    <div class="detail-value" id="detailMemberId">M001234</div>
-                    
-                    <div class="detail-label">氏名:</div>
-                    <div class="detail-value" id="detailName">山田 太郎</div>
-                    
-                    <div class="detail-label">フリガナ:</div>
-                    <div class="detail-value" id="detailKana">ヤマダ タロウ</div>
-                    
-                    <div class="detail-label">メールアドレス:</div>
-                    <div class="detail-value" id="detailEmail">yamada@example.com</div>
-                    
-                    <div class="detail-label">電話番号:</div>
-                    <div class="detail-value" id="detailPhone">090-1234-5678</div>
-                    
-                    <div class="detail-label">生年月日:</div>
-                    <div class="detail-value" id="detailBirth">1990年5月15日</div>
-                    
-                    <div class="detail-label">性別:</div>
-                    <div class="detail-value" id="detailGender">男性</div>
-                    
-                    <div class="detail-label">住所:</div>
-                    <div class="detail-value" id="detailAddress">東京都新宿区西新宿1-1-1</div>
-                </div>
+                <form id="editForm">
+                    <div class="form-section">
+                        <h4 class="section-title">基本情報</h4>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label class="form-label">会員ID</label>
+                                <input type="text" id="edit-member-id" class="form-input" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">氏名（姓） <span class="required">*</span></label>
+                                <input type="text" id="edit-last-name" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">氏名（名） <span class="required">*</span></label>
+                                <input type="text" id="edit-first-name" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">カナ（姓） <span class="required">*</span></label>
+                                <input type="text" id="edit-last-kana" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">カナ（名） <span class="required">*</span></label>
+                                <input type="text" id="edit-first-kana" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">メールアドレス <span class="required">*</span></label>
+                                <input type="email" id="edit-email" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">電話番号 <span class="required">*</span></label>
+                                <input type="tel" id="edit-phone" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">生年月日</label>
+                                <input type="date" id="edit-birth-date" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">性別</label>
+                                <select id="edit-gender" class="form-input">
+                                    <option value="">選択してください</option>
+                                    <option value="男性">男性</option>
+                                    <option value="女性">女性</option>
+                                    <option value="その他">その他</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">会員情報</h4>
-                <div class="detail-grid">
-                    <div class="detail-label">ステータス:</div>
-                    <div class="detail-value" id="detailStatus">
-                        <span class="status-badge status-premium">アクティブ</span>
+                    <div class="form-section">
+                        <h4 class="section-title">住所情報</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">郵便番号</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" id="edit-postal-code" class="form-input" placeholder="1234567" maxlength="7">
+                                    <button type="button" class="btn btn-secondary" onclick="searchAddress()" style="white-space: nowrap;">住所検索</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">都道府県</label>
+                                <select id="edit-prefecture" class="form-input">
+                                    <option value="">選択してください</option>
+                                    <option value="東京都">東京都</option>
+                                    <option value="神奈川県">神奈川県</option>
+                                    <option value="千葉県">千葉県</option>
+                                    <option value="埼玉県">埼玉県</option>
+                                    <option value="大阪府">大阪府</option>
+                                    <option value="愛知県">愛知県</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">市区町村</label>
+                                <input type="text" id="edit-city" class="form-input" placeholder="新宿区">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">町名・番地</label>
+                                <input type="text" id="edit-address1" class="form-input" placeholder="西新宿1-1-1">
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label class="form-label">建物名・部屋番号</label>
+                                <input type="text" id="edit-address2" class="form-input" placeholder="○○ビル 101号室">
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="detail-label">登録日:</div>
-                    <div class="detail-value" id="detailRegDate">2024-01-15</div>
-                    
-                    <div class="detail-label">最終ログイン:</div>
-                    <div class="detail-value" id="detailLastLogin">2025-08-24 14:30</div>
-                    
-                    <div class="detail-label">総ログイン回数:</div>
-                    <div class="detail-value" id="detailLoginCount">142回</div>
-                    
-                    <div class="detail-label">カタログ請求数:</div>
-                    <div class="detail-value" id="detailCatalogRequests">18件</div>
-                    
-                    <div class="detail-label">イベント参加数:</div>
-                    <div class="detail-value" id="detailEventParticipation">5回</div>
-                </div>
 
-                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">興味・関心</h4>
-                <div class="detail-grid">
-                    <div class="detail-label">希望エリア:</div>
-                    <div class="detail-value">東京都、神奈川県</div>
-                    
-                    <div class="detail-label">予算:</div>
-                    <div class="detail-value">3000万円〜5000万円</div>
-                    
-                    <div class="detail-label">希望物件タイプ:</div>
-                    <div class="detail-value">注文住宅、新築戸建て</div>
-                    
-                    <div class="detail-label">家族構成:</div>
-                    <div class="detail-value">夫婦+子供2人</div>
-                </div>
+                    <div class="form-section">
+                        <h4 class="section-title">ステータス</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">会員ステータス <span class="required">*</span></label>
+                                <select id="edit-status" class="form-input" required>
+                                    <option value="アクティブ">アクティブ</option>
+                                    <option value="退会">退会</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">最近の活動履歴</h4>
-                <div class="activity-log">
-                    <div class="activity-item">
-                        <div class="activity-desc">カタログ請求「モダンハウスカタログ2025」</div>
-                        <div class="activity-time">2025-08-24 14:30</div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
                     </div>
-                    <div class="activity-item">
-                        <div class="activity-desc">イベント参加「住宅展示場見学ツアー」</div>
-                        <div class="activity-time">2025-08-20 10:00</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-desc">プロフィール更新</div>
-                        <div class="activity-time">2025-08-18 16:45</div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-desc">ログイン</div>
-                        <div class="activity-time">2025-08-17 09:15</div>
-                    </div>
-                </div>
+                </form>
             </div>
-            <div class="modal-footer">
-                <div>
-                    <button class="btn btn-secondary" onclick="sendEmail('M001234')">メール送信</button>
-                    <button class="btn btn-primary" onclick="editMember('M001234')">編集</button>
-                </div>
-                <div>
-                    <button class="btn btn-secondary" onclick="closeModal()">閉じる</button>
-                </div>
+        </div>
+    </div>
+
+    <!-- メール送信モーダル -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">メール送信</h3>
+                <button class="close" onclick="closeEmailModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="emailForm">
+                    <div class="form-section">
+                        <h4 class="section-title">送信先情報</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">会員ID</label>
+                                <input type="text" id="email-member-id" class="form-input" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">会員名</label>
+                                <input type="text" id="email-member-name" class="form-input" readonly>
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label">送信先メールアドレス</label>
+                                <input type="email" id="email-to" class="form-input" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4 class="section-title">メール内容</h4>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label class="form-label">件名 <span class="required">*</span></label>
+                                <input type="text" id="email-subject" class="form-input" required placeholder="例：重要なお知らせ">
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label">本文 <span class="required">*</span></label>
+                                <textarea id="email-body" class="form-input" required rows="10" placeholder="メール本文を入力してください..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4 class="section-title">テンプレート選択</h4>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label class="form-label">テンプレート</label>
+                                <select id="email-template" class="form-input" onchange="applyTemplate()">
+                                    <option value="">テンプレートを選択してください</option>
+                                    <option value="welcome">新規登録歓迎メール</option>
+                                    <option value="reminder">更新リマインダー</option>
+                                    <option value="event">イベント案内</option>
+                                    <option value="newsletter">ニュースレター</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeEmailModal()">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">送信</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <script>
+        // サンプル会員データ
+        const membersData = {
+            'M001234': {
+                lastName: '山田',
+                firstName: '太郎',
+                email: 'yamada@example.com',
+                phone: '090-1234-5678',
+                ageGroup: '30代',
+                location: '東京都新宿区',
+                status: 'アクティブ'
+            },
+            'M001235': {
+                lastName: '佐藤',
+                firstName: '花子',
+                email: 'sato@example.com',
+                phone: '080-9876-5432',
+                ageGroup: '40代',
+                location: '神奈川県横浜市',
+                status: 'アクティブ'
+            },
+            'M001236': {
+                lastName: '鈴木',
+                firstName: '一郎',
+                email: 'suzuki@example.com',
+                phone: '070-5555-4444',
+                ageGroup: '50代',
+                location: '埼玉県大宮市',
+                status: 'アクティブ'
+            },
+            'M001237': {
+                lastName: '田中',
+                firstName: '美咲',
+                email: 'tanaka@example.com',
+                phone: '080-7777-8888',
+                ageGroup: '20代',
+                location: '千葉県千葉市',
+                status: '退会'
+            },
+            'M001238': {
+                lastName: '高橋',
+                firstName: '健太',
+                email: 'takahashi@example.com',
+                phone: '080-5555-6666',
+                ageGroup: '30代',
+                location: '東京都渋谷区',
+                status: '退会'
+            },
+            'M001239': {
+                lastName: '中村',
+                firstName: 'さくら',
+                email: 'nakamura@example.com',
+                phone: '090-3333-2222',
+                ageGroup: '40代',
+                location: '神奈川県川崎市',
+                status: 'アクティブ'
+            }
+        };
+
+        let currentMemberId = null;
+
+        // 編集モーダルを開く
+        function openEditModal(memberId) {
+            currentMemberId = memberId;
+            const data = membersData[memberId];
+            
+            if (!data) {
+                alert('会員データが見つかりません');
+                return;
+            }
+
+            // フォームにデータを設定
+            document.getElementById('edit-member-id').value = memberId;
+            document.getElementById('edit-last-name').value = data.lastName;
+            document.getElementById('edit-first-name').value = data.firstName;
+            document.getElementById('edit-last-kana').value = data.lastKana || '';
+            document.getElementById('edit-first-kana').value = data.firstKana || '';
+            document.getElementById('edit-email').value = data.email;
+            document.getElementById('edit-phone').value = data.phone;
+            document.getElementById('edit-birth-date').value = data.birthDate || '';
+            document.getElementById('edit-gender').value = data.gender || '';
+            document.getElementById('edit-postal-code').value = data.postalCode || '';
+            document.getElementById('edit-prefecture').value = data.prefecture || '';
+            document.getElementById('edit-city').value = data.city || '';
+            document.getElementById('edit-address1').value = data.address1 || '';
+            document.getElementById('edit-address2').value = data.address2 || '';
+            document.getElementById('edit-status').value = data.status;
+
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        // 編集モーダルを閉じる
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+        }
+
+        // アクションメニューの切り替え
+        function toggleActionMenu(button, memberId) {
+            const popover = button.nextElementSibling;
+            const isVisible = popover.classList.contains('show');
+            
+            // 他のポップオーバーを全て閉じる
+            document.querySelectorAll('.action-popover').forEach(p => {
+                p.classList.remove('show');
+            });
+            
+            // クリックされたポップオーバーの表示切り替え
+            if (!isVisible) {
+                popover.classList.add('show');
+            }
+        }
+
+
         // 選択数の更新
         function updateSelectedCount() {
             const checkboxes = document.querySelectorAll('.row-checkbox:checked');
@@ -851,6 +1269,11 @@
             updateSelectedCount();
         }
 
+        // 詳細ページに遷移
+        function openDetailPage(memberId) {
+            window.location.href = `member_detail.html?id=${memberId}`;
+        }
+
         // 詳細モーダルを開く
         function openDetailModal(memberId) {
             document.getElementById('memberModal').classList.add('show');
@@ -860,6 +1283,74 @@
         // モーダルを閉じる
         function closeModal() {
             document.getElementById('memberModal').classList.remove('show');
+        }
+
+        // メール送信モーダルを開く
+        function sendEmail(memberId) {
+            const data = membersData[memberId];
+            
+            if (!data) {
+                alert('会員データが見つかりません');
+                return;
+            }
+
+            // メール送信先情報を設定
+            document.getElementById('email-member-id').value = memberId;
+            document.getElementById('email-member-name').value = data.lastName + ' ' + data.firstName;
+            document.getElementById('email-to').value = data.email;
+            
+            // フォームをクリア
+            document.getElementById('email-subject').value = '';
+            document.getElementById('email-body').value = '';
+            document.getElementById('email-template').value = '';
+            
+            document.getElementById('emailModal').classList.add('show');
+        }
+
+        // メール送信モーダルを閉じる
+        function closeEmailModal() {
+            document.getElementById('emailModal').classList.remove('show');
+        }
+
+        // テンプレートを適用
+        function applyTemplate() {
+            const template = document.getElementById('email-template').value;
+            const memberName = document.getElementById('email-member-name').value;
+            const subjectField = document.getElementById('email-subject');
+            const bodyField = document.getElementById('email-body');
+
+            switch (template) {
+                case 'welcome':
+                    subjectField.value = '【不動産ポータル】新規会員登録のご案内';
+                    bodyField.value = `${memberName} 様\n\n不動産ポータルへのご登録ありがとうございます。\n\n登録が完了いたしました。\nこれより弊社サービスをご利用いただけます。\n\nご不明な点がございましたら、お気軽にお問い合わせください。\n\n不動産ポータル運営事務局`;
+                    break;
+                case 'reminder':
+                    subjectField.value = '【重要】情報更新のお願い';
+                    bodyField.value = `${memberName} 様\n\nいつも弊社サービスをご利用いただきありがとうございます。\n\n会員情報の更新時期となりました。\n最新の情報にアップデートいただきますようお願いいたします。\n\n更新はこちらから：[URL]\n\n不動産ポータル運営事務局`;
+                    break;
+                case 'event':
+                    subjectField.value = '【イベント案内】不動産セミナー開催のお知らせ';
+                    bodyField.value = `${memberName} 様\n\n平素より弊社サービスをご利用いただきありがとうございます。\n\n不動産投資セミナーを開催いたします。\n\n開催日時：2024年○月○日（○）\n会場：東京都○○区○○\n\nお申し込みはこちらから：[URL]\n\n皆様のご参加をお待ちしております。\n\n不動産ポータル運営事務局`;
+                    break;
+                case 'newsletter':
+                    subjectField.value = '【不動産ポータル】今月のニュースレター';
+                    bodyField.value = `${memberName} 様\n\n今月の不動産市場動向をお届けします。\n\n■ 今月のトピックス\n・市場動向について\n・新着物件情報\n・お役立ち情報\n\n詳細は弊社Webサイトをご確認ください。\n\n不動産ポータル運営事務局`;
+                    break;
+            }
+        }
+
+        // メールプレビュー
+        function previewEmail() {
+            const subject = document.getElementById('email-subject').value;
+            const body = document.getElementById('email-body').value;
+            const to = document.getElementById('email-to').value;
+            
+            if (!subject || !body) {
+                alert('件名と本文を入力してください');
+                return;
+            }
+            
+            alert(`プレビュー\n\n送信先: ${to}\n件名: ${subject}\n\n${body}`);
         }
 
         // 検索機能
@@ -939,17 +1430,169 @@
             console.log('Exporting selected members...');
         }
 
-        // メール送信
-        function sendEmail(memberId) {
-            console.log('Sending email to member:', memberId);
-            alert('メール送信画面を開きます');
+
+        // URLパラメータを処理
+        function handleUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+            const memberId = urlParams.get('id');
+            
+            if (action && memberId) {
+                setTimeout(() => {
+                    switch (action) {
+                        case 'edit':
+                            openEditModal(memberId);
+                            break;
+                        case 'email':
+                            sendEmail(memberId);
+                            break;
+                    }
+                }, 100);
+                
+                // URLパラメータをクリア
+                if (window.history.replaceState) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
         }
 
-        // 会員編集
-        function editMember(memberId) {
-            console.log('Editing member:', memberId);
-            window.location.href = 'member_register.html?id=' + memberId;
+        // フォーム送信処理
+        document.addEventListener('DOMContentLoaded', function() {
+            // URLパラメータ処理を実行
+            handleUrlParams();
+            // 編集フォームの送信処理
+            document.getElementById('editForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // フォームデータを収集
+                const formData = {
+                    memberId: document.getElementById('edit-member-id').value,
+                    lastName: document.getElementById('edit-last-name').value,
+                    firstName: document.getElementById('edit-first-name').value,
+                    email: document.getElementById('edit-email').value,
+                    phone: document.getElementById('edit-phone').value,
+                    location: document.getElementById('edit-location').value,
+                    status: document.getElementById('edit-status').value
+                };
+                
+                // サンプルデータを更新
+                membersData[currentMemberId] = formData;
+                
+                // テーブルの該当行を更新
+                const rows = document.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const cells = row.getElementsByTagName('td');
+                    if (cells[0] && cells[0].textContent === currentMemberId) {
+                        // 名前を更新
+                        const nameDiv = cells[1].querySelector('div > div');
+                        if (nameDiv) {
+                            nameDiv.textContent = `${formData.lastName} ${formData.firstName}`;
+                        }
+                        
+                        // メールアドレスを更新
+                        if (cells[2]) cells[2].textContent = formData.email;
+                        
+                        // 電話番号を更新
+                        if (cells[3]) cells[3].textContent = formData.phone;
+                        
+                        // 年代を更新
+                        if (cells[4]) cells[4].textContent = formData.ageGroup;
+                        
+                        // 居住地域を更新
+                        if (cells[5]) cells[5].textContent = formData.location;
+                        
+                        // ステータスを更新
+                        if (cells[6]) {
+                            const badge = cells[6].querySelector('.status-badge');
+                            if (badge) {
+                                badge.textContent = formData.status;
+                                // ステータスに応じてクラスを変更
+                                badge.className = 'status-badge';
+                                if (formData.status === 'アクティブ') {
+                                    badge.classList.add('status-active');
+                                } else if (formData.status === '退会') {
+                                    badge.classList.add('status-inactive');
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                alert('会員情報を更新しました');
+                closeEditModal();
+            });
+
+            // メール送信フォームの送信処理
+            document.getElementById('emailForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const subject = document.getElementById('email-subject').value;
+                const body = document.getElementById('email-body').value;
+                const to = document.getElementById('email-to').value;
+                const memberName = document.getElementById('email-member-name').value;
+                
+                if (!subject || !body) {
+                    alert('件名と本文を入力してください');
+                    return;
+                }
+                
+                // メール送信処理（実際の実装では API を呼び出し）
+                alert(`メールを送信しました\n\n送信先: ${memberName} (${to})\n件名: ${subject}`);
+                closeEmailModal();
+            });
+        });
+
+        // ドキュメントクリックでポップオーバーを閉じる
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.action-menu')) {
+                document.querySelectorAll('.action-popover').forEach(popover => {
+                    popover.classList.remove('show');
+                });
+            }
+        });
+
+        // 住所検索機能
+        function searchAddress() {
+            const postal = document.getElementById('edit-postal-code').value;
+            if (!postal) {
+                alert('郵便番号を入力してください');
+                return;
+            }
+            
+            // 実際の住所検索APIの代わりにサンプルデータを使用
+            if (postal === '1600023') {
+                document.getElementById('edit-prefecture').value = '東京都';
+                document.getElementById('edit-city').value = '新宿区';
+                document.getElementById('edit-address1').value = '西新宿';
+                alert('住所が見つかりました');
+            } else if (postal === '2310001') {
+                document.getElementById('edit-prefecture').value = '神奈川県';
+                document.getElementById('edit-city').value = '横浜市中区';
+                document.getElementById('edit-address1').value = '太田町';
+                alert('住所が見つかりました');
+            } else {
+                alert('住所検索機能を実行します（郵便番号: ' + postal + '）\n※実際の実装では郵便番号APIと連携します');
+            }
         }
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            const editModal = document.getElementById('editModal');
+            if (event.target === editModal) {
+                closeEditModal();
+            }
+            
+            const memberModal = document.getElementById('memberModal');
+            if (event.target === memberModal) {
+                closeModal();
+            }
+            
+            const emailModal = document.getElementById('emailModal');
+            if (event.target === emailModal) {
+                closeEmailModal();
+            }
+        }
+
     </script>
 </body>
 </html>

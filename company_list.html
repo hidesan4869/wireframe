@@ -502,21 +502,6 @@
             </div>
         </div>
 
-        <!-- 統計カード -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">47</div>
-                <div class="stat-label">登録企業数</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">12</div>
-                <div class="stat-label">今月新規登録</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">3</div>
-                <div class="stat-label">停止中</div>
-            </div>
-        </div>
 
         <!-- 検索・フィルター -->
         <div class="search-filter-section">
@@ -579,9 +564,9 @@
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C001')">⋮</button>
                                 <div class="action-popover">
                                  
-                                    <div class="action-item edit" onclick="editCompany('C001')">
-                                        <span class="action-item-icon">✏️</span>
-                                        <span>編集</span>
+                                    <div class="action-item detail" onclick="openCompanyDetail('C001')">
+                                        <span class="action-item-icon">👁️</span>
+                                        <span>詳細</span>
                                     </div>
                                     <div class="action-item member" onclick="manageMembers('C001')">
                                         <span class="action-item-icon">👥</span>
@@ -612,9 +597,9 @@
                             <div class="action-menu">
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C002')">⋮</button>
                                 <div class="action-popover">
-                                    <div class="action-item edit" onclick="editCompany('C002')">
-                                        <span class="action-item-icon">✏️</span>
-                                        <span>編集</span>
+                                    <div class="action-item detail" onclick="openCompanyDetail('C002')">
+                                        <span class="action-item-icon">👁️</span>
+                                        <span>詳細</span>
                                     </div>
                                     <div class="action-item member" onclick="manageMembers('C002')">
                                         <span class="action-item-icon">👥</span>
@@ -645,9 +630,9 @@
                             <div class="action-menu">
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C003')">⋮</button>
                                 <div class="action-popover">
-                                    <div class="action-item edit" onclick="editCompany('C003')">
-                                        <span class="action-item-icon">✏️</span>
-                                        <span>編集</span>
+                                    <div class="action-item detail" onclick="openCompanyDetail('C003')">
+                                        <span class="action-item-icon">👁️</span>
+                                        <span>詳細</span>
                                     </div>
                                     <div class="action-item member" onclick="manageMembers('C003')">
                                         <span class="action-item-icon">👥</span>
@@ -678,9 +663,9 @@
                             <div class="action-menu">
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C004')">⋮</button>
                                 <div class="action-popover">
-                                    <div class="action-item edit" onclick="editCompany('C004')">
-                                        <span class="action-item-icon">✏️</span>
-                                        <span>編集</span>
+                                    <div class="action-item detail" onclick="openCompanyDetail('C004')">
+                                        <span class="action-item-icon">👁️</span>
+                                        <span>詳細</span>
                                     </div>
                                     <div class="action-item member" onclick="manageMembers('C004')">
                                         <span class="action-item-icon">👥</span>
@@ -711,9 +696,9 @@
                             <div class="action-menu">
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C005')">⋮</button>
                                 <div class="action-popover">
-                                    <div class="action-item edit" onclick="editCompany('C005')">
-                                        <span class="action-item-icon">✏️</span>
-                                        <span>編集</span>
+                                    <div class="action-item detail" onclick="openCompanyDetail('C005')">
+                                        <span class="action-item-icon">👁️</span>
+                                        <span>詳細</span>
                                     </div>
                                     <div class="action-item member" onclick="manageMembers('C005')">
                                         <span class="action-item-icon">👥</span>
@@ -1085,9 +1070,9 @@
             }
         }
 
-        // 企業編集
-        function editCompany(companyId) {
-            openEditModal(companyId);
+        // 企業詳細ページに遷移
+        function openCompanyDetail(companyId) {
+            window.location.href = `company_detail.html?id=${companyId}`;
         }
 
         // メンバー管理
