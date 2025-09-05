@@ -282,6 +282,31 @@
             color: #7a7a7a;
         }
 
+        /* カテゴリーバッジ */
+        .category-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            display: inline-block;
+            margin-left: 8px;
+        }
+
+        .category-general {
+            background: #e8f4fd;
+            color: #0066cc;
+        }
+
+        .category-examples {
+            background: #e8f8e8;
+            color: #2e7d32;
+        }
+
+        .category-product {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
         /* テーブルビュー */
         .view-toggle {
             display: flex;
@@ -484,6 +509,66 @@
             padding-top: 20px;
             border-top: 1px solid #e0e0e0;
         }
+
+        /* ファイルアップロード */
+        .file-upload {
+            border: 2px dashed #c0c0c0;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background: #fafafa;
+            transition: border-color 0.2s;
+        }
+
+        .file-upload:hover {
+            border-color: #6a6a6a;
+        }
+
+        .file-upload-icon {
+            font-size: 48px;
+            color: #c0c0c0;
+            margin-bottom: 15px;
+        }
+
+        .file-upload-text {
+            color: #6a6a6a;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-input {
+            display: none;
+        }
+
+        .file-upload-btn {
+            background: #6a6a6a;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -544,6 +629,7 @@
                         <div class="catalog-company">株式会社山田建設</div>
                         <div style="font-size: 12px; color: #8a8a8a; margin: 5px 0;">
                             コード: CH001 | サービス種別: 注文住宅
+                            <span class="category-badge category-general">総合</span>
                         </div>
                         <p class="catalog-description">
                             最新のデザイントレンドを取り入れたモダンな住宅カタログ。シンプルで機能的な設計を特徴としています。
@@ -566,6 +652,7 @@
                         <div class="catalog-company">株式会社山田建設</div>
                         <div style="font-size: 12px; color: #8a8a8a; margin: 5px 0;">
                             コード: CH002 | サービス種別: 注文住宅
+                            <span class="category-badge category-general">総合</span>
                         </div>
                         <p class="catalog-description">
                             環境に配慮した省エネ住宅のカタログ。太陽光発電や高断熱材を使用した住宅を紹介。
@@ -588,6 +675,7 @@
                         <div class="catalog-company">佐藤ハウジング</div>
                         <div style="font-size: 12px; color: #8a8a8a; margin: 5px 0;">
                             コード: CH003 | サービス種別: 注文住宅
+                            <span class="category-badge category-examples">施工実例集</span>
                         </div>
                         <p class="catalog-description">
                             日本の伝統美と現代的な快適性を融合させた和モダン住宅のカタログ。
@@ -610,6 +698,7 @@
                         <div class="catalog-company">田中不動産株式会社</div>
                         <div style="font-size: 12px; color: #8a8a8a; margin: 5px 0;">
                             コード: CH004 | サービス種別: 注文住宅
+                            <span class="category-badge category-product">商品</span>
                         </div>
                         <p class="catalog-description">
                             IoT技術を活用した最新のスマートホーム。快適で安全な暮らしを実現。
@@ -632,6 +721,7 @@
                         <div class="catalog-company">鈴木工務店有限会社</div>
                         <div style="font-size: 12px; color: #8a8a8a; margin: 5px 0;">
                             コード: CH005 | サービス種別: 注文住宅
+                            <span class="category-badge category-general">総合</span>
                         </div>
                         <p class="catalog-description">
                             限られた敷地を最大限に活用する、都市型コンパクト住宅のカタログ。
@@ -654,6 +744,7 @@
                         <div class="catalog-company">高橋デベロップメント株式会社</div>
                         <div style="font-size: 12px; color: #8a8a8a; margin: 5px 0;">
                             コード: CH006 | サービス種別: 注文住宅
+                            <span class="category-badge category-general">総合</span>
                         </div>
                         <p class="catalog-description">
                             子育て世代に最適な間取りと設備を備えた、ファミリー向け住宅カタログ。
@@ -797,6 +888,21 @@
                         <textarea class="form-input form-textarea" id="editDescription" required rows="4"></textarea>
                     </div>
 
+                    <!-- 画像アップロードセクション -->
+                    <div class="form-group full-width">
+                        <label class="form-label">カタログ画像</label>
+                        <div class="file-upload">
+                            <div class="file-upload-icon">📷</div>
+                            <div class="file-upload-text">
+                                カタログのメイン画像をアップロードしてください<br>
+                            </div>
+                            <button type="button" class="file-upload-btn" onclick="document.getElementById('editImageInput').click()">
+                                ファイルを選択
+                            </button>
+                            <input type="file" id="editImageInput" class="file-upload-input" accept="image/*" onchange="handleFileUpload(this, 'editImageList')">
+                            <div id="editImageList" class="file-list"></div>
+                        </div>
+                    </div>
 
                     <div class="modal-actions">
                         <button type="button" class="btn btn-secondary" onclick="closeEditModal()">キャンセル</button>
@@ -957,6 +1063,31 @@
             // ページをリロードして更新を反映
             // location.reload();
         });
+
+        // ファイルアップロード処理
+        function handleFileUpload(input, listId) {
+            const fileList = document.getElementById(listId);
+            fileList.innerHTML = '';
+
+            Array.from(input.files).forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <span>📎</span>
+                        <span>${file.name}</span>
+                        <small>(${(file.size / 1024 / 1024).toFixed(2)}MB)</small>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="removeFile(${index}, '${listId}')">削除</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        // ファイル削除
+        function removeFile(index, listId) {
+            console.log('Removing file at index:', index);
+        }
 
         // エクスポート
         function exportCatalog() {
