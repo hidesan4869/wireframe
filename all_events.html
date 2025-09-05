@@ -498,26 +498,6 @@
                 </div>
             </div>
 
-            <!-- 統計カード -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">12</div>
-                    <div class="stat-label">開催中イベント</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">8</div>
-                    <div class="stat-label">今後のイベント</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">142</div>
-                    <div class="stat-label">総予約数</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">89</div>
-                    <div class="stat-label">今月の参加者</div>
-                </div>
-            </div>
-
             <!-- フィルター -->
             <div class="filter-section">
                 <div class="filter-row">
@@ -525,27 +505,8 @@
                         <label class="filter-label">イベントステータス</label>
                         <select class="filter-select" id="statusFilter" onchange="filterEvents()">
                             <option value="">全て</option>
-                            <option value="active">開催中</option>
-                            <option value="upcoming">今後の予定</option>
-                            <option value="ended">終了</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">イベント種類</label>
-                        <select class="filter-select" id="typeFilter" onchange="filterEvents()">
-                            <option value="">全種類</option>
-                            <option value="viewing">見学会</option>
-                            <option value="seminar">セミナー</option>
-                            <option value="fair">相談会</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">開催店舗</label>
-                        <select class="filter-select" id="storeFilter" onchange="filterEvents()">
-                            <option value="">全店舗</option>
-                            <option value="narumi">鳴海 xevoΣ 展示場</option>
-                            <option value="nagoya">名古屋駅前展示場</option>
-                            <option value="okazaki">岡崎展示場</option>
+                            <option value="active">公開中</option>
+                            <option value="upcoming">非公開</option>
                         </select>
                     </div>
                 </div>
@@ -567,17 +528,10 @@
                 <div class="event-card">
                     <div class="event-image">
                         🏠
-                        <span class="event-badge badge-viewing">見学会</span>
                         <span class="special-badge">特典あり</span>
                     </div>
                     <div class="event-content">
                         <h3 class="event-title">まちなかジーヴォ緑区桃山見学会</h3>
-                        <p class="event-subtitle">まちなかジーヴォ緑区桃山がオープンいたしました！</p>
-                        
-                        <div class="gift-info">
-                            🎁 Amazonギフトカード5,000円分プレゼント！
-                        </div>
-
                         <div class="event-details">
                             <div class="detail-item">
                                 <span class="detail-icon">📅</span>
@@ -591,20 +545,14 @@
                                 <span class="detail-icon">📍</span>
                                 <span>愛知県名古屋市緑区桃山3丁目</span>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">🏪</span>
-                                <span>鳴海 xevoΣ 展示場</span>
-                            </div>
                         </div>
 
                         <div class="event-status">
-                            <span class="status-badge status-active">開催中</span>
                             <span class="reservation-count">予約数: 45件</span>
                         </div>
 
                         <div class="event-actions">
-                            <button class="btn btn-primary btn-sm" onclick="openEventModal('EVT_001')">詳細</button>
-                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_001')">編集</button>
+                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_001')">詳細</button>
                             <button class="btn btn-secondary btn-sm" onclick="viewReservations('EVT_001')">予約一覧</button>
                         </div>
                     </div>
@@ -614,11 +562,9 @@
                 <div class="event-card">
                     <div class="event-image">
                         📚
-                        <span class="event-badge badge-seminar">セミナー</span>
                     </div>
                     <div class="event-content">
                         <h3 class="event-title">住宅ローンセミナー</h3>
-                        <p class="event-subtitle">初心者向け住宅ローンの基礎知識</p>
 
                         <div class="event-details">
                             <div class="detail-item">
@@ -631,22 +577,16 @@
                             </div>
                             <div class="detail-item">
                                 <span class="detail-icon">📍</span>
-                                <span>名古屋駅前展示場</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">👥</span>
-                                <span>定員: 20名</span>
+                                <span>愛知県名古屋市緑区桃山3丁目</span>
                             </div>
                         </div>
 
                         <div class="event-status">
-                            <span class="status-badge status-upcoming">予定</span>
                             <span class="reservation-count">予約数: 12件</span>
                         </div>
 
                         <div class="event-actions">
-                            <button class="btn btn-primary btn-sm" onclick="openEventModal('EVT_002')">詳細</button>
-                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_002')">編集</button>
+                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_002')">詳細</button>
                             <button class="btn btn-secondary btn-sm" onclick="viewReservations('EVT_002')">予約一覧</button>
                         </div>
                     </div>
@@ -656,11 +596,9 @@
                 <div class="event-card">
                     <div class="event-image">
                         💰
-                        <span class="event-badge badge-fair">相談会</span>
                     </div>
                     <div class="event-content">
                         <h3 class="event-title">資金計画相談会</h3>
-                        <p class="event-subtitle">マイホーム購入の資金計画をサポート</p>
 
                         <div class="event-details">
                             <div class="detail-item">
@@ -682,13 +620,11 @@
                         </div>
 
                         <div class="event-status">
-                            <span class="status-badge status-ended">終了</span>
                             <span class="reservation-count">参加者: 8組</span>
                         </div>
 
                         <div class="event-actions">
-                            <button class="btn btn-primary btn-sm" onclick="openEventModal('EVT_003')">詳細</button>
-                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_003')">編集</button>
+                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_003')">詳細</button>
                             <button class="btn btn-secondary btn-sm" onclick="viewReservations('EVT_003')">参加履歴</button>
                         </div>
                     </div>
@@ -698,17 +634,10 @@
                 <div class="event-card">
                     <div class="event-image">
                         🏗️
-                        <span class="event-badge badge-viewing">見学会</span>
                         <span class="special-badge">特典あり</span>
                     </div>
                     <div class="event-content">
                         <h3 class="event-title">xevoΣ展示場見学会</h3>
-                        <p class="event-subtitle">最新のxevoΣをご体験ください</p>
-                        
-                        <div class="gift-info">
-                            🎁 QUOカード3,000円分プレゼント！
-                        </div>
-
                         <div class="event-details">
                             <div class="detail-item">
                                 <span class="detail-icon">📅</span>
@@ -722,20 +651,14 @@
                                 <span class="detail-icon">📍</span>
                                 <span>鳴海 xevoΣ 展示場</span>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">🎯</span>
-                                <span>要予約・無料</span>
-                            </div>
                         </div>
 
                         <div class="event-status">
-                            <span class="status-badge status-upcoming">予定</span>
                             <span class="reservation-count">予約数: 28件</span>
                         </div>
 
                         <div class="event-actions">
-                            <button class="btn btn-primary btn-sm" onclick="openEventModal('EVT_004')">詳細</button>
-                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_004')">編集</button>
+                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_004')">詳細</button>
                             <button class="btn btn-secondary btn-sm" onclick="viewReservations('EVT_004')">予約一覧</button>
                         </div>
                     </div>
@@ -745,12 +668,9 @@
                 <div class="event-card">
                     <div class="event-image">
                         🌱
-                        <span class="event-badge badge-seminar">セミナー</span>
                     </div>
                     <div class="event-content">
                         <h3 class="event-title">土地探しセミナー</h3>
-                        <p class="event-subtitle">理想の土地を見つけるコツを伝授</p>
-
                         <div class="event-details">
                             <div class="detail-item">
                                 <span class="detail-icon">📅</span>
@@ -764,20 +684,14 @@
                                 <span class="detail-icon">📍</span>
                                 <span>名古屋駅前展示場</span>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">👥</span>
-                                <span>定員: 15名</span>
-                            </div>
                         </div>
 
                         <div class="event-status">
-                            <span class="status-badge status-upcoming">予定</span>
                             <span class="reservation-count">予約数: 7件</span>
                         </div>
 
                         <div class="event-actions">
-                            <button class="btn btn-primary btn-sm" onclick="openEventModal('EVT_005')">詳細</button>
-                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_005')">編集</button>
+                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_005')">詳細</button>
                             <button class="btn btn-secondary btn-sm" onclick="viewReservations('EVT_005')">予約一覧</button>
                         </div>
                     </div>
@@ -787,11 +701,9 @@
                 <div class="event-card">
                     <div class="event-image">
                         🏘️
-                        <span class="event-badge badge-fair">相談会</span>
                     </div>
                     <div class="event-content">
                         <h3 class="event-title">建替え相談会</h3>
-                        <p class="event-subtitle">既存住宅の建替えをご検討の方へ</p>
 
                         <div class="event-details">
                             <div class="detail-item">
@@ -806,133 +718,20 @@
                                 <span class="detail-icon">📍</span>
                                 <span>岡崎展示場</span>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">📞</span>
-                                <span>事前予約推奨</span>
-                            </div>
                         </div>
 
                         <div class="event-status">
-                            <span class="status-badge status-upcoming">予定</span>
                             <span class="reservation-count">予約数: 15件</span>
                         </div>
 
                         <div class="event-actions">
-                            <button class="btn btn-primary btn-sm" onclick="openEventModal('EVT_006')">詳細</button>
-                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_006')">編集</button>
+                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_006')">詳細</button>
                             <button class="btn btn-secondary btn-sm" onclick="viewReservations('EVT_006')">予約一覧</button>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- イベント詳細モーダル -->
-    <div id="eventModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">イベント詳細</h3>
-                <button class="close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="detail-section">
-                    <h4 class="section-title">イベント基本情報</h4>
-                    <div class="detail-grid">
-                        <div class="detail-label">イベント名:</div>
-                        <div class="detail-value" id="detailEventName">まちなかジーヴォ緑区桃山見学会</div>
-                        
-                        <div class="detail-label">種類:</div>
-                        <div class="detail-value" id="detailEventType">完成見学会</div>
-                        
-                        <div class="detail-label">開催期間:</div>
-                        <div class="detail-value" id="detailEventDuration">2024/12/4(水)～2025/9/24(水)</div>
-                        
-                        <div class="detail-label">開催時間:</div>
-                        <div class="detail-value" id="detailEventTime">10:00～18:00　年末年始休業日：12/28～1/3</div>
-                        
-                        <div class="detail-label">開催場所:</div>
-                        <div class="detail-value" id="detailEventLocation">愛知県名古屋市緑区桃山3丁目1606番1、1606番</div>
-                        
-                        <div class="detail-label">アクセス:</div>
-                        <div class="detail-value" id="detailEventAccess">名古屋市営地下鉄桜通線「神沢」駅まで徒歩4分</div>
-                        
-                        <div class="detail-label">開催店舗:</div>
-                        <div class="detail-value" id="detailEventStore">鳴海 xevoΣ 展示場</div>
-                        
-                        <div class="detail-label">参加費:</div>
-                        <div class="detail-value" id="detailEventFee">無料</div>
-                        
-                        <div class="detail-label">予約について:</div>
-                        <div class="detail-value" id="detailEventReservation">要予約（参加したい日の前日まで）</div>
-                    </div>
-                </div>
-
-                <div class="detail-section">
-                    <h4 class="section-title">イベント詳細内容</h4>
-                    <div id="detailEventDescription">
-                        <p>緑区桃山エリアにまちなかジーヴォ緑区桃山がオープンいたしました。吹き抜けのある21.5帖の広々LDKを採用！大開口・大空間を実現し、家族がくつろげる空間をつくりだします。</p>
-                        <p>キッチンにはkitchenHouseのデュエスタイルを採用させて頂きオープンかつ作業効率を考えたDKゾーンとなっております。</p>
-                        <p>随時現地見学会を開催させて頂いておりますので是非まちなかジーヴォを見学しながら、おうちづくりのご相談をさせて頂ければと思います！</p>
-                    </div>
-                </div>
-
-                <div class="detail-section">
-                    <h4 class="section-title">参加特典</h4>
-                    <div style="background: #e8f5e8; padding: 15px; border-radius: 6px; color: #2e7d32;">
-                        <strong>🎁 ご来場予約＆ご見学でAmazonギフトカード5,000円分プレゼント！</strong><br>
-                        WEBにてご予約の上、ご見学された方へAmazonギフトカード5,000円分をプレゼントいたします。※初回のみ<br>
-                        ご見学しながらおうちづくりのご相談なども可能です！<br>
-                        【キャンペーン主催：大和ハウス工業株式会社】【AmazonはAmazon.com, Inc.またはその関連会社の商標です。】
-                    </div>
-                </div>
-
-                <div class="detail-section">
-                    <h4 class="section-title">予約状況</h4>
-                    <div class="detail-grid">
-                        <div class="detail-label">総予約数:</div>
-                        <div class="detail-value">45件</div>
-                        
-                        <div class="detail-label">参加確定:</div>
-                        <div class="detail-value">32件</div>
-                        
-                        <div class="detail-label">参加待ち:</div>
-                        <div class="detail-value">8件</div>
-                        
-                        <div class="detail-label">キャンセル:</div>
-                        <div class="detail-value">5件</div>
-                    </div>
-                </div>
-
-                <div class="detail-section">
-                    <h4 class="section-title">お問い合わせ先</h4>
-                    <div class="detail-grid">
-                        <div class="detail-label">担当者:</div>
-                        <div class="detail-value">大野　真也</div>
-                        
-                        <div class="detail-label">電話番号:</div>
-                        <div class="detail-value">052-1234-5678</div>
-                        
-                        <div class="detail-label">営業時間:</div>
-                        <div class="detail-value">10:00～18:00（年末年始除く）</div>
-                        
-                        <div class="detail-label">ホームページ:</div>
-                        <div class="detail-value">
-                            <a href="#" style="color: #1976d2;">まちなかジーヴォ緑区桃山　物件詳細</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <div>
-                    <button class="btn btn-secondary" onclick="viewReservations()">予約者一覧</button>
-                </div>
-                <div>
-                    <button class="btn btn-secondary" onclick="closeModal()">閉じる</button>
-                    <button class="btn btn-primary" onclick="editEvent()">編集</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>

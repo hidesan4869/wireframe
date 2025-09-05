@@ -569,6 +569,72 @@
             align-items: center;
             gap: 10px;
         }
+
+        /* 公開ステータストグル */
+        .status-toggle {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .status-text {
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2e7d32;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
     </style>
 </head>
 <body>
@@ -874,12 +940,15 @@
                                 <option value="商品">商品</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">公開ステータス <span class="required">*</span></label>
-                            <select class="form-select" id="editStatus" required>
-                                <option value="active">公開中</option>
-                                <option value="inactive">非公開</option>
-                            </select>
+                        <div class="form-group full-width">
+                            <label class="form-label">公開設定</label>
+                            <div class="status-toggle">
+                                <span class="status-text">カタログ公開ステータス</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="editStatus" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
@@ -1025,7 +1094,7 @@
             document.getElementById('editCatalogName').value = data.name;
             document.getElementById('editCompany').value = data.company;
             document.getElementById('editCategory').value = data.category;
-            document.getElementById('editStatus').value = data.status;
+            document.getElementById('editStatus').checked = (data.status === 'active');
             document.getElementById('editDescription').value = data.description;
 
             // チェックボックスをリセット
@@ -1044,14 +1113,16 @@
                 name: document.getElementById('editCatalogName').value,
                 company: document.getElementById('editCompany').value,
                 category: document.getElementById('editCategory').value,
-                status: document.getElementById('editStatus').value,
+                status: document.getElementById('editStatus').checked ? 'active' : 'inactive',
                 description: document.getElementById('editDescription').value,
                 features: []
             };
 
             // 選択された特徴を収集
-            document.querySelectorAll('#editModal input[type="checkbox"]:checked').forEach(cb => {
-                formData.features.push(cb.value);
+            document.querySelectorAll('#editModal input[type="checkbox"]:checked:not(#editStatus)').forEach(cb => {
+                if (cb.name && cb.name.includes('feature')) {
+                    formData.features.push(cb.value);
+                }
             });
 
             console.log('更新データ:', formData);

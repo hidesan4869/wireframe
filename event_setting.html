@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>イベント設定 - 不動産ポータル管理画面</title>
+    <title>イベント編集 - 不動産ポータル管理画面</title>
     <style>
         * {
             margin: 0;
@@ -98,6 +98,8 @@
             cursor: pointer;
             font-size: 14px;
             transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn-primary {
@@ -155,7 +157,10 @@
             color: #4a4a4a;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .form-grid {
@@ -196,6 +201,7 @@
         .form-input:focus {
             outline: none;
             border-color: #4a4a4a;
+            box-shadow: 0 0 0 2px rgba(74, 74, 74, 0.25);
         }
 
         .form-select {
@@ -204,6 +210,7 @@
             border-radius: 6px;
             font-size: 14px;
             cursor: pointer;
+            background: white;
         }
 
         .form-textarea {
@@ -219,12 +226,14 @@
         .form-textarea:focus {
             outline: none;
             border-color: #4a4a4a;
+            box-shadow: 0 0 0 2px rgba(74, 74, 74, 0.25);
         }
 
         .form-checkbox {
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 8px;
         }
 
         .form-checkbox input {
@@ -238,76 +247,84 @@
             cursor: pointer;
         }
 
+        /* 動的追加可能な項目 */
+        .dynamic-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .event-context-item {
+            background: #fff8dc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ffd700;
+        }
+
+        .event-flow-item {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .add-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .remove-button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
         /* 画像アップロード */
         .image-upload-area {
             border: 2px dashed #c0c0c0;
-            border-radius: 6px;
-            padding: 40px;
+            border-radius: 8px;
+            padding: 30px;
             text-align: center;
             cursor: pointer;
-            transition: border-color 0.2s ease;
+            transition: all 0.2s ease;
+            background: #fafafa;
         }
 
         .image-upload-area:hover {
             border-color: #4a4a4a;
+            background: #f0f0f0;
         }
 
-        .image-preview {
-            display: none;
-            margin-top: 15px;
+        .image-upload-icon {
+            font-size: 48px;
+            color: #c0c0c0;
+            margin-bottom: 10px;
         }
 
-        .image-preview img {
-            max-width: 200px;
-            max-height: 150px;
-            border-radius: 6px;
-            object-fit: cover;
+        .image-upload-text {
+            color: #6a6a6a;
+            font-size: 14px;
         }
 
-        /* 特典設定 */
-        .benefit-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .benefit-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            padding: 15px;
-            background: white;
-            border-radius: 6px;
-        }
-
-        .benefit-checkbox {
-            width: 20px;
-            height: 20px;
-        }
-
-        .benefit-details {
-            flex: 1;
-        }
-
-        .benefit-name {
-            font-weight: 600;
-            color: #2c2c2c;
-            margin-bottom: 5px;
-        }
-
-        .benefit-description {
-            font-size: 12px;
-            color: #7a7a7a;
-        }
-
-        /* 日程設定 */
-        .date-range-group {
+        .checkbox-grid {
             display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 10px;
-            align-items: center;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
         }
 
         /* フォームフッター */
@@ -331,71 +348,6 @@
             gap: 10px;
         }
 
-        /* プレビューセクション */
-        .preview-section {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 25px;
-        }
-
-        .preview-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #4a4a4a;
-            margin-bottom: 15px;
-        }
-
-        .event-card-preview {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
-            max-width: 400px;
-        }
-
-        .preview-image {
-            height: 120px;
-            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            color: #7a7a7a;
-            position: relative;
-        }
-
-        .preview-badge {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 500;
-            color: white;
-            background: #2e7d32;
-        }
-
-        .preview-content {
-            padding: 15px;
-        }
-
-        .preview-event-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #2c2c2c;
-            margin-bottom: 8px;
-        }
-
-        .preview-event-details {
-            font-size: 12px;
-            color: #7a7a7a;
-            line-height: 1.4;
-        }
-
         /* 成功メッセージ */
         .success-message {
             background: #e8f5e8;
@@ -416,6 +368,70 @@
             font-size: 12px;
             margin-top: 3px;
         }
+
+        /* 公開ステータス */
+        .status-toggle {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-text {
+            font-weight: 600;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2e7d32;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
     </style>
 </head>
 <body>
@@ -432,14 +448,16 @@
         <!-- メインコンテンツ -->
         <main class="main-content">
             <div class="breadcrumb">
-                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > イベント予約管理 > イベント設定
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 
+                <a href="all_events.html" style="color: #6a6a6a; text-decoration: none;">イベント管理</a> > 
+                イベント編集
             </div>
 
             <div class="page-header">
-                <h2 class="page-title">📊 イベント設定</h2>
+                <h2 class="page-title">📊 イベント編集</h2>
                 <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="window.location.href='all_events.html'">イベント一覧</button>
-                    <button class="btn btn-secondary" onclick="clearForm()">クリア</button>
+                    <a href="all_events.html" class="btn btn-secondary">一覧に戻る</a>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">クリア</button>
                 </div>
             </div>
 
@@ -450,262 +468,298 @@
 
             <form id="eventForm" class="form-container" onsubmit="submitForm(event)">
                 <div class="form-header">
-                    <h3 class="form-title">イベント情報設定</h3>
+                    <h3 class="form-title">イベント情報編集</h3>
                 </div>
                 
                 <div class="form-body">
-                    <!-- 基本情報 -->
+                    <!-- cbh_events テーブル対応：基本情報 -->
                     <div class="form-section">
-                        <h4 class="section-title">基本情報</h4>
+                        <h4 class="section-title">🏢 基本情報</h4>
                         
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label">イベント名 <span class="required">*</span></label>
-                                <input type="text" id="eventName" class="form-input" 
-                                       placeholder="例：まちなかジーヴォ緑区桃山見学会" 
-                                       required maxlength="100" oninput="updatePreview()">
-                                <div class="error-message" id="eventNameError"></div>
+                                <label class="form-label">企業 <span class="required">*</span></label>
+                                <select id="companyId" class="form-select" required>
+                                    <option value="">選択してください</option>
+                                    <option value="1">株式会社山田建設</option>
+                                    <option value="2">田中不動産株式会社</option>
+                                    <option value="3">佐藤ハウジング</option>
+                                    <option value="4">鈴木工務店有限会社</option>
+                                </select>
+                                <div class="error-message" id="companyIdError"></div>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">イベント種類 <span class="required">*</span></label>
-                                <select id="eventType" class="form-select" required onchange="updatePreview()">
-                                    <option value="">選択してください</option>
-                                    <option value="viewing">見学会</option>
-                                    <option value="seminar">セミナー</option>
-                                    <option value="fair">相談会</option>
-                                    <option value="campaign">キャンペーン</option>
-                                </select>
-                                <div class="error-message" id="eventTypeError"></div>
+                                <label class="form-label">イベントタイトル <span class="required">*</span></label>
+                                <input type="text" id="eventTitle" class="form-input" 
+                                       placeholder="例：まちなかジーヴォ緑区桃山見学会" 
+                                       required maxlength="255">
+                                <div class="error-message" id="eventTitleError"></div>
                             </div>
 
                             <div class="form-group full-width">
-                                <label class="form-label">サブタイトル</label>
-                                <input type="text" id="eventSubtitle" class="form-input" 
-                                       placeholder="例：まちなかジーヴォ緑区桃山がオープンいたしました！" 
-                                       maxlength="200" oninput="updatePreview()">
-                            </div>
-
-                            <div class="form-group full-width">
-                                <label class="form-label">詳細説明 <span class="required">*</span></label>
+                                <label class="form-label">イベント説明 <span class="required">*</span></label>
                                 <textarea id="eventDescription" class="form-textarea" 
                                           placeholder="イベントの詳細内容を入力してください..." 
-                                          required oninput="updatePreview()"></textarea>
+                                          required></textarea>
                                 <div class="error-message" id="eventDescriptionError"></div>
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- 開催情報 -->
-                    <div class="form-section">
-                        <h4 class="section-title">開催情報</h4>
-                        
-                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">開催場所 <span class="required">*</span></label>
+                                <input type="text" id="eventVenue" class="form-input" 
+                                       placeholder="例：ジーヴォ緑区桃山展示場" 
+                                       required maxlength="255">
+                                <div class="error-message" id="eventVenueError"></div>
+                            </div>
+
                             <div class="form-group">
                                 <label class="form-label">開催開始日 <span class="required">*</span></label>
-                                <input type="date" id="eventStartDate" class="form-input" 
-                                       required onchange="updatePreview()">
+                                <input type="date" id="eventStartDate" class="form-input" required>
                                 <div class="error-message" id="eventStartDateError"></div>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label">開催終了日 <span class="required">*</span></label>
-                                <input type="date" id="eventEndDate" class="form-input" 
-                                       required onchange="updatePreview()">
+                                <input type="date" id="eventEndDate" class="form-input" required>
                                 <div class="error-message" id="eventEndDateError"></div>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">開始時間 <span class="required">*</span></label>
-                                <input type="time" id="eventStartTime" class="form-input" 
-                                       required onchange="updatePreview()">
-                                <div class="error-message" id="eventStartTimeError"></div>
+                                <label class="form-label">所要時間</label>
+                                <input type="text" id="timeRequired" class="form-input" 
+                                       placeholder="例：約1時間30分" maxlength="100">
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">終了時間 <span class="required">*</span></label>
-                                <input type="time" id="eventEndTime" class="form-input" 
-                                       required onchange="updatePreview()">
-                                <div class="error-message" id="eventEndTimeError"></div>
+                                <label class="form-label">参加費 <span class="required">*</span></label>
+                                <input type="text" id="participationFee" class="form-input" 
+                                       placeholder="例：無料" required maxlength="100">
+                                <div class="error-message" id="participationFeeError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">予約締切日</label>
+                                <input type="date" id="reservationDeadline" class="form-input">
                             </div>
 
                             <div class="form-group full-width">
-                                <label class="form-label">開催場所 <span class="required">*</span></label>
-                                <input type="text" id="eventLocation" class="form-input" 
-                                       placeholder="例：愛知県名古屋市緑区桃山3丁目1606番1、1606番" 
-                                       required maxlength="200" oninput="updatePreview()">
-                                <div class="error-message" id="eventLocationError"></div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">アクセス</label>
-                                <input type="text" id="eventAccess" class="form-input" 
-                                       placeholder="例：名古屋市営地下鉄桜通線「神沢」駅まで徒歩4分" 
-                                       maxlength="200">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">開催店舗 <span class="required">*</span></label>
-                                <select id="eventStore" class="form-select" required>
-                                    <option value="">選択してください</option>
-                                    <option value="narumi">鳴海 xevoΣ 展示場</option>
-                                    <option value="nagoya">名古屋駅前展示場</option>
-                                    <option value="okazaki">岡崎展示場</option>
-                                    <option value="toyota">豊田展示場</option>
-                                </select>
-                                <div class="error-message" id="eventStoreError"></div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">定員</label>
-                                <input type="number" id="eventCapacity" class="form-input" 
-                                       placeholder="例：20" min="1" max="999">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">参加費</label>
-                                <input type="text" id="eventFee" class="form-input" 
-                                       placeholder="例：無料" maxlength="50">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">予約締切</label>
-                                <select id="eventReservationDeadline" class="form-select">
-                                    <option value="">選択してください</option>
-                                    <option value="same_day">当日まで</option>
-                                    <option value="1_day_before">前日まで</option>
-                                    <option value="2_days_before">2日前まで</option>
-                                    <option value="3_days_before">3日前まで</option>
-                                    <option value="1_week_before">1週間前まで</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 特典設定 -->
-                    <div class="form-section">
-                        <h4 class="section-title">参加特典設定</h4>
-                        
-                        <div class="benefit-section">
-                            <div class="benefit-item">
-                                <input type="checkbox" id="giftAmazon" class="benefit-checkbox" onchange="updatePreview()">
-                                <div class="benefit-details">
-                                    <div class="benefit-name">Amazonギフトカード</div>
-                                    <div class="benefit-description">金額を選択できます</div>
-                                </div>
-                                <select id="amazonAmount" class="form-select" style="width: 150px;" disabled>
-                                    <option value="3000">3,000円</option>
-                                    <option value="5000" selected>5,000円</option>
-                                    <option value="10000">10,000円</option>
-                                </select>
-                            </div>
-
-                            <div class="benefit-item">
-                                <input type="checkbox" id="giftQuo" class="benefit-checkbox" onchange="updatePreview()">
-                                <div class="benefit-details">
-                                    <div class="benefit-name">QUOカード</div>
-                                    <div class="benefit-description">金額を選択できます</div>
-                                </div>
-                                <select id="quoAmount" class="form-select" style="width: 150px;" disabled>
-                                    <option value="1000">1,000円</option>
-                                    <option value="3000" selected>3,000円</option>
-                                    <option value="5000">5,000円</option>
-                                </select>
-                            </div>
-
-                            <div class="benefit-item">
-                                <input type="checkbox" id="giftCustom" class="benefit-checkbox" onchange="updatePreview()">
-                                <div class="benefit-details">
-                                    <div class="benefit-name">その他特典</div>
-                                    <div class="benefit-description">カスタム特典を設定</div>
-                                </div>
-                                <input type="text" id="customGift" class="form-input" style="width: 200px;" 
-                                       placeholder="特典内容を入力" maxlength="100" disabled>
-                            </div>
-
-                            <div class="form-group full-width" style="margin-top: 15px;">
-                                <label class="form-label">特典詳細・注意事項</label>
-                                <textarea id="benefitDetails" class="form-textarea" 
-                                          placeholder="特典の詳細や注意事項を入力してください..." 
+                                <label class="form-label">予約について</label>
+                                <textarea id="aboutReservations" class="form-textarea" 
+                                          placeholder="予約方法や注意事項を入力してください..." 
                                           style="min-height: 80px;"></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 画像設定 -->
+                    <!-- 住所情報 -->
                     <div class="form-section">
-                        <h4 class="section-title">イベント画像</h4>
-                        
-                        <div class="form-group">
-                            <label class="form-label">メイン画像</label>
-                            <div class="image-upload-area" onclick="document.getElementById('eventImage').click()">
-                                <input type="file" id="eventImage" accept="image/*" style="display: none;" onchange="previewImage(this)">
-                                <div id="uploadPrompt">
-                                    📷 画像を選択またはドラッグ&ドロップ<br>
-                                    <small style="color: #7a7a7a;">JPG, PNG（最大5MB）</small>
-                                </div>
-                                <div class="image-preview" id="imagePreview">
-                                    <img id="previewImg" src="" alt="プレビュー">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- お問い合わせ先 -->
-                    <div class="form-section">
-                        <h4 class="section-title">お問い合わせ先</h4>
+                        <h4 class="section-title">📍 住所情報</h4>
                         
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label">担当者名 <span class="required">*</span></label>
-                                <input type="text" id="contactPerson" class="form-input" 
-                                       placeholder="例：大野　真也" 
-                                       required maxlength="50">
-                                <div class="error-message" id="contactPersonError"></div>
+                                <label class="form-label">郵便番号</label>
+                                <input type="text" id="postalCode" class="form-input" 
+                                       placeholder="例：460-0003" 
+                                       pattern="\d{3}-\d{4}" maxlength="8">
+                                <div class="error-message" id="postalCodeError"></div>
                             </div>
-
+                            
                             <div class="form-group">
-                                <label class="form-label">電話番号 <span class="required">*</span></label>
-                                <input type="tel" id="contactPhone" class="form-input" 
-                                       placeholder="例：052-1234-5678" 
-                                       required pattern="\d{2,4}-\d{3,4}-\d{4}">
-                                <div class="error-message" id="contactPhoneError"></div>
+                                <label class="form-label">都道府県 <span class="required">*</span></label>
+                                <select id="prefectureId" class="form-select" required>
+                                    <option value="">選択してください</option>
+                                    <option value="1">北海道</option>
+                                    <option value="2">青森県</option>
+                                    <option value="23">愛知県</option>
+                                    <option value="27">大阪府</option>
+                                    <option value="13">東京都</option>
+                                </select>
+                                <div class="error-message" id="prefectureIdError"></div>
                             </div>
-
+                            
                             <div class="form-group">
-                                <label class="form-label">営業時間</label>
-                                <input type="text" id="businessHours" class="form-input" 
-                                       placeholder="例：10:00～18:00（年末年始除く）" 
-                                       maxlength="100">
+                                <label class="form-label">市区町村 <span class="required">*</span></label>
+                                <input type="text" id="addr01" class="form-input" 
+                                       placeholder="例：名古屋市中区" 
+                                       required maxlength="255">
+                                <div class="error-message" id="addr01Error"></div>
                             </div>
-
+                            
                             <div class="form-group">
-                                <label class="form-label">ホームページURL</label>
-                                <input type="url" id="websiteUrl" class="form-input" 
-                                       placeholder="https://example.com" 
-                                       maxlength="200">
+                                <label class="form-label">番地・建物名</label>
+                                <input type="text" id="addr02" class="form-input" 
+                                       placeholder="例：錦三丁目1番1号 ナゴヤビル" 
+                                       maxlength="255">
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- 追加設定 -->
-                    <div class="form-section">
-                        <h4 class="section-title">追加設定</h4>
-                        
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <div class="form-checkbox">
-                                    <input type="checkbox" id="publishEvent" checked>
-                                    <label for="publishEvent">イベントを公開する</label>
-                                </div>
-                            </div>
-
+                            
                             <div class="form-group full-width">
-                                <label class="form-label">内部メモ</label>
-                                <textarea id="internalMemo" class="form-textarea" 
-                                          placeholder="管理者向けのメモや備考を入力..." 
-                                          style="min-height: 80px;"></textarea>
+                                <label class="form-label">アクセス情報</label>
+                                <textarea id="accessInfo" class="form-textarea" 
+                                          placeholder="例：名古屋市営地下鉄桜通線「神沢」駅まで徒歩4分" 
+                                          style="min-height: 60px;"></textarea>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- cbh_event_genre テーブル対応：イベントジャンル -->
+                    <div class="form-section">
+                        <h4 class="section-title">🏷️ イベントジャンル</h4>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">ジャンル選択（複数選択可）</label>
+                            <div class="checkbox-grid">
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="eventGenre" value="1">
+                                    <span>見学会</span>
+                                </label>
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="eventGenre" value="2">
+                                    <span>セミナー・講座</span>
+                                </label>
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="eventGenre" value="3">
+                                    <span>相談会</span>
+                                </label>
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="eventGenre" value="4">
+                                    <span>体験会</span>
+                                </label>
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="eventGenre" value="5">
+                                    <span>キャンペーン</span>
+                                </label>
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="eventGenre" value="6">
+                                    <span>展示会</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- cbh_event_context テーブル対応：イベント内容 -->
+                    <div class="form-section">
+                        <h4 class="section-title">📝 イベント詳細・内容</h4>
+                        
+                        <div id="eventContextList">
+                            <div class="event-context-item">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">内容タイトル</label>
+                                        <input type="text" class="form-input" name="contextTitle[]" 
+                                               placeholder="例：住宅見学" maxlength="255">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label">内容説明</label>
+                                        <textarea class="form-textarea" name="contextDescription[]" 
+                                                  placeholder="内容の詳細説明を入力してください..." 
+                                                  style="min-height: 80px;"></textarea>
+                                    </div>
+                                </div>
+                                <button type="button" class="remove-button" onclick="removeEventContext(this)">この内容を削除</button>
+                            </div>
+                        </div>
+                        <button type="button" class="add-button" onclick="addEventContext()">+ 内容を追加</button>
+                    </div>
+
+                    <!-- cbh_event_flows テーブル対応：イベントフロー -->
+                    <div class="form-section">
+                        <h4 class="section-title">⚡ イベントフロー（進行順序）</h4>
+                        
+                        <div id="eventFlowList">
+                            <div class="event-flow-item">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">フロータイトル</label>
+                                        <input type="text" class="form-input" name="flowTitle[]" 
+                                               placeholder="例：受付・案内" maxlength="255">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">表示順序</label>
+                                        <input type="number" class="form-input" name="sortOrder[]" 
+                                               placeholder="1" min="1" max="99" value="1">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label">フロー説明</label>
+                                        <textarea class="form-textarea" name="flowDescription[]" 
+                                                  placeholder="このフローの詳細説明を入力してください..." 
+                                                  style="min-height: 80px;"></textarea>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label">フロー画像</label>
+                                        <div class="image-upload-area" onclick="document.getElementById('flowImage1').click()">
+                                            <input type="file" id="flowImage1" accept="image/*" style="display: none;">
+                                            <div class="image-upload-icon">📷</div>
+                                            <div class="image-upload-text">画像を選択またはドラッグ&ドロップ</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="remove-button" onclick="removeEventFlow(this)">このフローを削除</button>
+                            </div>
+                        </div>
+                        <button type="button" class="add-button" onclick="addEventFlow()">+ フローを追加</button>
+                    </div>
+
+                    <!-- cbh_event_features テーブル対応：イベント特徴 -->
+                    <div class="form-section">
+                        <h4 class="section-title">⭐ イベント特徴タグ</h4>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">特徴タグ選択（複数選択可）</label>
+                            <div class="checkbox-grid">
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="featureTag" value="1">
+                                    <span>家族向け</span>
+                                </label>
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="featureTag" value="2">
+                                    <span>初心者歓迎</span>
+                                </label>
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="featureTag" value="3">
+                                    <span>駐車場あり</span>
+                                </label>
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="featureTag" value="4">
+                                    <span>予約不要</span>
+                                </label>
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="featureTag" value="5">
+                                    <span>無料参加</span>
+                                </label>
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="featureTag" value="6">
+                                    <span>特典あり</span>
+                                </label>
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="featureTag" value="7">
+                                    <span>個別対応可</span>
+                                </label>
+                                <label class="form-checkbox">
+                                    <input type="checkbox" name="featureTag" value="8">
+                                    <span>オンライン参加可</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 公開設定 -->
+                    <div class="form-section">
+                        <h4 class="section-title">🌐 公開設定</h4>
+                        
+                        <div class="status-toggle">
+                            <span class="status-text">イベント公開ステータス</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="isActive" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-group full-width" style="margin-top: 20px;">
+                            <label class="form-label">内部メモ</label>
+                            <textarea id="internalMemo" class="form-textarea" 
+                                      placeholder="管理者向けのメモや備考を入力..." 
+                                      style="min-height: 80px;"></textarea>
                         </div>
                     </div>
                 </div>
@@ -725,92 +779,86 @@
     </div>
 
     <script>
-        // 画像プレビュー
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('uploadPrompt').style.display = 'none';
-                    document.getElementById('imagePreview').style.display = 'block';
-                    document.getElementById('previewImg').src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
+        // イベント内容の追加
+        function addEventContext() {
+            const contextList = document.getElementById('eventContextList');
+            const newItem = document.createElement('div');
+            newItem.className = 'event-context-item';
+            newItem.innerHTML = `
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">内容タイトル</label>
+                        <input type="text" class="form-input" name="contextTitle[]" 
+                               placeholder="例：住宅見学" maxlength="255">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">内容説明</label>
+                        <textarea class="form-textarea" name="contextDescription[]" 
+                                  placeholder="内容の詳細説明を入力してください..." 
+                                  style="min-height: 80px;"></textarea>
+                    </div>
+                </div>
+                <button type="button" class="remove-button" onclick="removeEventContext(this)">この内容を削除</button>
+            `;
+            contextList.appendChild(newItem);
+        }
+
+        // イベント内容の削除
+        function removeEventContext(button) {
+            if (confirm('この内容を削除しますか？')) {
+                button.parentElement.remove();
             }
         }
 
-        // プレビュー更新
-        function updatePreview() {
-            const eventName = document.getElementById('eventName').value || 'イベント名を入力してください';
-            const eventType = document.getElementById('eventType').value;
-            const startDate = document.getElementById('eventStartDate').value;
-            const endDate = document.getElementById('eventEndDate').value;
-            const startTime = document.getElementById('eventStartTime').value;
-            const endTime = document.getElementById('eventEndTime').value;
-            const location = document.getElementById('eventLocation').value || '開催場所を入力してください';
-
-            // タイトル更新
-            document.getElementById('previewTitle').textContent = eventName;
-
-            // バッジ更新
-            const badge = document.getElementById('previewBadge');
-            switch(eventType) {
-                case 'viewing':
-                    badge.textContent = '見学会';
-                    badge.style.background = '#2e7d32';
-                    break;
-                case 'seminar':
-                    badge.textContent = 'セミナー';
-                    badge.style.background = '#1976d2';
-                    break;
-                case 'fair':
-                    badge.textContent = '相談会';
-                    badge.style.background = '#f57c00';
-                    break;
-                case 'campaign':
-                    badge.textContent = 'キャンペーン';
-                    badge.style.background = '#d32f2f';
-                    break;
-                default:
-                    badge.textContent = 'イベント';
-                    badge.style.background = '#6c757d';
-            }
-
-            // 詳細情報更新
-            let dateInfo = '開催日程を設定してください';
-            if (startDate && endDate && startTime && endTime) {
-                if (startDate === endDate) {
-                    dateInfo = `📅 ${startDate} ${startTime}～${endTime}`;
-                } else {
-                    dateInfo = `📅 ${startDate}～${endDate} ${startTime}～${endTime}`;
-                }
-            }
-
-            document.getElementById('previewDetails').innerHTML = 
-                `${dateInfo}<br>📍 ${location}`;
-
-            // 特典表示
-            updateBenefitDisplay();
+        // イベントフローの追加
+        function addEventFlow() {
+            const flowList = document.getElementById('eventFlowList');
+            const flowCount = flowList.children.length + 1;
+            const newItem = document.createElement('div');
+            newItem.className = 'event-flow-item';
+            newItem.innerHTML = `
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">フロータイトル</label>
+                        <input type="text" class="form-input" name="flowTitle[]" 
+                               placeholder="例：受付・案内" maxlength="255">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">表示順序</label>
+                        <input type="number" class="form-input" name="sortOrder[]" 
+                               placeholder="${flowCount}" min="1" max="99" value="${flowCount}">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">フロー説明</label>
+                        <textarea class="form-textarea" name="flowDescription[]" 
+                                  placeholder="このフローの詳細説明を入力してください..." 
+                                  style="min-height: 80px;"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">フロー画像</label>
+                        <div class="image-upload-area" onclick="document.getElementById('flowImage${flowCount}').click()">
+                            <input type="file" id="flowImage${flowCount}" accept="image/*" style="display: none;">
+                            <div class="image-upload-icon">📷</div>
+                            <div class="image-upload-text">画像を選択またはドラッグ&ドロップ</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="remove-button" onclick="removeEventFlow(this)">このフローを削除</button>
+            `;
+            flowList.appendChild(newItem);
         }
 
-        // 特典表示更新
-        function updateBenefitDisplay() {
-            const amazonGift = document.getElementById('giftAmazon').checked;
-            const quoGift = document.getElementById('giftQuo').checked;
-            const customGift = document.getElementById('giftCustom').checked;
-
-            // 特典チェックボックスに応じてselect/inputを有効/無効化
-            document.getElementById('amazonAmount').disabled = !amazonGift;
-            document.getElementById('quoAmount').disabled = !quoGift;
-            document.getElementById('customGift').disabled = !customGift;
+        // イベントフローの削除
+        function removeEventFlow(button) {
+            if (confirm('このフローを削除しますか？')) {
+                button.parentElement.remove();
+            }
         }
 
         // フォームクリア
         function clearForm() {
             if (confirm('入力内容をすべてクリアしますか？')) {
                 document.getElementById('eventForm').reset();
-                document.getElementById('uploadPrompt').style.display = 'block';
-                document.getElementById('imagePreview').style.display = 'none';
-                updatePreview();
                 clearErrors();
             }
         }
@@ -832,15 +880,15 @@
 
             // 必須項目のチェック
             const requiredFields = [
-                { id: 'eventName', error: 'eventNameError', message: 'イベント名は必須です' },
-                { id: 'eventType', error: 'eventTypeError', message: 'イベント種類は必須です' },
-                { id: 'eventDescription', error: 'eventDescriptionError', message: '詳細説明は必須です' },
+                { id: 'companyId', error: 'companyIdError', message: '企業は必須です' },
+                { id: 'eventTitle', error: 'eventTitleError', message: 'イベントタイトルは必須です' },
+                { id: 'eventDescription', error: 'eventDescriptionError', message: 'イベント説明は必須です' },
+                { id: 'eventVenue', error: 'eventVenueError', message: '開催場所は必須です' },
                 { id: 'eventStartDate', error: 'eventStartDateError', message: '開催開始日は必須です' },
                 { id: 'eventEndDate', error: 'eventEndDateError', message: '開催終了日は必須です' },
-                { id: 'eventStartTime', error: 'eventStartTimeError', message: '開始時間は必須です' },
-                { id: 'eventEndTime', error: 'eventEndTimeError', message: '終了時間は必須です' },
-                { id: 'eventLocation', error: 'eventLocationError', message: '開催場所は必須です' },
-                { id: 'eventStore', error: 'eventStoreError', message: '開催店舗は必須です' },
+                { id: 'prefectureId', error: 'prefectureIdError', message: '都道府県は必須です' },
+                { id: 'addr01', error: 'addr01Error', message: '市区町村は必須です' },
+                { id: 'participationFee', error: 'participationFeeError', message: '参加費は必須です' },
                 { id: 'contactPerson', error: 'contactPersonError', message: '担当者名は必須です' },
                 { id: 'contactPhone', error: 'contactPhoneError', message: '電話番号は必須です' }
             ];
@@ -861,11 +909,10 @@
                 isValid = false;
             }
 
-            // 時間の妥当性チェック
-            const startTime = document.getElementById('eventStartTime').value;
-            const endTime = document.getElementById('eventEndTime').value;
-            if (startDate === endDate && startTime && endTime && startTime >= endTime) {
-                showError('eventEndTime', 'eventEndTimeError', '終了時間は開始時間より後の時間を選択してください');
+            // 郵便番号の形式チェック
+            const postalCode = document.getElementById('postalCode');
+            if (postalCode.value && !/^\d{3}-\d{4}$/.test(postalCode.value)) {
+                showError('postalCode', 'postalCodeError', '郵便番号の形式が正しくありません（例：460-0003）');
                 isValid = false;
             }
 
@@ -896,32 +943,58 @@
             event.preventDefault();
             
             if (validateForm()) {
-                // 実際の処理ではAPIへ送信
+                // DBテーブル構造に対応したデータ収集
                 const formData = {
-                    eventName: document.getElementById('eventName').value,
-                    eventType: document.getElementById('eventType').value,
-                    eventSubtitle: document.getElementById('eventSubtitle').value,
-                    eventDescription: document.getElementById('eventDescription').value,
-                    startDate: document.getElementById('eventStartDate').value,
-                    endDate: document.getElementById('eventEndDate').value,
-                    startTime: document.getElementById('eventStartTime').value,
-                    endTime: document.getElementById('eventEndTime').value,
-                    location: document.getElementById('eventLocation').value,
-                    access: document.getElementById('eventAccess').value,
-                    store: document.getElementById('eventStore').value,
-                    capacity: document.getElementById('eventCapacity').value,
-                    fee: document.getElementById('eventFee').value,
-                    contactPerson: document.getElementById('contactPerson').value,
-                    contactPhone: document.getElementById('contactPhone').value,
-                    benefits: {
-                        amazon: document.getElementById('giftAmazon').checked ? document.getElementById('amazonAmount').value : null,
-                        quo: document.getElementById('giftQuo').checked ? document.getElementById('quoAmount').value : null,
-                        custom: document.getElementById('giftCustom').checked ? document.getElementById('customGift').value : null
-                    },
-                    published: document.getElementById('publishEvent').checked
+                    // cbh_events テーブル
+                    company_id: document.getElementById('companyId').value,
+                    title: document.getElementById('eventTitle').value,
+                    description: document.getElementById('eventDescription').value,
+                    venue: document.getElementById('eventVenue').value,
+                    start_date: document.getElementById('eventStartDate').value,
+                    end_date: document.getElementById('eventEndDate').value,
+                    is_active: document.getElementById('isActive').checked,
+                    postal_code: document.getElementById('postalCode').value,
+                    prefecture_id: document.getElementById('prefectureId').value,
+                    addr01: document.getElementById('addr01').value,
+                    addr02: document.getElementById('addr02').value,
+                    time_required: document.getElementById('timeRequired').value,
+                    about_reservations: document.getElementById('aboutReservations').value,
+                    reservation_deadline: document.getElementById('reservationDeadline').value,
+                    participation_fee: document.getElementById('participationFee').value,
+                    
+                    // cbh_event_genre テーブル
+                    event_genres: Array.from(document.querySelectorAll('input[name="eventGenre"]:checked')).map(cb => ({
+                        genre_id: cb.value,
+                        name: cb.nextElementSibling.textContent
+                    })),
+                    
+                    // cbh_event_context テーブル
+                    event_contexts: Array.from(document.querySelectorAll('input[name="contextTitle[]"]')).map((title, index) => ({
+                        title: title.value,
+                        description: document.querySelectorAll('textarea[name="contextDescription[]"]')[index]?.value
+                    })).filter(context => context.title || context.description),
+                    
+                    // cbh_event_flows テーブル
+                    event_flows: Array.from(document.querySelectorAll('input[name="flowTitle[]"]')).map((title, index) => ({
+                        title: title.value,
+                        description: document.querySelectorAll('textarea[name="flowDescription[]"]')[index]?.value,
+                        sort_order: document.querySelectorAll('input[name="sortOrder[]"]')[index]?.value,
+                        image_path: null // 実際の実装では画像アップロード処理が必要
+                    })).filter(flow => flow.title || flow.description),
+                    
+                    // cbh_event_features テーブル
+                    feature_tags: Array.from(document.querySelectorAll('input[name="featureTag"]:checked')).map(cb => cb.value),
+                    
+                    // その他の情報
+                    contact_person: document.getElementById('contactPerson').value,
+                    contact_phone: document.getElementById('contactPhone').value,
+                    business_hours: document.getElementById('businessHours').value,
+                    website_url: document.getElementById('websiteUrl').value,
+                    access_info: document.getElementById('accessInfo').value,
+                    internal_memo: document.getElementById('internalMemo').value
                 };
 
-                console.log('Event data:', formData);
+                console.log('Event data (DB structure compatible):', formData);
 
                 // 成功メッセージ表示
                 document.getElementById('successMessage').style.display = 'block';
@@ -939,12 +1012,7 @@
 
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
-            updatePreview();
-            
-            // 特典チェックボックスイベントリスナー
-            document.getElementById('giftAmazon').addEventListener('change', updateBenefitDisplay);
-            document.getElementById('giftQuo').addEventListener('change', updateBenefitDisplay);
-            document.getElementById('giftCustom').addEventListener('change', updateBenefitDisplay);
+            console.log('🎉 新しいDBテーブル構造対応イベント編集ページが初期化されました！');
         });
     </script>
 </body>
