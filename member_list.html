@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>会員一覧 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         * {
             margin: 0;
@@ -678,7 +679,7 @@
     <div class="container">
         <!-- ヘッダー -->
         <header class="header">
-            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'"><i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>不動産ポータル管理システム</h1>
             <div class="user-info">
                 <span>田中 太郎さん</span>
                 <button class="btn btn-secondary">ログアウト</button>
@@ -692,7 +693,7 @@
             </div>
 
             <div class="page-header">
-                <h2 class="page-title">👥 会員一覧</h2>
+                <h2 class="page-title"><i data-lucide="users" style="width: 24px; height: 24px; margin-right: 8px;"></i>会員一覧</h2>
                 <div class="action-buttons">
                     <button class="btn btn-secondary" onclick="exportMembers()">CSVエクスポート</button>
                     <button class="btn btn-primary" onclick="window.location.href='member_register.html'">新規会員登録</button>
@@ -775,7 +776,7 @@
                                     <button class="action-button" onclick="toggleActionMenu(this, 'M001234')">⋮</button>
                                     <div class="action-popover">
                                         <div class="action-item detail" onclick="openDetailPage('M001234')">
-                                            <span class="action-item-icon">👁️</span>
+                                            <span class="action-item-icon"><i data-lucide="eye" style="width: 16px; height: 16px;"></i></span>
                                             <span>詳細</span>
                                         </div>
                                     </div>
@@ -801,7 +802,7 @@
                                     <button class="action-button" onclick="toggleActionMenu(this, 'M001235')">⋮</button>
                                     <div class="action-popover">
                                         <div class="action-item detail" onclick="openDetailPage('M001235')">
-                                            <span class="action-item-icon">👁️</span>
+                                            <span class="action-item-icon"><i data-lucide="eye" style="width: 16px; height: 16px;"></i></span>
                                             <span>詳細</span>
                                         </div>
                                         <div class="action-item mail" onclick="sendEmail('M001235')">
@@ -831,7 +832,7 @@
                                     <button class="action-button" onclick="toggleActionMenu(this, 'M001236')">⋮</button>
                                     <div class="action-popover">
                                         <div class="action-item detail" onclick="openDetailPage('M001236')">
-                                            <span class="action-item-icon">👁️</span>
+                                            <span class="action-item-icon"><i data-lucide="eye" style="width: 16px; height: 16px;"></i></span>
                                             <span>詳細</span>
                                         </div>
                                         <div class="action-item mail" onclick="sendEmail('M001236')">
@@ -861,11 +862,11 @@
                                     <button class="action-button" onclick="toggleActionMenu(this, 'M001237')">⋮</button>
                                     <div class="action-popover">
                                         <div class="action-item detail" onclick="openDetailPage('M001237')">
-                                            <span class="action-item-icon">👁️</span>
+                                            <span class="action-item-icon"><i data-lucide="eye" style="width: 16px; height: 16px;"></i></span>
                                             <span>詳細</span>
                                         </div>
                                         <div class="action-item edit" onclick="openEditModal('M001237')">
-                                            <span class="action-item-icon">✏️</span>
+                                            <span class="action-item-icon"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></span>
                                             <span>編集</span>
                                         </div>
                                         <div class="action-item mail" onclick="sendEmail('M001237')">
@@ -895,11 +896,11 @@
                                     <button class="action-button" onclick="toggleActionMenu(this, 'M001238')">⋮</button>
                                     <div class="action-popover">
                                         <div class="action-item detail" onclick="openDetailPage('M001238')">
-                                            <span class="action-item-icon">👁️</span>
+                                            <span class="action-item-icon"><i data-lucide="eye" style="width: 16px; height: 16px;"></i></span>
                                             <span>詳細</span>
                                         </div>
                                         <div class="action-item edit" onclick="openEditModal('M001238')">
-                                            <span class="action-item-icon">✏️</span>
+                                            <span class="action-item-icon"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></span>
                                             <span>編集</span>
                                         </div>
                                         <div class="action-item mail" onclick="sendEmail('M001238')">
@@ -929,11 +930,11 @@
                                     <button class="action-button" onclick="toggleActionMenu(this, 'M001239')">⋮</button>
                                     <div class="action-popover">
                                         <div class="action-item detail" onclick="openDetailPage('M001239')">
-                                            <span class="action-item-icon">👁️</span>
+                                            <span class="action-item-icon"><i data-lucide="eye" style="width: 16px; height: 16px;"></i></span>
                                             <span>詳細</span>
                                         </div>
                                         <div class="action-item edit" onclick="openEditModal('M001239')">
-                                            <span class="action-item-icon">✏️</span>
+                                            <span class="action-item-icon"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></span>
                                             <span>編集</span>
                                         </div>
                                         <div class="action-item mail" onclick="sendEmail('M001239')">
@@ -1458,6 +1459,9 @@
 
         // フォーム送信処理
         document.addEventListener('DOMContentLoaded', function() {
+            // Lucide icons 初期化
+            lucide.createIcons();
+            
             // URLパラメータ処理を実行
             handleUrlParams();
             // 編集フォームの送信処理

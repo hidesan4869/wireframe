@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>契約企業一覧 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         * {
             margin: 0;
@@ -481,7 +482,7 @@
 <body>
     <!-- ヘッダー -->
     <header class="header">
-        <h1 onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+        <h1 onclick="window.location.href='index.html'"><i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>不動産ポータル管理システム</h1>
         <div class="user-info">
             <span>田中 太郎さん（運営者）</span>
             <button class="btn btn-secondary">ログアウト</button>
@@ -495,7 +496,7 @@
         </div>
 
         <div class="page-header">
-            <h2 class="page-title">🏢 企業一覧</h2>
+            <h2 class="page-title"><i data-lucide="building" style="width: 24px; height: 24px; margin-right: 8px;"></i>企業一覧</h2>
             <div class="action-buttons">
                 <button class="btn btn-secondary">CSVエクスポート</button>
                 <button class="btn btn-primary" onclick="window.location.href='company_register.html'">新規企業登録</button>
@@ -565,11 +566,11 @@
                                 <div class="action-popover">
                                  
                                     <div class="action-item detail" onclick="openCompanyDetail('C001')">
-                                        <span class="action-item-icon">👁️</span>
+                                        <span class="action-item-icon"><i data-lucide="eye" style="width: 16px; height: 16px;"></i></span>
                                         <span>詳細</span>
                                     </div>
                                     <div class="action-item member" onclick="manageMembers('C001')">
-                                        <span class="action-item-icon">👥</span>
+                                        <span class="action-item-icon"><i data-lucide="users" style="width: 16px; height: 16px;"></i></span>
                                         <span>メンバー管理</span>
                                     </div>
                                 </div>
@@ -598,11 +599,11 @@
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C002')">⋮</button>
                                 <div class="action-popover">
                                     <div class="action-item detail" onclick="openCompanyDetail('C002')">
-                                        <span class="action-item-icon">👁️</span>
+                                        <span class="action-item-icon"><i data-lucide="eye" style="width: 16px; height: 16px;"></i></span>
                                         <span>詳細</span>
                                     </div>
                                     <div class="action-item member" onclick="manageMembers('C002')">
-                                        <span class="action-item-icon">👥</span>
+                                        <span class="action-item-icon"><i data-lucide="users" style="width: 16px; height: 16px;"></i></span>
                                         <span>メンバー管理</span>
                                     </div>
                                 </div>
@@ -631,11 +632,11 @@
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C003')">⋮</button>
                                 <div class="action-popover">
                                     <div class="action-item detail" onclick="openCompanyDetail('C003')">
-                                        <span class="action-item-icon">👁️</span>
+                                        <span class="action-item-icon"><i data-lucide="eye" style="width: 16px; height: 16px;"></i></span>
                                         <span>詳細</span>
                                     </div>
                                     <div class="action-item member" onclick="manageMembers('C003')">
-                                        <span class="action-item-icon">👥</span>
+                                        <span class="action-item-icon"><i data-lucide="users" style="width: 16px; height: 16px;"></i></span>
                                         <span>メンバー管理</span>
                                     </div>
                                 </div>
@@ -664,11 +665,11 @@
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C004')">⋮</button>
                                 <div class="action-popover">
                                     <div class="action-item detail" onclick="openCompanyDetail('C004')">
-                                        <span class="action-item-icon">👁️</span>
+                                        <span class="action-item-icon"><i data-lucide="eye" style="width: 16px; height: 16px;"></i></span>
                                         <span>詳細</span>
                                     </div>
                                     <div class="action-item member" onclick="manageMembers('C004')">
-                                        <span class="action-item-icon">👥</span>
+                                        <span class="action-item-icon"><i data-lucide="users" style="width: 16px; height: 16px;"></i></span>
                                         <span>メンバー管理</span>
                                     </div>
                                 </div>
@@ -697,11 +698,11 @@
                                 <button class="action-button" onclick="toggleActionMenu(this, 'C005')">⋮</button>
                                 <div class="action-popover">
                                     <div class="action-item detail" onclick="openCompanyDetail('C005')">
-                                        <span class="action-item-icon">👁️</span>
+                                        <span class="action-item-icon"><i data-lucide="eye" style="width: 16px; height: 16px;"></i></span>
                                         <span>詳細</span>
                                     </div>
                                     <div class="action-item member" onclick="manageMembers('C005')">
-                                        <span class="action-item-icon">👥</span>
+                                        <span class="action-item-icon"><i data-lucide="users" style="width: 16px; height: 16px;"></i></span>
                                         <span>メンバー管理</span>
                                     </div>
                                 </div>
@@ -1219,6 +1220,11 @@
                 closeEditModal();
             }
         }
+        
+        // Lucide icons 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
     </script>
 </body>
 </html>

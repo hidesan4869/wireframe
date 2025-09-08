@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント予約詳細 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;   
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #4a4a4a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-warning {
+            background: #f57c00;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e65100;
+            transform: translateY(-1px);
+        }
+
+        /* 詳細カード */
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6a6a6a;
+        }
+
+        .detail-value {
+            color: #2c2c2c;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-confirmed {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-cancelled {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .notes-section {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 6px;
+            white-space: pre-line;
+            margin-top: 10px;
+        }
+
+        .benefits-section {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 6px;
+            color: #2e7d32;
+            margin-top: 10px;
+        }
+
+        /* 編集モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 3% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 10px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #4a4a4a;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* トグルスイッチ */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #4a4a4a;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            color: #4a4a4a;
+            user-select: none;
+        }
+
+        .toggle-status {
+            font-size: 13px;
+            color: #6a6a6a;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                不動産ポータル管理システム
+            </h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="event_requests.html">イベント予約管理</a> > イベント予約詳細
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">
+                    <i data-lucide="clipboard-list" style="width: 24px; height: 24px; margin-right: 8px;"></i>
+                    イベント予約詳細
+                </h2>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="window.history.back()">戻る</button>
+                    <button class="btn btn-warning" onclick="openEditModal()">編集</button>
+                </div>
+            </div>
+
+            <!-- 予約情報 -->
+            <div class="detail-card">
+                <h4 style="margin-top: 25px; margin-bottom: 15px; color: #4a4a4a; font-size: 16px; border-bottom: 1px solid #e0e0e0; padding-bottom: 5px;">イベント情報</h4>
+                <div class="detail-grid">
+                    <div class="detail-label">イベントID:</div>
+                    <div class="detail-value" id="eventId">EVT001</div>
+                    
+                    <div class="detail-label">イベント名:</div>
+                    <div class="detail-value" id="eventName">まちなかジーヴォ緑区桃山見学会</div>
+                    
+                    <div class="detail-label">開催企業:</div>
+                    <div class="detail-value" id="eventCompany">株式会社モダン</div>
+                    
+                    <div class="detail-label">開催日程:</div>
+                    <div class="detail-value" id="eventSchedule">2024/12/4(水)～2025/9/24(水)</div>
+                    
+                    <div class="detail-label">開催時間:</div>
+                    <div class="detail-value" id="eventTime">10:00～18:00</div>
+                    
+                    <div class="detail-label">開催場所:</div>
+                    <div class="detail-value" id="eventLocation">愛知県名古屋市緑区桃山3丁目</div>
+                </div>
+            </div>
+
+            <!-- 顧客情報 -->
+            <div class="detail-card">
+                <h3 class="card-title">予約情報</h3>
+                <div class="detail-grid">
+                    <div class="detail-label">ID:</div>
+                    <div class="detail-value" id="reservationId">1000</div>
+                    
+                    <div class="detail-label">予約日時:</div>
+                    <div class="detail-value" id="reservationDate">2025-08-25</div>
+                </div>
+                <h4 class="card-title">予約者情報</h4>
+                <div class="detail-grid">
+                    <div class="detail-label">氏名:</div>
+                    <div class="detail-value" id="customerName">山田 太郎</div>
+                    <div class="detail-label">フリガナ:</div>
+                    <div class="detail-value" id="customerName">ヤマダ タロウ</div>
+                    
+                    <div class="detail-label">メールアドレス:</div>
+                    <div class="detail-value" id="customerEmail">yamada@example.com</div>
+                    
+                    <div class="detail-label">電話番号:</div>
+                    <div class="detail-value" id="customerPhone">090-1234-5678</div>
+                    
+                    <div class="detail-label">住所:</div>
+                    <div class="detail-value" id="customerAddress">東京都新宿区西新宿1-1-1</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 編集モーダル -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">予約情報編集</h3>
+                <button class="close" onclick="closeEditModal()"><i data-lucide="x" style="width: 20px; height: 20px;"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">姓</label>
+                            <input type="text" class="form-input" id="editCustomerLastName" value="山田">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">名</label>
+                            <input type="text" class="form-input" id="editCustomerFirstName" value="太郎">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">姓（カナ）</label>
+                            <input type="text" class="form-input" id="editCustomerLastNameKana" value="ヤマダ">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">名（カナ）</label>
+                            <input type="text" class="form-input" id="editCustomerFirstNameKana" value="タロウ">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">電話番号</label>
+                            <input type="tel" class="form-input" id="editCustomerPhone" value="090-1234-5678">
+                        </div>
+                        <div class="form-group">
+                            <!-- 空のスペース -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label class="form-label">メールアドレス</label>
+                            <input type="email" class="form-input" id="editCustomerEmail" value="yamada@example.com">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label class="form-label">住所</label>
+                            <input type="text" class="form-input" id="editCustomerAddress" value="東京都新宿区西新宿1-1-1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label class="form-label">希望連絡時間</label>
+                            <input type="text" class="form-input" id="editCustomerAddress" value="18時頃">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label class="form-label">希望参加時間</label>
+                            <input type="text" class="form-input" id="editCustomerAddress" value="10:00">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="full-width" style="display: flex;">
+                            <label class="form-label">ニュースレター配信</label>
+                            <div class="toggle-container" style="margin-left: 1rem;">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="editNewsletterSubscription" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditModal()">キャンセル</button>
+                <button class="btn btn-primary" onclick="saveReservation()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URLパラメータから予約IDを取得
+        function getReservationIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // 編集モーダルを開く
+        function openEditModal() {
+            document.getElementById('editModal').classList.add('show');
+            console.log('Opening edit modal for reservation:', getReservationIdFromUrl());
+        }
+
+        // 編集モーダルを閉じる
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+        }
+
+        // 予約情報を保存
+        function saveReservation() {
+            const reservationId = getReservationIdFromUrl();
+            
+            // フォームデータを取得
+            const formData = {
+                customerName: document.getElementById('editCustomerName').value,
+                customerKana: document.getElementById('editCustomerKanaKana').value,
+                customerPhone: document.getElementById('editCustomerPhone').value,
+                customerEmail: document.getElementById('editCustomerEmail').value,
+                customerAddress: document.getElementById('editCustomerAddress').value,
+                participantCount: document.getElementById('editParticipantCount').value,
+                status: document.getElementById('editStatus').value,
+                notes: document.getElementById('editNotes').value
+            };
+
+            console.log('Saving reservation data:', formData);
+
+            // 実際の保存処理をここに実装
+            alert('予約情報を更新しました。');
+            
+            // 画面の表示を更新
+            updateDisplayData(formData);
+            
+            // モーダルを閉じる
+            closeEditModal();
+        }
+
+        // 画面表示データを更新
+        function updateDisplayData(data) {
+            document.getElementById('customerName').textContent = data.customerName;
+            document.getElementById('customerPhone').textContent = data.customerPhone;
+            document.getElementById('customerEmail').textContent = data.customerEmail;
+            document.getElementById('customerAddress').textContent = data.customerAddress;
+            document.getElementById('participantCount').textContent = data.participantCount + '名';
+            document.getElementById('customerNotes').textContent = data.notes;
+
+            // ステータスの更新
+            const statusElement = document.getElementById('reservationStatus');
+            statusElement.textContent = getStatusText(data.status);
+            statusElement.className = `status-badge status-${data.status}`;
+        }
+
+        // ステータステキストを取得
+        function getStatusText(status) {
+            const statusMap = {
+                'confirmed': '参加確定',
+                'pending': '予約待ち',
+                'cancelled': 'キャンセル'
+            };
+            return statusMap[status] || status;
+        }
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeEditModal();
+            }
+        }
+
+        // トグルスイッチの状態を更新
+        function updateNewsletterStatus() {
+            const checkbox = document.getElementById('editNewsletterSubscription');
+            const statusText = document.getElementById('newsletterStatus');
+            
+            if (checkbox.checked) {
+                statusText.textContent = '配信希望';
+                statusText.style.color = '#2e7d32';
+            } else {
+                statusText.textContent = '配信停止';
+                statusText.style.color = '#d32f2f';
+            }
+        }
+
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            const reservationId = getReservationIdFromUrl();
+            console.log('Loading reservation detail for ID:', reservationId);
+            
+            // 実際のAPIから詳細データを取得する処理をここに実装
+            // loadReservationDetail(reservationId);
+
+            // Lucideアイコンを初期化
+            lucide.createIcons();
+
+            // ニュースレタートグルのイベントリスナーを追加
+            const newsletterToggle = document.getElementById('editNewsletterSubscription');
+            if (newsletterToggle) {
+                newsletterToggle.addEventListener('change', updateNewsletterStatus);
+                updateNewsletterStatus(); // 初期状態を設定
+            }
+        });
+    </script>
+</body>
+</html>

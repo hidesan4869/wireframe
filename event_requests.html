@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>イベント予約者情報 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         * {
             margin: 0;
@@ -169,7 +170,7 @@
 
         .filter-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
             gap: 15px;
             margin-bottom: 15px;
         }
@@ -204,6 +205,115 @@
             gap: 10px;
             align-items: end;
         }
+
+        /* 企業検索オートコンプリート */
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #c0c0c0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .suggestion-item:hover {
+            background: #f5f5f5;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item[data-value=""] {
+            font-weight: 600;
+            color: #666;
+            background: #f8f8f8;
+        }
+
+        /* アクションメニュー */
+        .action-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-button {
+            background: #4a4a4a;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+            background: #3a3a3a;
+            transform: scale(1.1);
+        }
+
+        .action-popover {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .action-popover.show {
+            display: block;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #2c2c2c;
+            transition: background 0.2s ease;
+        }
+
+        .action-item:hover {
+            background: #f5f5f5;
+        }
+
+        .action-item-icon {
+            font-size: 16px;
+            width: 18px;
+            text-align: center;
+        }
+
+        /* アクションアイテムの色分け */
+        .action-item.detail:hover {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
 
         /* データテーブル */
         .data-table {
@@ -425,7 +535,10 @@
     <div class="container">
         <!-- ヘッダー -->
         <header class="header">
-            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                不動産ポータル管理システム
+            </h1>
             <div class="user-info">
                 <span>田中 太郎さん</span>
                 <button class="btn btn-secondary">ログアウト</button>
@@ -439,7 +552,10 @@
             </div>
 
             <div class="page-header">
-                <h2 class="page-title">👥 イベント予約者情報</h2>
+                <h2 class="page-title">
+                    <i data-lucide="users" style="width: 24px; height: 24px; margin-right: 8px;"></i>
+                    イベント予約者情報
+                </h2>
                 <div class="action-buttons">
                     <button class="btn btn-secondary" onclick="exportReservations()">CSVエクスポート</button>
                     <button class="btn btn-primary" onclick="window.location.href='event_setting.html'">イベント設定</button>
@@ -449,9 +565,29 @@
             <!-- フィルター -->
             <div class="filter-section">
                 <div class="filter-row">
-                    <div class="filter-group" style="grid-column: span 3;">
+                    <div class="filter-group">
+                        <label class="filter-label">企業名検索</label>
+                        <div style="position: relative;">
+                            <input type="text" class="filter-input" id="companySearch" 
+                                   placeholder="企業名で検索..." 
+                                   oninput="filterCompanies()" 
+                                   onfocus="showCompanySuggestions()" 
+                                   onblur="hideCompanySuggestions()"
+                                   onkeypress="handleEnterKey(event)"
+                                   style="width: 100%;">
+                            <div id="companySuggestions" class="suggestions-dropdown" style="display: none;">
+                                <div class="suggestion-item" onmousedown="selectCompany('株式会社山田建設')">株式会社山田建設</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('株式会社田中工務店')">株式会社田中工務店</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('鈴木ハウジング')">鈴木ハウジング</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('中部建設株式会社')">中部建設株式会社</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('愛知住宅販売')">愛知住宅販売</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('すべての企業')" data-value="">すべての企業</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-group">
                         <label class="filter-label">キーワード検索</label>
-                        <input type="text" class="filter-input" id="searchBox" placeholder="顧客名、イベント名、メールアドレスで検索..." onkeyup="searchReservations()">
+                        <input type="text" class="filter-input" id="searchBox" placeholder="顧客名、イベント名、メールアドレスで検索..." onkeypress="handleEnterKey(event)">
                     </div>
                     <div class="search-controls">
                         <button class="btn btn-secondary" onclick="clearFilters()">フィルタークリア</button>
@@ -470,16 +606,17 @@
                     <thead>
                         <tr>
                             <th>予約ID</th>
+                            <th>企業名</th>
                             <th>イベント情報</th>
                             <th>顧客情報</th>
                             <th>予約日時</th>
-                            <th>参加人数</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>EVT001</td>
+                            <td>株式会社山田建設</td>
                             <td>
                                 <div class="event-info">
                                     <div class="event-details">
@@ -494,15 +631,22 @@
                                     <div class="customer-contact">yamada@example.com / 090-1234-5678</div>
                                 </div>
                             </td>
-                            <td>2025-08-25 14:30</td>
-                            <td>2名</td>
+                            <td>2025-08-25</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openReservationModal('EVT001')">詳細</button>
-                                <button class="btn btn-secondary btn-sm" onclick="editReservation('EVT001')">編集</button>
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'EVT001')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openReservationDetail('EVT001')">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
                             <td>EVT002</td>
+                            <td>株式会社田中工務店</td>
                             <td>
                                 <div class="event-info">
                                     <div class="event-details">
@@ -517,15 +661,22 @@
                                     <div class="customer-contact">sato@example.com / 080-9876-5432</div>
                                 </div>
                             </td>
-                            <td>2025-08-24 09:15</td>
-                            <td>1名</td>
+                            <td>2025-08-24</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openReservationModal('EVT002')">詳細</button>
-                                <button class="btn btn-secondary btn-sm" onclick="editReservation('EVT002')">編集</button>
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'EVT002')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openReservationDetail('EVT002')">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
                             <td>EVT003</td>
+                            <td>鈴木ハウジング</td>
                             <td>
                                 <div class="event-info">
                                     <div class="event-details">
@@ -540,15 +691,22 @@
                                     <div class="customer-contact">suzuki@example.com / 070-1111-2222</div>
                                 </div>
                             </td>
-                            <td>2025-08-23 16:45</td>
-                            <td>3名</td>
+                            <td>2025-08-23</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openReservationModal('EVT003')">詳細</button>
-                                <button class="btn btn-secondary btn-sm" onclick="editReservation('EVT003')">編集</button>
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'EVT003')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openReservationDetail('EVT003')">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
                             <td>EVT004</td>
+                            <td>中部建設株式会社</td>
                             <td>
                                 <div class="event-info">
                                     <div class="event-details">
@@ -563,15 +721,22 @@
                                     <div class="customer-contact">tanaka.m@example.com / 090-3333-4444</div>
                                 </div>
                             </td>
-                            <td>2025-08-22 11:20</td>
-                            <td>4名</td>
+                            <td>2025-08-22</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openReservationModal('EVT004')">詳細</button>
-                                <button class="btn btn-secondary btn-sm" onclick="editReservation('EVT004')">編集</button>
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'EVT004')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openReservationDetail('EVT004')">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
                             <td>EVT005</td>
+                            <td>愛知住宅販売</td>
                             <td>
                                 <div class="event-info">
                                     <div class="event-details">
@@ -586,11 +751,17 @@
                                     <div class="customer-contact">takahashi@example.com / 080-5555-6666</div>
                                 </div>
                             </td>
-                            <td>2025-08-21 15:30</td>
-                            <td>2名</td>
+                            <td>2025-08-21</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openReservationModal('EVT005')">詳細</button>
-                                <button class="btn btn-secondary btn-sm" onclick="editReservation('EVT005')">編集</button>
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'EVT005')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openReservationDetail('EVT005')">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -599,118 +770,118 @@
         </main>
     </div>
 
-    <!-- 予約詳細モーダル -->
-    <div id="reservationModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">予約詳細</h3>
-                <button class="close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <h4 style="margin-bottom: 15px; color: #4a4a4a;">予約情報</h4>
-                <div class="detail-grid">
-                    <div class="detail-label">予約ID:</div>
-                    <div class="detail-value" id="detailReservationId">EVT001</div>
-                    
-                    <div class="detail-label">予約日時:</div>
-                    <div class="detail-value" id="detailReservationDate">2025-08-25 14:30</div>
-                    
-                    <div class="detail-label">ステータス:</div>
-                    <div class="detail-value" id="detailStatus">参加確定</div>
-                    
-                    <div class="detail-label">参加人数:</div>
-                    <div class="detail-value" id="detailParticipants">2名</div>
-                </div>
-
-                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">イベント情報</h4>
-                <div class="detail-grid">
-                    <div class="detail-label">イベント名:</div>
-                    <div class="detail-value" id="detailEventName">まちなかジーヴォ緑区桃山見学会</div>
-                    
-                    <div class="detail-label">開催日時:</div>
-                    <div class="detail-value" id="detailEventDate">2025-08-30 10:00-18:00</div>
-                    
-                    <div class="detail-label">開催場所:</div>
-                    <div class="detail-value" id="detailEventLocation">愛知県名古屋市緑区桃山3丁目1606番1</div>
-                    
-                    <div class="detail-label">イベント種類:</div>
-                    <div class="detail-value" id="detailEventType">完成見学会</div>
-                </div>
-
-                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">顧客情報</h4>
-                <div class="detail-grid">
-                    <div class="detail-label">氏名:</div>
-                    <div class="detail-value" id="detailCustomerName">山田 太郎</div>
-                    
-                    <div class="detail-label">メールアドレス:</div>
-                    <div class="detail-value" id="detailCustomerEmail">yamada@example.com</div>
-                    
-                    <div class="detail-label">電話番号:</div>
-                    <div class="detail-value" id="detailCustomerPhone">090-1234-5678</div>
-                    
-                    <div class="detail-label">住所:</div>
-                    <div class="detail-value" id="detailCustomerAddress">東京都新宿区西新宿1-1-1</div>
-                </div>
-
-                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">備考・要望</h4>
-                <div id="detailNotes" style="background: #f8f8f8; padding: 15px; border-radius: 6px; white-space: pre-line;">
-小さな子供（3歳）がいるので、ベビーカーでも見学しやすい導線でお願いします。
-駐車場の利用を希望します。
-                </div>
-
-                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">参加特典</h4>
-                <div style="background: #e8f5e8; padding: 15px; border-radius: 6px; color: #2e7d32;">
-                    ご来場予約＆ご見学でAmazonギフトカード5,000円分プレゼント！
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal()">閉じる</button>
-                <button class="btn btn-primary" onclick="editReservation()">編集</button>
-            </div>
-        </div>
-    </div>
 
     <script>
-        // 予約詳細モーダルを開く
-        function openReservationModal(reservationId) {
-            document.getElementById('reservationModal').classList.add('show');
-            console.log('Opening reservation detail for:', reservationId);
+        // 予約詳細画面へ遷移
+        function openReservationDetail(reservationId) {
+            console.log('Opening reservation detail page for:', reservationId);
+            // 詳細画面へ遷移
+            window.location.href = `event_reservation_detail.html?id=${reservationId}`;
         }
 
-        // モーダルを閉じる
-        function closeModal() {
-            document.getElementById('reservationModal').classList.remove('show');
+        // アクションメニューの表示/非表示切り替え
+        function toggleActionMenu(button, reservationId) {
+            // 現在のポップオーバーを取得
+            const popover = button.nextElementSibling;
+            
+            // 他のポップオーバーを全て閉じる
+            document.querySelectorAll('.action-popover').forEach(p => {
+                if (p !== popover) {
+                    p.classList.remove('show');
+                }
+            });
+            
+            // 現在のポップオーバーの表示を切り替え
+            popover.classList.toggle('show');
         }
 
-        // 予約編集
-        function editReservation(reservationId) {
-            console.log('Editing reservation:', reservationId);
-            alert(`予約 ${reservationId} の編集機能は実装予定です。`);
+        // 企業検索のオートコンプリート機能
+        function showCompanySuggestions() {
+            document.getElementById('companySuggestions').style.display = 'block';
         }
 
-        // 検索機能
-        function searchReservations() {
-            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+        function hideCompanySuggestions() {
+            setTimeout(() => {
+                document.getElementById('companySuggestions').style.display = 'none';
+            }, 200);
+        }
+
+        function filterCompanies() {
+            const searchTerm = document.getElementById('companySearch').value.toLowerCase();
+            const suggestions = document.querySelectorAll('#companySuggestions .suggestion-item');
+            
+            suggestions.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm) || item.getAttribute('data-value') === '') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function selectCompany(companyName) {
+            const input = document.getElementById('companySearch');
+            if (companyName === 'すべての企業') {
+                input.value = '';
+            } else {
+                input.value = companyName;
+            }
+            document.getElementById('companySuggestions').style.display = 'none';
+        }
+
+        // Enterキーでの検索実行
+        function handleEnterKey(event) {
+            if (event.key === 'Enter') {
+                applyFilters();
+            }
+        }
+
+        // フィルター適用（企業名とキーワード検索を統合）
+        function applyFilters() {
+            const companyFilter = document.getElementById('companySearch').value.toLowerCase();
+            const keywordFilter = document.getElementById('searchBox').value.toLowerCase();
             const rows = document.querySelectorAll('#reservationTable tbody tr');
             
             rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
+                let showRow = true;
+                
+                // 企業名フィルタリング
+                if (companyFilter) {
+                    const companyCell = row.cells[1]; // 企業名は2番目のセル
+                    const companyText = companyCell.textContent.toLowerCase();
+                    if (!companyText.includes(companyFilter)) {
+                        showRow = false;
+                    }
+                }
+                
+                // キーワードフィルタリング（顧客名、メールアドレス、イベント名）
+                if (keywordFilter && showRow) {
+                    const eventCell = row.cells[2]; // イベント情報
+                    const customerCell = row.cells[3]; // 顧客情報
+                    
+                    const eventText = eventCell.textContent.toLowerCase();
+                    const customerText = customerCell.textContent.toLowerCase();
+                    
+                    if (!eventText.includes(keywordFilter) && !customerText.includes(keywordFilter)) {
+                        showRow = false;
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
             });
         }
 
         // フィルタークリア
         function clearFilters() {
-            document.getElementById('statusFilter').value = '';
-            document.getElementById('eventTypeFilter').value = '';
-            document.getElementById('dateFilter').value = '';
+            document.getElementById('companySearch').value = '';
             document.getElementById('searchBox').value = '';
-            filterTable();
-        }
-
-        // フィルター適用
-        function filterTable() {
-            console.log('Applying filters...');
+            
+            // すべての行を表示
+            const rows = document.querySelectorAll('#reservationTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = '';
+            });
         }
 
         // データエクスポート
@@ -719,13 +890,20 @@
             alert('予約データをCSVエクスポートしています...');
         }
 
-        // モーダル外クリックで閉じる
-        window.onclick = function(event) {
-            const modal = document.getElementById('reservationModal');
-            if (event.target === modal) {
-                closeModal();
+        // ページのどこかをクリックしたときにポップオーバーを閉じる
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.action-menu')) {
+                document.querySelectorAll('.action-popover').forEach(popover => {
+                    popover.classList.remove('show');
+                });
             }
-        }
+        });
+
+        // Lucideアイコンを初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+
     </script>
 </body>
 </html>

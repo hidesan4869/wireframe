@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>イベント一覧 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         * {
             margin: 0;
@@ -124,6 +125,82 @@
             font-size: 12px;
         }
 
+        /* アクションメニュー */
+        .action-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-button {
+            background: #4a4a4a;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+            background: #3a3a3a;
+            transform: scale(1.1);
+        }
+
+        .action-popover {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .action-popover.show {
+            display: block;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #2c2c2c;
+            transition: background 0.2s ease;
+        }
+
+        .action-item:hover {
+            background: #f5f5f5;
+        }
+
+        .action-item-icon {
+            font-size: 16px;
+            width: 18px;
+            text-align: center;
+        }
+
+        /* アクションアイテムの色分け */
+        .action-item.edit:hover {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .action-item.view:hover {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
         /* 統計カード */
         .stats-grid {
             display: grid;
@@ -205,47 +282,119 @@
             align-items: end;
         }
 
-        /* イベントカードグリッド */
-        .events-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 20px;
+        /* オートコンプリート */
+        .autocomplete-container {
+            position: relative;
+            width: 100%;
         }
 
-        .event-card {
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #c0c0c0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .autocomplete-suggestions.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item.active {
+            background-color: #f8f9fa;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-company {
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .suggestion-count {
+            color: #6a6a6a;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        /* イベントリストテーブル */
+        .events-list {
             background: white;
             border-radius: 12px;
-            overflow: hidden;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             border: 1px solid #e0e0e0;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow: hidden;
         }
 
-        .event-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        .events-table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .event-image {
-            height: 180px;
-            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            color: #7a7a7a;
-            position: relative;
+        .events-table th {
+            background: #f8f9fa;
+            padding: 15px 12px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 1px solid #e0e0e0;
         }
 
-        .event-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+        .events-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        .events-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .events-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .event-title-cell {
+            font-weight: 600;
+            color: #2c2c2c;
+            max-width: 300px;
+        }
+
+        .event-title-main {
+            font-size: 16px;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .event-type-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
             font-weight: 500;
             color: white;
+            margin-top: 4px;
         }
 
         .badge-viewing {
@@ -256,66 +405,42 @@
             background: #1976d2;
         }
 
-        .badge-fair {
+        .badge-consultation {
             background: #f57c00;
         }
 
-        .special-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-            background: #d32f2f;
-            color: white;
+        .badge-fair {
+            background: #9c27b0;
         }
 
-        .event-content {
-            padding: 20px;
+        .event-date-cell {
+            color: #4a4a4a;
+            min-width: 140px;
         }
 
-        .event-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #2c2c2c;
-            margin-bottom: 8px;
-            line-height: 1.3;
+        .event-time {
+            color: #6a6a6a;
+            font-size: 13px;
+            margin-top: 2px;
         }
 
-        .event-subtitle {
-            font-size: 14px;
+        .event-location-cell {
+            color: #4a4a4a;
+            max-width: 200px;
+        }
+
+        .location-icon {
             color: #7a7a7a;
-            margin-bottom: 15px;
+            margin-right: 4px;
         }
 
-        .event-details {
-            margin-bottom: 15px;
-        }
-
-        .detail-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .detail-icon {
-            width: 16px;
-            font-size: 12px;
-            color: #7a7a7a;
-        }
-
-        .event-status {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+        .event-status-cell {
+            text-align: center;
+            min-width: 80px;
         }
 
         .status-badge {
+            display: inline-block;
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
@@ -327,9 +452,9 @@
             color: #2e7d32;
         }
 
-        .status-upcoming {
-            background: #e3f2fd;
-            color: #1976d2;
+        .status-draft {
+            background: #fff3e0;
+            color: #f57c00;
         }
 
         .status-ended {
@@ -337,27 +462,33 @@
             color: #7a7a7a;
         }
 
-        .reservation-count {
-            font-size: 14px;
+        .event-reservations-cell {
+            text-align: center;
             color: #4a4a4a;
             font-weight: 500;
+            min-width: 80px;
+        }
+
+        .reservation-count {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .reservation-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-top: 2px;
+        }
+
+        .event-actions-cell {
+            text-align: right;
+            min-width: 140px;
         }
 
         .event-actions {
             display: flex;
-            gap: 8px;
-        }
-
-        .gift-info {
-            background: #e8f5e8;
-            color: #2e7d32;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            gap: 6px;
+            justify-content: flex-end;
         }
 
         /* モーダル */
@@ -477,7 +608,10 @@
     <div class="container">
         <!-- ヘッダー -->
         <header class="header">
-            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                不動産ポータル管理システム
+            </h1>
             <div class="user-info">
                 <span>田中 太郎さん</span>
                 <button class="btn btn-secondary">ログアウト</button>
@@ -491,7 +625,10 @@
             </div>
 
             <div class="page-header">
-                <h2 class="page-title">📊 イベント一覧</h2>
+                <h2 class="page-title">
+                    <i data-lucide="calendar" style="width: 24px; height: 24px; margin-right: 8px;"></i>
+                    イベント一覧
+                </h2>
                 <div class="action-buttons">
                     <button class="btn btn-secondary" onclick="window.location.href='event_requests.html'">予約者一覧</button>
                     <button class="btn btn-primary" onclick="window.location.href='event_setting.html'">新規イベント作成</button>
@@ -502,18 +639,50 @@
             <div class="filter-section">
                 <div class="filter-row">
                     <div class="filter-group">
-                        <label class="filter-label">イベントステータス</label>
-                        <select class="filter-select" id="statusFilter" onchange="filterEvents()">
-                            <option value="">全て</option>
-                            <option value="active">公開中</option>
-                            <option value="upcoming">非公開</option>
-                        </select>
+                        <label class="filter-label">企業名</label>
+                        <div class="autocomplete-container">
+                            <input type="text" class="filter-input" id="companySearch" placeholder="企業名を入力..." 
+                                   oninput="handleCompanySearch()" 
+                                   onfocus="showCompanySuggestions()" 
+                                   onblur="hideCompanySuggestions()">
+                            <div class="autocomplete-suggestions" id="companySuggestions">
+                                <div class="suggestion-item" onclick="selectCompany('')">
+                                    <span class="suggestion-company">全ての企業</span>
+                                    <span class="suggestion-count">(6件)</span>
+                                </div>
+                                <div class="suggestion-item" onclick="selectCompany('株式会社モダン')">
+                                    <span class="suggestion-company">株式会社モダン</span>
+                                    <span class="suggestion-count">(6件)</span>
+                                </div>
+                                <div class="suggestion-item" onclick="selectCompany('田中不動産株式会社')">
+                                    <span class="suggestion-company">田中不動産株式会社</span>
+                                    <span class="suggestion-count">(0件)</span>
+                                </div>
+                                <div class="suggestion-item" onclick="selectCompany('佐藤ハウジング')">
+                                    <span class="suggestion-company">佐藤ハウジング</span>
+                                    <span class="suggestion-count">(0件)</span>
+                                </div>
+                                <div class="suggestion-item" onclick="selectCompany('鈴木工務店有限会社')">
+                                    <span class="suggestion-company">鈴木工務店有限会社</span>
+                                    <span class="suggestion-count">(0件)</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                <div class="filter-group" style="width: 200px;">
+                    <label class="filter-label">イベントステータス</label>
+                    <select class="filter-select" id="statusFilter" onchange="filterEvents()">
+                        <option value="">全て</option>
+                        <option value="active">公開中</option>
+                        <option value="draft">下書き</option>
+                        <option value="ended">非公開</option>
+                    </select>
                 </div>
                 <div class="filter-row">
                     <div class="filter-group" style="grid-column: span 2;">
                         <label class="filter-label">キーワード検索</label>
-                        <input type="text" class="filter-input" id="searchBox" placeholder="イベント名、開催場所で検索..." onkeyup="searchEvents()">
+                        <input type="text" class="filter-input" id="searchBox" placeholder="イベント名で検索..." onkeyup="searchEvents()">
                     </div>
                     <div class="search-controls">
                         <button class="btn btn-secondary" onclick="clearFilters()">フィルタークリア</button>
@@ -522,214 +691,240 @@
                 </div>
             </div>
 
-            <!-- イベント一覧 -->
-            <div class="events-grid" id="eventsGrid">
-                <!-- イベントカード1 -->
-                <div class="event-card">
-                    <div class="event-image">
-                        🏠
-                        <span class="special-badge">特典あり</span>
-                    </div>
-                    <div class="event-content">
-                        <h3 class="event-title">まちなかジーヴォ緑区桃山見学会</h3>
-                        <div class="event-details">
-                            <div class="detail-item">
-                                <span class="detail-icon">📅</span>
-                                <span>2024/12/4(水)～2025/9/24(水)</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">🕐</span>
-                                <span>10:00～18:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">📍</span>
-                                <span>愛知県名古屋市緑区桃山3丁目</span>
-                            </div>
-                        </div>
-
-                        <div class="event-status">
-                            <span class="reservation-count">予約数: 45件</span>
-                        </div>
-
-                        <div class="event-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_001')">編集</button>
-                            <button class="btn btn-secondary btn-sm" onclick="viewReservations('EVT_001')">予約一覧</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- イベントカード2 -->
-                <div class="event-card">
-                    <div class="event-image">
-                        📚
-                    </div>
-                    <div class="event-content">
-                        <h3 class="event-title">住宅ローンセミナー</h3>
-
-                        <div class="event-details">
-                            <div class="detail-item">
-                                <span class="detail-icon">📅</span>
-                                <span>2025/9/5(土)</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">🕐</span>
-                                <span>14:00～16:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">📍</span>
-                                <span>愛知県名古屋市緑区桃山3丁目</span>
-                            </div>
-                        </div>
-
-                        <div class="event-status">
-                            <span class="reservation-count">予約数: 12件</span>
-                        </div>
-
-                        <div class="event-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_002')">編集</button>
-                            <button class="btn btn-secondary btn-sm" onclick="viewReservations('EVT_002')">予約一覧</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- イベントカード3 -->
-                <div class="event-card">
-                    <div class="event-image">
-                        💰
-                    </div>
-                    <div class="event-content">
-                        <h3 class="event-title">資金計画相談会</h3>
-
-                        <div class="event-details">
-                            <div class="detail-item">
-                                <span class="detail-icon">📅</span>
-                                <span>2025/8/28(金)</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">🕐</span>
-                                <span>10:00～17:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">📍</span>
-                                <span>岡崎展示場</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">⏰</span>
-                                <span>予約制（1組60分）</span>
-                            </div>
-                        </div>
-
-                        <div class="event-status">
-                            <span class="reservation-count">参加者: 8組</span>
-                        </div>
-
-                        <div class="event-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_003')">編集</button>
-                            <button class="btn btn-secondary btn-sm" onclick="viewReservations('EVT_003')">参加履歴</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- イベントカード4 -->
-                <div class="event-card">
-                    <div class="event-image">
-                        🏗️
-                        <span class="special-badge">特典あり</span>
-                    </div>
-                    <div class="event-content">
-                        <h3 class="event-title">xevoΣ展示場見学会</h3>
-                        <div class="event-details">
-                            <div class="detail-item">
-                                <span class="detail-icon">📅</span>
-                                <span>2025/9/10(土)～9/11(日)</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">🕐</span>
-                                <span>11:00～16:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">📍</span>
-                                <span>鳴海 xevoΣ 展示場</span>
-                            </div>
-                        </div>
-
-                        <div class="event-status">
-                            <span class="reservation-count">予約数: 28件</span>
-                        </div>
-
-                        <div class="event-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_004')">編集</button>
-                            <button class="btn btn-secondary btn-sm" onclick="viewReservations('EVT_004')">予約一覧</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- イベントカード5 -->
-                <div class="event-card">
-                    <div class="event-image">
-                        🌱
-                    </div>
-                    <div class="event-content">
-                        <h3 class="event-title">土地探しセミナー</h3>
-                        <div class="event-details">
-                            <div class="detail-item">
-                                <span class="detail-icon">📅</span>
-                                <span>2025/9/15(月)</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">🕐</span>
-                                <span>13:00～15:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">📍</span>
-                                <span>名古屋駅前展示場</span>
-                            </div>
-                        </div>
-
-                        <div class="event-status">
-                            <span class="reservation-count">予約数: 7件</span>
-                        </div>
-
-                        <div class="event-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_005')">編集</button>
-                            <button class="btn btn-secondary btn-sm" onclick="viewReservations('EVT_005')">予約一覧</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- イベントカード6 -->
-                <div class="event-card">
-                    <div class="event-image">
-                        🏘️
-                    </div>
-                    <div class="event-content">
-                        <h3 class="event-title">建替え相談会</h3>
-
-                        <div class="event-details">
-                            <div class="detail-item">
-                                <span class="detail-icon">📅</span>
-                                <span>2025/9/20(土)～9/22(月)</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">🕐</span>
-                                <span>9:00～18:00</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-icon">📍</span>
-                                <span>岡崎展示場</span>
-                            </div>
-                        </div>
-
-                        <div class="event-status">
-                            <span class="reservation-count">予約数: 15件</span>
-                        </div>
-
-                        <div class="event-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="editEvent('EVT_006')">編集</button>
-                            <button class="btn btn-secondary btn-sm" onclick="viewReservations('EVT_006')">予約一覧</button>
-                        </div>
-                    </div>
-                </div>
+            <!-- イベント一覧テーブル -->
+            <div class="events-list" id="eventsList">
+                <table class="events-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>企業名</th>
+                            <th>イベント名</th>
+                            <th>開催日</th>
+                            <th>開催場所</th>
+                            <th>公開ステータス</th>
+                            <th>予約数</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>EVT001</td>
+                            <td>株式会社モダン</td>
+                            <td class="event-title-cell">
+                                <div class="event-title-main">まちなかジーヴォ緑区桃山見学会</div>
+                            </td>
+                            <td class="event-date-cell">
+                                2024/12/4(水)～2025/9/24(水)
+                                <div class="event-time">10:00～18:00</div>
+                            </td>
+                            <td class="event-location-cell">
+                                愛知県名古屋市緑区桃山3丁目
+                            </td>
+                            <td class="event-status-cell">
+                                <span class="status-badge status-active">公開中</span>
+                            </td>
+                            <td class="event-reservations-cell">
+                                <span class="reservation-count">12</span>
+                                <span class="reservation-label">件</span>
+                            </td>
+                            <td class="event-actions-cell">
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'EVT_001')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item edit" onclick="editEvent('EVT_001')">
+                                            <i data-lucide="edit" class="action-item-icon"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item view" onclick="viewReservations('EVT_001')">
+                                            <i data-lucide="users" class="action-item-icon"></i>
+                                            <span>予約一覧</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>EVT002</td>
+                            <td>株式会社モダン</td>
+                            <td class="event-title-cell">
+                                <div class="event-title-main">住宅ローンセミナー</div>
+                            </td>
+                            <td class="event-date-cell">
+                                2025/9/5(土)
+                                <div class="event-time">14:00～16:00</div>
+                            </td>
+                            <td class="event-location-cell">
+                                愛知県名古屋市緑区桃山3丁目
+                            </td>
+                            <td class="event-status-cell">
+                                <span class="status-badge status-active">公開中</span>
+                            </td>
+                            <td class="event-reservations-cell">
+                                <span class="reservation-count">8</span>
+                                <span class="reservation-label">件</span>
+                            </td>
+                            <td class="event-actions-cell">
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'EVT_002')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item edit" onclick="editEvent('EVT_002')">
+                                            <i data-lucide="edit" class="action-item-icon"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item view" onclick="viewReservations('EVT_002')">
+                                            <i data-lucide="users" class="action-item-icon"></i>
+                                            <span>予約一覧</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>EVT003</td>
+                            <td>株式会社モダン</td>
+                            <td class="event-title-cell">
+                                <div class="event-title-main">資金計画相談会</div>
+                            </td>
+                            <td class="event-date-cell">
+                                2025/8/28(金)
+                                <div class="event-time">10:00～17:00（予約制）</div>
+                            </td>
+                            <td class="event-location-cell">
+                                岡崎展示場
+                            </td>
+                            <td class="event-status-cell">
+                                <span class="status-badge status-draft">下書き</span>
+                            </td>
+                            <td class="event-reservations-cell">
+                                <span class="reservation-count">0</span>
+                                <span class="reservation-label">件</span>
+                            </td>
+                            <td class="event-actions-cell">
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'EVT_003')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item edit" onclick="editEvent('EVT_003')">
+                                            <i data-lucide="edit" class="action-item-icon"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item view" onclick="viewReservations('EVT_003')">
+                                            <i data-lucide="history" class="action-item-icon"></i>
+                                            <span>参加履歴</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>EVT004</td>
+                            <td>株式会社モダン</td>
+                            <td class="event-title-cell">
+                                <div class="event-title-main">xevoΣ展示場見学会</div>
+                            </td>
+                            <td class="event-date-cell">
+                                2025/9/10(土)～9/11(日)
+                                <div class="event-time">11:00～16:00</div>
+                            </td>
+                            <td class="event-location-cell">
+                                鳴海 xevoΣ 展示場
+                            </td>
+                            <td class="event-status-cell">
+                                <span class="status-badge status-active">公開中</span>
+                            </td>
+                            <td class="event-reservations-cell">
+                                <span class="reservation-count">15</span>
+                                <span class="reservation-label">件</span>
+                            </td>
+                            <td class="event-actions-cell">
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'EVT_004')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item edit" onclick="editEvent('EVT_004')">
+                                            <i data-lucide="edit" class="action-item-icon"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item view" onclick="viewReservations('EVT_004')">
+                                            <i data-lucide="users" class="action-item-icon"></i>
+                                            <span>予約一覧</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>EVT005</td>
+                            <td>株式会社モダン</td>
+                            <td class="event-title-cell">
+                                <div class="event-title-main">土地探しセミナー</div>
+                            </td>
+                            <td class="event-date-cell">
+                                2025/9/15(月)
+                                <div class="event-time">13:00～15:00</div>
+                            </td>
+                            <td class="event-location-cell">
+                                名古屋駅前展示場
+                            </td>
+                            <td class="event-status-cell">
+                                <span class="status-badge status-active">公開中</span>
+                            </td>
+                            <td class="event-reservations-cell">
+                                <span class="reservation-count">6</span>
+                                <span class="reservation-label">件</span>
+                            </td>
+                            <td class="event-actions-cell">
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'EVT_005')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item edit" onclick="editEvent('EVT_005')">
+                                            <i data-lucide="edit" class="action-item-icon"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item view" onclick="viewReservations('EVT_005')">
+                                            <i data-lucide="users" class="action-item-icon"></i>
+                                            <span>予約一覧</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>EVT006</td>
+                            <td>株式会社モダン</td>
+                            <td class="event-title-cell">
+                                <div class="event-title-main">建替え相談会</div>
+                            </td>
+                            <td class="event-date-cell">
+                                2025/9/20(土)～9/22(月)
+                                <div class="event-time">9:00～18:00</div>
+                            </td>
+                            <td class="event-location-cell">
+                                岡崎展示場
+                            </td>
+                            <td class="event-status-cell">
+                                <span class="status-badge status-ended">非公開</span>
+                            </td>
+                            <td class="event-reservations-cell">
+                                <span class="reservation-count">23</span>
+                                <span class="reservation-label">件</span>
+                            </td>
+                            <td class="event-actions-cell">
+                                <div class="action-menu">
+                                    <button class="action-button" onclick="toggleActionMenu(this, 'EVT_006')">⋮</button>
+                                    <div class="action-popover">
+                                        <div class="action-item edit" onclick="editEvent('EVT_006')">
+                                            <i data-lucide="edit" class="action-item-icon"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item view" onclick="viewReservations('EVT_006')">
+                                            <i data-lucide="users" class="action-item-icon"></i>
+                                            <span>予約一覧</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </main>
     </div>
@@ -761,26 +956,136 @@
         // 検索機能
         function searchEvents() {
             const searchTerm = document.getElementById('searchBox').value.toLowerCase();
-            const cards = document.querySelectorAll('.event-card');
+            const rows = document.querySelectorAll('.events-table tbody tr');
             
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
             });
         }
 
         // フィルタークリア
         function clearFilters() {
+            document.getElementById('companySearch').value = '';
             document.getElementById('statusFilter').value = '';
-            document.getElementById('typeFilter').value = '';
-            document.getElementById('storeFilter').value = '';
             document.getElementById('searchBox').value = '';
+            hideCompanySuggestions();
             filterEvents();
         }
 
         // フィルター適用
         function filterEvents() {
             console.log('Applying event filters...');
+            const companyFilter = document.getElementById('companySearch').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const rows = document.querySelectorAll('.events-table tbody tr');
+            
+            rows.forEach(row => {
+                const companyCell = row.cells[1].textContent.toLowerCase(); // 企業名列
+                const statusCell = row.cells[5].textContent.toLowerCase(); // ステータス列
+                
+                let showRow = true;
+                
+                // 企業フィルター
+                if (companyFilter && !companyCell.includes(companyFilter)) {
+                    showRow = false;
+                }
+                
+                // ステータスフィルター
+                if (statusFilter) {
+                    const statusMap = {
+                        'active': '公開中',
+                        'draft': '下書き', 
+                        'ended': '非公開'
+                    };
+                    if (!statusCell.includes(statusMap[statusFilter])) {
+                        showRow = false;
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        // 企業検索のオートコンプリート機能
+        let selectedCompany = '';
+        const companies = [
+            { name: '株式会社モダン', count: 6 },
+            { name: '田中不動産株式会社', count: 0 },
+            { name: '佐藤ハウジング', count: 0 },
+            { name: '鈴木工務店有限会社', count: 0 }
+        ];
+
+        function handleCompanySearch() {
+            const input = document.getElementById('companySearch');
+            const suggestions = document.getElementById('companySuggestions');
+            const query = input.value.toLowerCase();
+            
+            if (query.length === 0) {
+                showAllSuggestions();
+                return;
+            }
+            
+            // フィルタリングされた候補を表示
+            const filteredCompanies = companies.filter(company => 
+                company.name.toLowerCase().includes(query)
+            );
+            
+            updateSuggestions(filteredCompanies);
+            suggestions.classList.add('show');
+            
+            // リアルタイムフィルタリング
+            filterEvents();
+        }
+
+        function showCompanySuggestions() {
+            const suggestions = document.getElementById('companySuggestions');
+            showAllSuggestions();
+            suggestions.classList.add('show');
+        }
+
+        function hideCompanySuggestions() {
+            setTimeout(() => {
+                document.getElementById('companySuggestions').classList.remove('show');
+            }, 150); // クリック処理のために遅延
+        }
+
+        function showAllSuggestions() {
+            updateSuggestions(companies);
+        }
+
+        function updateSuggestions(filteredCompanies) {
+            const suggestions = document.getElementById('companySuggestions');
+            suggestions.innerHTML = '';
+            
+            // "全ての企業"オプション
+            const allOption = document.createElement('div');
+            allOption.className = 'suggestion-item';
+            allOption.onclick = () => selectCompany('');
+            allOption.innerHTML = `
+                <span class="suggestion-company">全ての企業</span>
+                <span class="suggestion-count">(全6件)</span>
+            `;
+            suggestions.appendChild(allOption);
+            
+            // フィルタリングされた企業
+            filteredCompanies.forEach(company => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.onclick = () => selectCompany(company.name);
+                item.innerHTML = `
+                    <span class="suggestion-company">${company.name}</span>
+                    <span class="suggestion-count">(${company.count}件)</span>
+                `;
+                suggestions.appendChild(item);
+            });
+        }
+
+        function selectCompany(companyName) {
+            document.getElementById('companySearch').value = companyName;
+            selectedCompany = companyName;
+            hideCompanySuggestions();
+            filterEvents();
         }
 
         // モーダル外クリックで閉じる
@@ -790,6 +1095,34 @@
                 closeModal();
             }
         }
+        // アクションメニューの切り替え
+        function toggleActionMenu(button, eventId) {
+            const popover = button.nextElementSibling;
+            const isVisible = popover.style.display === 'block';
+            
+            // 他のメニューをすべて閉じる
+            document.querySelectorAll('.action-popover').forEach(p => {
+                p.style.display = 'none';
+            });
+            
+            // クリックされたメニューを表示/非表示
+            popover.style.display = isVisible ? 'none' : 'block';
+            
+            event.stopPropagation();
+        }
+
+        // Lucideアイコンを初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            
+            // ドキュメント全体のクリックイベントでポップオーバーを閉じる
+            document.addEventListener('click', function() {
+                document.querySelectorAll('.action-popover').forEach(popover => {
+                    popover.style.display = 'none';
+                });
+            });
+        });
+
     </script>
 </body>
 </html>

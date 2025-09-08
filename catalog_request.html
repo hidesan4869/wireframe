@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>カタログ請求管理 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         * {
             margin: 0;
@@ -435,7 +436,7 @@
     <div class="container">
         <!-- ヘッダー -->
         <header class="header">
-            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'"><i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>不動産ポータル管理システム</h1>
             <div class="user-info">
                 <span>田中 太郎さん</span>
                 <button class="btn btn-secondary">ログアウト</button>
@@ -455,14 +456,6 @@
                 </div>
             </div>
 
-            <!-- 統計カード -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">152</div>
-                    <div class="stat-label">今月の請求数</div>
-                </div>
-            </div>
-
             <!-- フィルター -->
             <div class="filter-section">
                 <div class="filter-row">
@@ -479,7 +472,7 @@
                     <div class="filter-group">
                         <label class="filter-label">物件種別</label>
                         <select class="filter-select" id="typeFilter" onchange="filterTable()">
-                            <option value="">全て</option>
+                            <option value="">すべて</option>
                             <option value="custom-home">注文住宅</option>
                             <option value="land">土地</option>
                             <option value="new-house">新築戸建て</option>
@@ -488,7 +481,7 @@
                     <div class="filter-group">
                         <label class="filter-label">企業</label>
                         <select class="filter-select" id="companyFilter" onchange="filterTable()">
-                            <option value="">全企業</option>
+                            <option value="">すべて</option>
                             <option value="C001">株式会社山田建設</option>
                             <option value="C002">田中不動産株式会社</option>
                             <option value="C003">佐藤ハウジング</option>
@@ -786,6 +779,11 @@
         function openNewRequestModal() {
             alert('新規請求登録機能は実装予定です');
         }
+        
+        // Lucide icons 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
     </script>
 </body>
 </html>

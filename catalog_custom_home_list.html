@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>注文住宅カタログ一覧 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         * {
             margin: 0;
@@ -641,7 +642,7 @@
     <div class="container">
         <!-- ヘッダー -->
         <header class="header">
-            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'"><i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>不動産ポータル管理システム</h1>
             <div class="user-info">
                 <span>田中 太郎さん</span>
                 <button class="btn btn-secondary">ログアウト</button>
@@ -683,7 +684,7 @@
             <!-- ビュー切り替え -->
             <div class="view-toggle">
                 <button class="view-btn active" onclick="switchView('grid')">📱 カードビュー</button>
-                <button class="view-btn" onclick="switchView('table')">📋 テーブルビュー</button>
+                <button class="view-btn" onclick="switchView('table')"><i data-lucide="clipboard-list" style="width: 16px; height: 16px; margin-right: 8px;"></i>テーブルビュー</button>
             </div>
 
             <!-- カタログカードグリッド -->
@@ -1178,6 +1179,11 @@
             if (event.key === 'Escape') {
                 closeEditModal();
             }
+        });
+        
+        // Lucide icons 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
         });
     </script>
 </body>

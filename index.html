@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         * {
             margin: 0;
@@ -561,7 +562,7 @@
     <div class="container">
         <!-- ヘッダー -->
         <header class="header">
-            <h1>🏠 不動産ポータル管理システム</h1>
+            <h1><i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>不動産ポータル管理システム</h1>
             <div class="user-info">
                 <span>田中 太郎</span>
                 <button class="btn btn-secondary">ログアウト</button>
@@ -572,23 +573,23 @@
         <nav class="sidebar">
             <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this); showDashboard();">
-                    📊 ダッシュボード
+                    <i data-lucide="bar-chart" style="width: 16px; height: 16px; margin-right: 8px;"></i>ダッシュボード
                 </div>
             </div>
 
             <!-- カタログ請求管理 -->
             <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
-                    📋 カタログ請求管理
+                    <i data-lucide="clipboard-list" style="width: 16px; height: 16px; margin-right: 8px;"></i>カタログ請求管理
                     <span class="arrow">▶</span>
                 </div>
                 <div class="nav-subitems">
                     <div class="nav-subitem" onclick="window.location.href='catalog_request.html'">
-                        👥 カタログ請求者情報
+                        <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 8px;"></i>カタログ請求者情報
                     </div>
                     
                     <div class="nav-subitem" onclick="toggleSubNav(this)">
-                        🏘️ 注文住宅
+                        <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>注文住宅
                         <span class="arrow">▶</span>
                     </div>
                     <div class="sub-subitems">
@@ -606,7 +607,7 @@
                     </div>
 
                     <div class="nav-subitem" onclick="toggleSubNav(this)">
-                        🏠 新築戸建て
+                        <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>新築戸建て
                         <span class="arrow">▶</span>
                     </div>
                     <div class="sub-subitems">
@@ -619,18 +620,18 @@
             <!-- イベント予約管理 -->
             <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
-                    🎪 イベント予約管理
+                    <i data-lucide="calendar" style="width: 16px; height: 16px; margin-right: 8px;"></i>イベント予約管理
                     <span class="arrow">▶</span>
                 </div>
                 <div class="nav-subitems">
                     <div class="nav-subitem" onclick="window.location.href='event_requests.html'">
-                        👥 イベント予約者情報
+                        <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 8px;"></i>イベント予約者情報
                     </div>
                     <div class="nav-subitem" onclick="window.location.href='all_events.html'">
-                        📊 イベント一覧
+                        <i data-lucide="bar-chart" style="width: 16px; height: 16px; margin-right: 8px;"></i>イベント一覧
                     </div>
                     <div class="nav-subitem" onclick="window.location.href='event_setting.html'">
-                        ➕ イベント設定
+                        <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 8px;"></i>イベント設定
                     </div>
                 </div>
             </div>
@@ -638,18 +639,18 @@
             <!-- 見学予約管理 -->
             <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
-                    👁️ 見学予約管理
+                    <i data-lucide="eye" style="width: 16px; height: 16px; margin-right: 8px;"></i>見学予約管理
                     <span class="arrow">▶</span>
                 </div>
                 <div class="nav-subitems">
                     <div class="nav-subitem" onclick="window.location.href='tour_user_reservation_list.html'">
-                        👥 見学予約者一覧
+                        <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 8px;"></i>見学予約者一覧
                     </div>
                     <div class="nav-subitem" onclick="window.location.href='tour_schedule_list.html'">
-                        📅 予約日時設定一覧
+                        <i data-lucide="calendar" style="width: 16px; height: 16px; margin-right: 8px;"></i>予約日時設定一覧
                     </div>
                     <div class="nav-subitem" onclick="window.location.href='tour_schedule_register.html'">
-                        ➕ 予約日時設定
+                        <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 8px;"></i>予約日時設定
                     </div>
                 </div>
             </div>
@@ -657,21 +658,21 @@
             <!-- 契約企業情報 -->
             <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
-                    🏢 契約企業管理
+                    <i data-lucide="building" style="width: 16px; height: 16px; margin-right: 8px;"></i>契約企業管理
                     <span class="arrow">▶</span>
                 </div>
                 <div class="nav-subitems">
                     <div class="nav-subitem" onclick="window.location.href='company_list.html'">
-                        📋 企業一覧
+                        <i data-lucide="clipboard-list" style="width: 16px; height: 16px; margin-right: 8px;"></i>企業一覧
                     </div>
                     <div class="nav-subitem" onclick="window.location.href='company_detail.html?id=C001'">
-                        👁️ 企業詳細
+                        <i data-lucide="eye" style="width: 16px; height: 16px; margin-right: 8px;"></i>企業詳細
                     </div>
                     <div class="nav-subitem" onclick="window.location.href='company_register.html'">
-                        ➕ 企業登録
+                        <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 8px;"></i>企業登録
                     </div>
                     <div class="nav-subitem" onclick="window.location.href='company_member_management.html'">
-                        👥 メンバー管理
+                        <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 8px;"></i>メンバー管理
                     </div>
                 </div>
             </div>
@@ -679,18 +680,18 @@
             <!-- 会員管理 -->
             <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
-                    👤 会員管理
+                    <i data-lucide="user" style="width: 16px; height: 16px; margin-right: 8px;"></i>会員管理
                     <span class="arrow">▶</span>
                 </div>
                 <div class="nav-subitems">
                     <div class="nav-subitem" onclick="window.location.href='member_list.html'">
-                        👥 会員一覧
+                        <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 8px;"></i>会員一覧
                     </div>
                     <div class="nav-subitem" onclick="window.location.href='member_register.html'">
-                        ➕ 会員登録
+                        <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 8px;"></i>会員登録
                     </div>
                     <div class="nav-subitem" onclick="window.location.href='inquiry_management.html'">
-                        💬 問い合わせ管理
+                        <i data-lucide="message-circle" style="width: 16px; height: 16px; margin-right: 8px;"></i>問い合わせ管理
                     </div>
                 </div>
             </div>
@@ -698,12 +699,12 @@
             <!-- 物件管理 -->
             <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
-                    🏠 物件管理
+                    <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>物件管理
                     <span class="arrow">▶</span>
                 </div>
                 <div class="nav-subitems">
                     <div class="nav-subitem" onclick="toggleSubNav(this)">
-                        🏘️ 注文住宅
+                        <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>注文住宅
                         <span class="arrow">▶</span>
                     </div>
                     <div class="sub-subitems">
@@ -716,15 +717,15 @@
             <!-- 請求書管理 -->
             <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
-                    💰 請求書管理
+                    <i data-lucide="file-text" style="width: 16px; height: 16px; margin-right: 8px;"></i>請求書管理
                     <span class="arrow">▶</span>
                 </div>
                 <div class="nav-subitems">
                     <div class="nav-subitem" onclick="window.location.href='invoice_list.html'">
-                        📋 請求書一覧
+                        <i data-lucide="clipboard-list" style="width: 16px; height: 16px; margin-right: 8px;"></i>請求書一覧
                     </div>
                     <div class="nav-subitem" onclick="window.location.href='invoice_create.html'">
-                        ➕ 請求書作成
+                        <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 8px;"></i>請求書作成
                     </div>
                 </div>
             </div>
@@ -732,27 +733,27 @@
             <!-- メーカー専用ダッシュボード -->
             <div class="nav-item manufacturer-only">
                 <div class="nav-header" onclick="toggleNav(this); showManufacturerDashboard();">
-                    📊 メーカーダッシュボード
+                    <i data-lucide="bar-chart" style="width: 16px; height: 16px; margin-right: 8px;"></i>メーカーダッシュボード
                 </div>
             </div>
 
             <!-- 送客管理 -->
             <div class="nav-item">
                 <div class="nav-header" onclick="toggleNav(this)">
-                    📨 送客管理
+                    <i data-lucide="send" style="width: 16px; height: 16px; margin-right: 8px;"></i>送客管理
                     <span class="arrow">▶</span>
                 </div>
                 <div class="nav-subitems">
                     <div class="nav-subitem" onclick="window.location.href='referral_list.html'">
-                        📋 送客一覧
+                        <i data-lucide="clipboard-list" style="width: 16px; height: 16px; margin-right: 8px;"></i>送客一覧
                     </div>
                     <div class="nav-subitem" onclick="window.location.href='construction_management.html'">
-                        📋 着工管理
+                        <i data-lucide="clipboard-list" style="width: 16px; height: 16px; margin-right: 8px;"></i>着工管理
                     </div>
                     
                     <!-- 運営者向け -->
                     <div class="nav-subitem" onclick="toggleSubNav(this)">
-                        👨‍💼 運営者向け
+                        <i data-lucide="user-tie" style="width: 16px; height: 16px; margin-right: 8px;"></i>運営者向け
                         <span class="arrow">▶</span>
                     </div>
                     <div class="sub-subitems">
@@ -762,13 +763,13 @@
 
                     <!-- 企業向け -->
                     <div class="nav-subitem" onclick="toggleSubNav(this)">
-                        🏭 企業向け
+                        <i data-lucide="factory" style="width: 16px; height: 16px; margin-right: 8px;"></i>企業向け
                         <span class="arrow">▶</span>
                     </div>
                     <div class="sub-subitems">
                         <div class="sub-subitem" onclick="window.location.href='referral_report_input.html'">初回送客報告入力</div>
                         <div class="sub-subitem" onclick="toggleSubNav(this)">
-                            📊 月次報告管理
+                            <i data-lucide="bar-chart" style="width: 16px; height: 16px; margin-right: 8px;"></i>月次報告管理
                             <span class="arrow">▶</span>
                         </div>
                         <div class="sub-sub-subitems" style="margin-left: 20px; background: #ffffff;">
@@ -782,24 +783,24 @@
             <!-- システム管理 -->
             <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
-                    ⚙️ システム管理
+                    <i data-lucide="settings" style="width: 16px; height: 16px; margin-right: 8px;"></i>システム管理
                     <span class="arrow">▶</span>
                 </div>
                 <div class="nav-subitems">
                     <div class="nav-subitem" onclick="showContent('user-management', event)">
-                        👨‍💼 基本設定
+                        <i data-lucide="user-tie" style="width: 16px; height: 16px; margin-right: 8px;"></i>基本設定
                     </div>
                     <div class="nav-subitem" onclick="showContent('user-management', event)">
-                        👨‍💼 管理ユーザー
+                        <i data-lucide="user-tie" style="width: 16px; height: 16px; margin-right: 8px;"></i>管理ユーザー
                     </div>
                     <div class="nav-subitem" onclick="showContent('role-management', event)">
-                        🔐 権限カテゴリ管理
+                        <i data-lucide="lock" style="width: 16px; height: 16px; margin-right: 8px;"></i>権限カテゴリ管理
                     </div>
                     <div class="nav-subitem" onclick="showContent('system-settings', event)">
-                        🛠️ システム設定
+                        <i data-lucide="settings" style="width: 16px; height: 16px; margin-right: 8px;"></i>システム設定
                     </div>
                     <div class="nav-subitem" onclick="showContent('system-settings', event)">
-                        🛠️ メール設定
+                        <i data-lucide="mail" style="width: 16px; height: 16px; margin-right: 8px;"></i>メール設定
                     </div>
                 </div>
             </div>
@@ -1487,6 +1488,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             // ダッシュボードを表示
             showDashboard();
+            
+            // Lucide icons 初期化
+            lucide.createIcons();
         });
     </script>
 </body>
