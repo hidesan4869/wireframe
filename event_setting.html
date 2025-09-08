@@ -605,7 +605,6 @@
                 <h2 class="page-title">📊 イベント登録</h2>
                 <div class="action-buttons">
                     <a href="all_events.html" class="btn btn-secondary">一覧に戻る</a>
-                    <button type="button" class="btn btn-secondary" onclick="clearForm()">クリア</button>
                 </div>
             </div>
 
@@ -821,10 +820,18 @@
                                                   style="min-height: 80px;"></textarea>
                                     </div>
                                 </div>
-                                <button type="button" class="remove-button" onclick="removeEventContext(this)">この内容を削除</button>
+                                
+                               <!-- 公開設定 -->
+                                <div>
+                                    <h4>設定<label class="toggle-switch" style="margin-left: 10px;">
+                                        <input type="checkbox" id="isActive" checked>
+                                        <span class="slider"></span>
+                                    </label></h4>
+                                    <button type="button" class="remove-button" onclick="removeEventContext(this)">項目を完全に削除</button>
+                                </div>
                             </div>
                         </div>
-                        <button type="button" class="add-button" onclick="addEventContext()">+ 追加</button>
+                        <button type="button" class="add-button" style="text-align: center;" onclick="addEventContext()">+ 追加</button>
                     </div>
 
                     <!-- cbh_event_flows テーブル対応：イベントフロー -->
@@ -854,7 +861,13 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button type="button" class="remove-button" onclick="removeEventFlow(this)">このフローを削除</button>
+                                <div>
+                                    <h4>設定<label class="toggle-switch" style="margin-left: 10px;">
+                                        <input type="checkbox" id="isActive" checked>
+                                        <span class="slider"></span>
+                                    </label></h4>
+                                    <button type="button" class="remove-button" onclick="removeEventContext(this)">項目を完全に削除</button>
+                                </div>
                             </div>
                         </div>
                         <button type="button" class="add-button" onclick="addEventFlow()">+ 追加</button>
@@ -973,7 +986,13 @@
                                   style="min-height: 80px;"></textarea>
                     </div>
                 </div>
-                <button type="button" class="remove-button" onclick="removeEventContext(this)">この内容を削除</button>
+                <div>
+                    <h4>設定<label class="toggle-switch" style="margin-left: 10px;">
+                        <input type="checkbox" id="isActive" checked>
+                        <span class="slider"></span>
+                    </label></h4>
+                </div>
+                <button type="button" class="remove-button" onclick="removeEventContext(this)">項目を完全に削除</button>
             `;
             contextList.appendChild(newItem);
         }
@@ -1018,7 +1037,13 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" class="remove-button" onclick="removeEventFlow(this)">このフローを削除</button>
+                <div>
+                    <h4>設定<label class="toggle-switch" style="margin-left: 10px;">
+                        <input type="checkbox" id="isActive" checked>
+                        <span class="slider"></span>
+                    </label></h4>
+                </div>
+                <button type="button" class="remove-button" onclick="removeEventContext(this)">項目を完全に削除</button>
             `;
             flowList.appendChild(newItem);
         }
