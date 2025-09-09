@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>モデルハウス編集 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #4a4a4a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .property-id {
+            font-size: 14px;
+            color: #6a6a6a;
+            margin-left: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7a7a7a;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+
+        /* フォームカード */
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-icon {
+            transition: transform 0.2s ease;
+        }
+
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .card-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+        }
+
+        .card-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .form-label.required::after {
+            content: " *";
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #4a4a4a;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* 動的セクション */
+        .dynamic-section {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            background: #fafafa;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .add-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f5f5f5;
+            border: 2px dashed #c0c0c0;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #6a6a6a;
+            margin-top: 10px;
+        }
+
+        .add-button:hover {
+            background: #e8f5e8;
+            border-color: #4a4a4a;
+            color: #4a4a4a;
+        }
+
+        /* ファイルアップロード */
+        .file-upload-area {
+            border: 2px dashed #c0c0c0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #fafafa;
+        }
+
+        .file-upload-area:hover {
+            border-color: #4a4a4a;
+            background: #f0f0f0;
+        }
+
+        .file-upload-text {
+            color: #6a6a6a;
+            margin-top: 10px;
+        }
+
+        /* 画像プレビュー */
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .image-preview {
+            position: relative;
+            aspect-ratio: 1;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* チェックボックスグループ */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background: #f5f5f5;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin: 0;
+        }
+
+        /* トグルスイッチ */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #4a4a4a;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .toggle-status {
+            font-size: 13px;
+            color: #6a6a6a;
+            font-weight: 500;
+        }
+
+        /* ボタングループ */
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .button-group-left {
+            display: flex;
+            gap: 10px;
+        }
+
+        .button-group-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 最終更新情報 */
+        .update-info {
+            background: #f0f7ff;
+            border: 1px solid #bbdefb;
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1976d2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 削除された項目 */
+        .deleted-section {
+            opacity: 0.5;
+            background: #ffebee;
+            border-color: #ffcdd2;
+        }
+
+        .deleted-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .restore-button {
+            background: #d32f2f;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .restore-button:hover {
+            background: #b71c1c;
+        }
+
+        /* 変更インジケーター */
+        .changed {
+            border-color: #f57c00 !important;
+            background: #fff8e1 !important;
+        }
+
+        .change-indicator {
+            display: inline-block;
+            background: #f57c00;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                不動産ポータル管理システム
+            </h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="#">物件管理</a> > 
+                <a href="#">注文住宅</a> > 
+                <a href="model_house_list.html">モデルハウス物件一覧</a> > 
+                <a href="model_house_detail.html">ファミリーモデルハウス</a> > 編集
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">
+                    <i data-lucide="edit" style="width: 24px; height: 24px; margin-right: 8px;"></i>
+                    モデルハウス編集
+                    <span class="property-id">物件ID: MH001</span>
+                </h2>
+            </div>
+
+            <form id="modelHouseEditForm">
+                <!-- 基本情報 -->
+                <div class="form-card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-title">
+                            <i data-lucide="info" style="width: 18px; height: 18px;"></i>
+                            基本情報
+                        </div>
+                        <i data-lucide="chevron-down" class="toggle-icon"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required">企業</label>
+                                <select class="form-select" id="companyId" name="company_id" required>
+                                    <option value="1" selected>株式会社山田建設</option>
+                                    <option value="2">田中不動産株式会社</option>
+                                    <option value="3">佐藤ハウジング</option>
+                                    <option value="4">中部建設株式会社</option>
+                                    <option value="5">愛知住宅販売</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">表示順序</label>
+                                <input type="number" class="form-input" id="sortNumber" name="sort_number" value="1" min="1">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">モデルハウス名</label>
+                                <input type="text" class="form-input" id="name" name="name" required value="ファミリーモデルハウス">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">モデルハウスタイトル</label>
+                                <input type="text" class="form-input" id="title" name="title" required value="家族と過ごす理想の住まい">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label required">モデルハウス説明</label>
+                                <textarea class="form-textarea" id="description" name="description" required rows="4">このファミリーモデルハウスは、家族との絆を深める理想の住まいとして設計されました。広々としたリビングダイニングは家族が自然と集まる空間となり、大きな窓から差し込む光が暖かな雰囲気を演出します。</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">営業時間</label>
+                                <input type="text" class="form-input" id="businessHours" name="business_hours" required value="10:00-18:00">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">休業日</label>
+                                <input type="text" class="form-input" id="holidays" name="holidays" required value="水曜定休">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">展示場名</label>
+                                <input type="text" class="form-input" id="exhibitionVenueName" name="exhibition_venue_name" value="品川住宅展示場">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">予約期限</label>
+                                <input type="text" class="form-input" id="reservationDeadline" name="reservation_deadline" value="見学希望日の3日前まで">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">アクセス方法</label>
+                                <textarea class="form-textarea" id="access" name="access" rows="3">JR山手線「五反田駅」西口より徒歩5分
+東急池上線「大崎広小路駅」より徒歩7分
+駐車場：展示場内に5台分の無料駐車場完備</textarea>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label required">公開状態</label>
+                                <div class="toggle-container">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="isActive" name="is_active" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="toggle-status" id="activeStatus">公開中</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 住所情報 -->
+                <div class="form-card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-title">
+                            <i data-lucide="map-pin" style="width: 18px; height: 18px;"></i>
+                            住所情報
+                        </div>
+                        <i data-lucide="chevron-down" class="toggle-icon"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required">都道府県</label>
+                                <select class="form-select" id="prefectureId" name="prefecture_id" required>
+                                    <option value="13" selected>東京都</option>
+                                    <option value="14">神奈川県</option>
+                                    <option value="23">愛知県</option>
+                                    <option value="27">大阪府</option>
+                                    <option value="40">福岡県</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">郵便番号</label>
+                                <input type="text" class="form-input" id="postalCode" name="postal_code" required value="141-0031">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label required">住所1（市区町村）</label>
+                                <input type="text" class="form-input" id="addr01" name="addr01" required value="品川区西五反田">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">住所2（番地・建物名）</label>
+                                <input type="text" class="form-input" id="addr02" name="addr02" value="2-27-1 品川住宅展示場内">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 内容情報 -->
+                <div class="form-card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-title">
+                            <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
+                            内容情報
+                        </div>
+                        <i data-lucide="chevron-down" class="toggle-icon"></i>
+                    </div>
+                    <div class="card-content">
+                        <div id="contextContainer">
+                            <div class="dynamic-section">
+                                <div class="section-header">
+                                    <h4 class="section-title">内容 1</h4>
+                                    <div class="section-actions">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="removeContext(this)">
+                                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <label class="form-label required">内容タイトル</label>
+                                        <input type="text" class="form-input" name="context_titles[]" required value="リビング・ダイニング">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label required">内容説明</label>
+                                        <textarea class="form-textarea" name="context_descriptions[]" required rows="3">約25畳の広々としたLDKは、家族が自然と集まる設計。吹き抜けの開放感と大きな窓からの採光で、明るく快適な空間を実現しています。</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dynamic-section">
+                                <div class="section-header">
+                                    <h4 class="section-title">内容 2</h4>
+                                    <div class="section-actions">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="removeContext(this)">
+                                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <label class="form-label required">内容タイトル</label>
+                                        <input type="text" class="form-input changed" name="context_titles[]" required value="キッチン">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label required">内容説明</label>
+                                        <textarea class="form-textarea changed" name="context_descriptions[]" required rows="3">対面式のアイランドキッチンは、料理をしながら家族との会話を楽しめる設計。最新の食洗機とIHクッキングヒーターを完備しています。</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dynamic-section">
+                                <div class="section-header">
+                                    <h4 class="section-title">内容 3</h4>
+                                    <div class="section-actions">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="removeContext(this)">
+                                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <label class="form-label required">内容タイトル</label>
+                                        <input type="text" class="form-input" name="context_titles[]" required value="主寝室">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label required">内容説明</label>
+                                        <textarea class="form-textarea" name="context_descriptions[]" required rows="3">約10畳の主寝室には、ウォークインクローゼットを併設。プライベートバルコニーからは緑豊かな景色を楽しめます。</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="add-button" onclick="addContext()">
+                            <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                            内容を追加
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 見どころ -->
+                <div class="form-card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-title">
+                            <i data-lucide="star" style="width: 18px; height: 18px;"></i>
+                            見どころ
+                        </div>
+                        <i data-lucide="chevron-down" class="toggle-icon"></i>
+                    </div>
+                    <div class="card-content">
+                        <div id="highlightContainer">
+                            <div class="dynamic-section">
+                                <div class="section-header">
+                                    <h4 class="section-title">見どころ 1</h4>
+                                    <div class="section-actions">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="removeHighlight(this)">
+                                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <label class="form-label required">見どころタイトル</label>
+                                        <input type="text" class="form-input" name="highlight_titles[]" required value="開放感あふれる吹き抜けリビング">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label">見どころ説明</label>
+                                        <textarea class="form-textarea" name="highlight_descriptions[]" rows="3">2階まで続く吹き抜けが、圧倒的な開放感を演出。家族の気配を感じながら、それぞれの時間を過ごせます。</textarea>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label">見どころ画像</label>
+                                        <div class="image-preview-grid">
+                                            <div class="image-preview">
+                                                <img src="https://via.placeholder.com/150" alt="既存画像">
+                                                <button class="remove-btn" onclick="removeExistingImage(this)">
+                                                    <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="file-upload-area" style="margin-top: 10px;" onclick="this.nextElementSibling.click()">
+                                            <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
+                                            <div class="file-upload-text">新しい画像をアップロード</div>
+                                        </div>
+                                        <input type="file" name="highlight_images[]" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dynamic-section">
+                                <div class="section-header">
+                                    <h4 class="section-title">見どころ 2</h4>
+                                    <div class="section-actions">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="removeHighlight(this)">
+                                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <label class="form-label required">見どころタイトル</label>
+                                        <input type="text" class="form-input" name="highlight_titles[]" required value="リビングと一体化したウッドデッキ">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label">見どころ説明</label>
+                                        <textarea class="form-textarea" name="highlight_descriptions[]" rows="3">リビングから直接アクセスできるウッドデッキは、第二のリビングとして活用可能。BBQや家族団らんの場として最適です。</textarea>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label">見どころ画像</label>
+                                        <div class="image-preview-grid">
+                                            <div class="image-preview">
+                                                <img src="https://via.placeholder.com/150/ff0000" alt="既存画像">
+                                                <button class="remove-btn" onclick="removeExistingImage(this)">
+                                                    <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="file-upload-area" style="margin-top: 10px;" onclick="this.nextElementSibling.click()">
+                                            <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
+                                            <div class="file-upload-text">新しい画像をアップロード</div>
+                                        </div>
+                                        <input type="file" name="highlight_images[]" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="add-button" onclick="addHighlight()">
+                            <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                            見どころを追加
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 間取り図 -->
+                <div class="form-card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-title">
+                            <i data-lucide="layout-grid" style="width: 18px; height: 18px;"></i>
+                            間取り図
+                        </div>
+                        <i data-lucide="chevron-down" class="toggle-icon"></i>
+                    </div>
+                    <div class="card-content">
+                        <div id="floorPlanContainer">
+                            <div class="dynamic-section">
+                                <div class="section-header">
+                                    <h4 class="section-title">間取り図 1</h4>
+                                    <div class="section-actions">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="removeFloorPlan(this)">
+                                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label required">階層</label>
+                                        <select class="form-select" name="floor_layers[]" required>
+                                            <option value="1F" selected>1F</option>
+                                            <option value="2F">2F</option>
+                                            <option value="3F">3F</option>
+                                            <option value="B1F">B1F</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label required">間取り図タイトル</label>
+                                        <input type="text" class="form-input" name="floor_titles[]" required value="1階間取り図">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label">間取り図説明</label>
+                                        <textarea class="form-textarea" name="floor_descriptions[]" rows="2">LDK（25畳）、和室（6畳）、浴室、トイレ、玄関、ガレージ。1階の床面積：85.5㎡</textarea>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label required">間取り図画像</label>
+                                        <div class="image-preview-grid">
+                                            <div class="image-preview">
+                                                <img src="https://via.placeholder.com/150/00ff00" alt="既存画像">
+                                                <button class="remove-btn" onclick="removeExistingImage(this)">
+                                                    <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="file-upload-area" style="margin-top: 10px;" onclick="this.nextElementSibling.click()">
+                                            <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
+                                            <div class="file-upload-text">新しい間取り図をアップロード</div>
+                                        </div>
+                                        <input type="file" name="floor_images[]" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dynamic-section">
+                                <div class="section-header">
+                                    <h4 class="section-title">間取り図 2</h4>
+                                    <div class="section-actions">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="removeFloorPlan(this)">
+                                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label required">階層</label>
+                                        <select class="form-select" name="floor_layers[]" required>
+                                            <option value="1F">1F</option>
+                                            <option value="2F" selected>2F</option>
+                                            <option value="3F">3F</option>
+                                            <option value="B1F">B1F</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label required">間取り図タイトル</label>
+                                        <input type="text" class="form-input" name="floor_titles[]" required value="2階間取り図">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label">間取り図説明</label>
+                                        <textarea class="form-textarea" name="floor_descriptions[]" rows="2">主寝室（10畳）、子供部屋（12畳・将来分割可能）、書斎（4.5畳）、トイレ、バルコニー。2階の床面積：72.3㎡</textarea>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label class="form-label required">間取り図画像</label>
+                                        <div class="image-preview-grid">
+                                            <div class="image-preview">
+                                                <img src="https://via.placeholder.com/150/0000ff" alt="既存画像">
+                                                <button class="remove-btn" onclick="removeExistingImage(this)">
+                                                    <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="file-upload-area" style="margin-top: 10px;" onclick="this.nextElementSibling.click()">
+                                            <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
+                                            <div class="file-upload-text">新しい間取り図をアップロード</div>
+                                        </div>
+                                        <input type="file" name="floor_images[]" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="add-button" onclick="addFloorPlan()">
+                            <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                            間取り図を追加
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 画像ギャラリー -->
+                <div class="form-card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-title">
+                            <i data-lucide="images" style="width: 18px; height: 18px;"></i>
+                            画像ギャラリー
+                        </div>
+                        <i data-lucide="chevron-down" class="toggle-icon"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-group">
+                            <label class="form-label">現在の画像</label>
+                            <div class="image-preview-grid">
+                                <div class="image-preview">
+                                    <img src="https://via.placeholder.com/150" alt="ギャラリー画像1">
+                                    <button class="remove-btn" onclick="removeExistingImage(this)">
+                                        <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                                    </button>
+                                </div>
+                                <div class="image-preview">
+                                    <img src="https://via.placeholder.com/150/ff0000" alt="ギャラリー画像2">
+                                    <button class="remove-btn" onclick="removeExistingImage(this)">
+                                        <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                                    </button>
+                                </div>
+                                <div class="image-preview">
+                                    <img src="https://via.placeholder.com/150/00ff00" alt="ギャラリー画像3">
+                                    <button class="remove-btn" onclick="removeExistingImage(this)">
+                                        <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                                    </button>
+                                </div>
+                                <div class="image-preview">
+                                    <img src="https://via.placeholder.com/150/0000ff" alt="ギャラリー画像4">
+                                    <button class="remove-btn" onclick="removeExistingImage(this)">
+                                        <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">新しい画像を追加</label>
+                            <div class="file-upload-area" onclick="document.getElementById('galleryImages').click()">
+                                <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
+                                <div class="file-upload-text">画像を選択してアップロード<br>（複数選択可能）</div>
+                            </div>
+                            <input type="file" id="galleryImages" name="gallery_images[]" accept="image/*" multiple style="display: none;" onchange="previewGalleryImages(this)">
+                            <div id="newGalleryPreview" class="image-preview-grid" style="margin-top: 15px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 特徴タグ -->
+                <div class="form-card">
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <div class="card-title">
+                            <i data-lucide="tags" style="width: 18px; height: 18px;"></i>
+                            特徴タグ
+                        </div>
+                        <i data-lucide="chevron-down" class="toggle-icon"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="checkbox-grid">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="features[]" value="1" checked>
+                                <span>省エネ住宅</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="features[]" value="2">
+                                <span>バリアフリー</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="features[]" value="3" checked>
+                                <span>自然素材</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="features[]" value="4" checked>
+                                <span>スマートハウス</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="features[]" value="5" checked>
+                                <span>太陽光発電</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="features[]" value="6">
+                                <span>オール電化</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="features[]" value="7" checked>
+                                <span>吹き抜け</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="features[]" value="8" checked>
+                                <span>ウッドデッキ</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="features[]" value="9" checked>
+                                <span>ガレージ付き</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="features[]" value="10">
+                                <span>庭付き</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ボタン -->
+                <div class="button-group">
+                    <div class="button-group-left">
+                    </div>
+                    <div class="button-group-right">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">リセット</button>
+                        <button type="button" class="btn btn-secondary" onclick="previewChanges()">プレビュー</button>
+                        <button type="submit" class="btn btn-success">
+                            <i data-lucide="save" style="width: 16px; height: 16px;"></i> 変更を保存
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        let contextCounter = 3;
+        let highlightCounter = 2;
+        let floorPlanCounter = 2;
+
+        // カード折りたたみ機能
+        function toggleCard(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+            
+            content.classList.toggle('collapsed');
+            icon.classList.toggle('collapsed');
+        }
+
+        // 内容追加
+        function addContext() {
+            contextCounter++;
+            const container = document.getElementById('contextContainer');
+            const newContext = document.createElement('div');
+            newContext.className = 'dynamic-section';
+            newContext.innerHTML = `
+                <div class="section-header">
+                    <h4 class="section-title">内容 ${contextCounter}</h4>
+                    <div class="section-actions">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="removeContext(this)">
+                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="form-label required">内容タイトル</label>
+                        <input type="text" class="form-input" name="context_titles[]" required placeholder="例：リビング・ダイニング">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label required">内容説明</label>
+                        <textarea class="form-textarea" name="context_descriptions[]" required placeholder="この内容の詳細な説明を記入してください..." rows="3"></textarea>
+                    </div>
+                </div>
+            `;
+            container.appendChild(newContext);
+            lucide.createIcons();
+        }
+
+        // 内容削除
+        function removeContext(button) {
+            if (confirm('この内容を削除してもよろしいですか？')) {
+                button.closest('.dynamic-section').remove();
+            }
+        }
+
+        // 見どころ追加
+        function addHighlight() {
+            highlightCounter++;
+            const container = document.getElementById('highlightContainer');
+            const newHighlight = document.createElement('div');
+            newHighlight.className = 'dynamic-section';
+            newHighlight.innerHTML = `
+                <div class="section-header">
+                    <h4 class="section-title">見どころ ${highlightCounter}</h4>
+                    <div class="section-actions">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="removeHighlight(this)">
+                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="form-label required">見どころタイトル</label>
+                        <input type="text" class="form-input" name="highlight_titles[]" required placeholder="例：開放感あふれる吹き抜けリビング">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">見どころ説明</label>
+                        <textarea class="form-textarea" name="highlight_descriptions[]" placeholder="この見どころの詳細な説明を記入してください..." rows="3"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">見どころ画像</label>
+                        <div class="file-upload-area" onclick="this.nextElementSibling.click()">
+                            <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
+                            <div class="file-upload-text">画像をアップロード</div>
+                        </div>
+                        <input type="file" name="highlight_images[]" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                        <div class="image-preview-grid"></div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(newHighlight);
+            lucide.createIcons();
+        }
+
+        // 見どころ削除
+        function removeHighlight(button) {
+            if (confirm('この見どころを削除してもよろしいですか？')) {
+                button.closest('.dynamic-section').remove();
+            }
+        }
+
+        // 間取り図追加
+        function addFloorPlan() {
+            floorPlanCounter++;
+            const container = document.getElementById('floorPlanContainer');
+            const newFloorPlan = document.createElement('div');
+            newFloorPlan.className = 'dynamic-section';
+            newFloorPlan.innerHTML = `
+                <div class="section-header">
+                    <h4 class="section-title">間取り図 ${floorPlanCounter}</h4>
+                    <div class="section-actions">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="removeFloorPlan(this)">
+                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label required">階層</label>
+                        <select class="form-select" name="floor_layers[]" required>
+                            <option value="">選択してください</option>
+                            <option value="1F">1F</option>
+                            <option value="2F">2F</option>
+                            <option value="3F">3F</option>
+                            <option value="B1F">B1F</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">間取り図タイトル</label>
+                        <input type="text" class="form-input" name="floor_titles[]" required placeholder="例：1階間取り図">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">間取り図説明</label>
+                        <textarea class="form-textarea" name="floor_descriptions[]" placeholder="この階の間取りの特徴を説明してください..." rows="2"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label required">間取り図画像</label>
+                        <div class="file-upload-area" onclick="this.nextElementSibling.click()">
+                            <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
+                            <div class="file-upload-text">間取り図をアップロード</div>
+                        </div>
+                        <input type="file" name="floor_images[]" accept="image/*" style="display: none;" onchange="previewImage(this)" required>
+                        <div class="image-preview-grid"></div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(newFloorPlan);
+            lucide.createIcons();
+        }
+
+        // 間取り図削除
+        function removeFloorPlan(button) {
+            if (confirm('この間取り図を削除してもよろしいですか？')) {
+                button.closest('.dynamic-section').remove();
+            }
+        }
+
+        // 画像プレビュー
+        function previewImage(input) {
+            const file = input.files[0];
+            if (file) {
+                const previewContainer = input.nextElementSibling;
+                previewContainer.innerHTML = '';
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.createElement('div');
+                    preview.className = 'image-preview';
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" alt="プレビュー">
+                        <button class="remove-btn" onclick="removeImage(this, '${input.name}')">
+                            <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                        </button>
+                    `;
+                    previewContainer.appendChild(preview);
+                    lucide.createIcons();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // ギャラリー画像プレビュー
+        function previewGalleryImages(input) {
+            const files = input.files;
+            const previewContainer = document.getElementById('newGalleryPreview');
+            previewContainer.innerHTML = '';
+
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.createElement('div');
+                    preview.className = 'image-preview';
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" alt="プレビュー ${index + 1}">
+                        <button class="remove-btn" onclick="removeGalleryImage(this, ${index})">
+                            <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                        </button>
+                    `;
+                    previewContainer.appendChild(preview);
+                    lucide.createIcons();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 既存画像削除
+        function removeExistingImage(button) {
+            if (confirm('この画像を削除してもよろしいですか？\nこの操作は保存後に反映されます。')) {
+                button.closest('.image-preview').style.opacity = '0.3';
+                button.closest('.image-preview').classList.add('deleted');
+            }
+        }
+
+        // 画像削除
+        function removeImage(button, inputName) {
+            const preview = button.closest('.image-preview');
+            const input = document.querySelector(`input[name="${inputName}"]`);
+            input.value = '';
+            preview.remove();
+        }
+
+        // ギャラリー画像削除
+        function removeGalleryImage(button, index) {
+            button.closest('.image-preview').remove();
+        }
+
+        // アクティブ状態トグル更新
+        function updateActiveStatus() {
+            const checkbox = document.getElementById('isActive');
+            const statusText = document.getElementById('activeStatus');
+            
+            if (checkbox.checked) {
+                statusText.textContent = '公開中';
+                statusText.style.color = '#2e7d32';
+            } else {
+                statusText.textContent = '非公開';
+                statusText.style.color = '#d32f2f';
+            }
+        }
+
+        // フォームリセット
+        function resetForm() {
+            if (confirm('入力内容をリセットしてもよろしいですか？\n保存されていない変更は失われます。')) {
+                document.getElementById('modelHouseEditForm').reset();
+                updateActiveStatus();
+            }
+        }
+
+        // プレビュー
+        function previewChanges() {
+            alert('プレビュー機能は準備中です。\n変更内容は保存後に反映されます。');
+        }
+
+        // フォーム送信処理
+        function submitForm(event) {
+            event.preventDefault();
+            
+            if (confirm('変更を保存してもよろしいですか？')) {
+                // 実際のフォーム送信処理をここに実装
+                console.log('Form submitted');
+                alert('モデルハウス情報を更新しました！');
+                window.location.href = 'model_house_detail.html';
+            }
+        }
+
+        // 変更監視
+        function trackChanges() {
+            const inputs = document.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    this.classList.add('changed');
+                });
+            });
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            
+            // アクティブ状態トグルのイベントリスナー
+            const activeToggle = document.getElementById('isActive');
+            activeToggle.addEventListener('change', updateActiveStatus);
+            updateActiveStatus();
+            
+            // フォーム送信イベント
+            const form = document.getElementById('modelHouseEditForm');
+            form.addEventListener('submit', submitForm);
+            
+            // 変更監視
+            trackChanges();
+        });
+    </script>
+</body>
+</html>

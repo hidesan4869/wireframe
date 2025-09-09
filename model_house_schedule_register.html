@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>モデルハウス見学予約日登録 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #4a4a4a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7a7a7a;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        /* フォームセクション */
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 20px 25px;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .section-content {
+            padding: 25px;
+        }
+
+        /* モデルハウス選択 */
+        .model-house-selector {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #90caf9;
+        }
+
+        .current-model-house {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .model-house-info {
+            flex: 1;
+        }
+
+        .model-house-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 5px;
+        }
+
+        .model-house-address {
+            color: #424242;
+            font-size: 14px;
+        }
+
+        /* カレンダー */
+        .calendar-container {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+        }
+
+        .calendar-sidebar {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .calendar-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-button {
+            background: #4a4a4a;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-button:hover {
+            background: #3a3a3a;
+        }
+
+        .current-month {
+            font-size: 16px;
+            font-weight: 600;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+
+        .calendar-header {
+            text-align: center;
+            padding: 8px 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6a6a6a;
+            background: #e9ecef;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            position: relative;
+            min-height: 45px;
+        }
+
+        .calendar-day:hover {
+            background: #e3f2fd;
+        }
+
+        .calendar-day.other-month {
+            color: #bbb;
+        }
+
+        .calendar-day.selected {
+            background: #2196f3;
+            color: white;
+            font-weight: 600;
+        }
+
+        .calendar-day.has-schedule {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #ff9800;
+        }
+
+        /* 時間枠設定 */
+        .time-slots-container {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .date-display {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .time-slot {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .time-slot-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            gap: 20px;
+        }
+
+        .time-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            font-weight: 600;
+        }
+
+        .form-input {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-select {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .time-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .time-input .form-group {
+            flex: 1;
+        }
+
+        .time-slot-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .remove-time-slot {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+        }
+
+        .remove-time-slot:hover {
+            background: #c82333;
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4);
+        }
+
+        .add-time-slot {
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 15px auto 0;
+            display: block;
+            transition: all 0.2s ease;
+        }
+
+        .add-time-slot:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ステータス選択 */
+        .status-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-button {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #d0d0d0;
+            border-radius: 9999px;
+            cursor: pointer;
+            text-align: center;
+            background: white;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 44px;
+        }
+
+
+        .status-button.selected {
+            border-color: #28a745;
+            background: white;
+            font-weight: 600;
+        }
+
+
+        .status-icon {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .status-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* 一括操作 */
+        .bulk-actions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .bulk-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .date-range-picker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* アクションバー */
+        .action-bar {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 20px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+
+        .save-status {
+            color: #6a6a6a;
+            font-size: 14px;
+        }
+
+        .action-buttons-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ステップインジケーター */
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step.completed {
+            opacity: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #6a6a6a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .step.active .step-number {
+            background: #2196f3;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: #4caf50;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 14px;
+            color: #6a6a6a;
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: #2196f3;
+            font-weight: 600;
+        }
+
+        .step.completed .step-label {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .step-connector {
+            width: 100px;
+            height: 2px;
+            background: #e0e0e0;
+            margin: 0 20px;
+        }
+
+        .step.completed + .step-connector {
+            background: #4caf50;
+        }
+
+        /* ステップコンテンツ */
+        .step-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* モデルハウス検索フォーム */
+        .model-house-search .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* モデルハウスカードグリッド */
+        .model-house-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .model-house-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .model-house-card:hover {
+            border-color: #2196f3;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .model-house-card.selected {
+            border-color: #2196f3;
+            background: #e3f2fd;
+        }
+
+        .model-house-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .model-house-id {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6a6a6a;
+            background: #f5f5f5;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .model-house-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .model-house-card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .model-house-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .model-house-title {
+            font-size: 14px;
+            color: #7a7a7a;
+        }
+
+        .model-house-company {
+            font-size: 14px;
+            color: #2196f3;
+            font-weight: 500;
+        }
+
+        .model-house-address {
+            font-size: 13px;
+            color: #6a6a6a;
+        }
+
+        /* 選択されたモデルハウス */
+        .selected-model-house {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #90caf9;
+        }
+
+        .selected-model-house-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .selected-model-house-info {
+            flex: 1;
+        }
+
+        .selected-model-house-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 5px;
+        }
+
+        .selected-model-house-address {
+            color: #424242;
+            font-size: 14px;
+        }
+
+        /* 個別登録セクション */
+        .individual-register-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .btn-register-individual {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            min-width: 200px;
+        }
+
+        /* メッセージ表示 */
+        .initial-state,
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #6a6a6a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                不動産ポータル管理システム
+            </h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="#">物件管理</a> > 
+                <a href="#">注文住宅</a> > 
+                <a href="model_house_list.html">モデルハウス物件一覧</a> > 見学予約日登録
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">
+                    <i data-lucide="calendar-plus" style="width: 24px; height: 24px; margin-right: 8px;"></i>
+                    モデルハウス見学予約日登録
+                </h2>
+            </div>
+
+            <!-- ステップインジケーター -->
+            <div class="step-indicator">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">モデルハウス選択</div>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">予約日時の設定</div>
+                </div>
+            </div>
+
+            <!-- ステップ1: モデルハウス選択 -->
+            <div class="step-content" id="step1">
+                <div class="form-section">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i data-lucide="building-2" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+                            対象モデルハウスを選択してください
+                        </h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="model-house-search">
+                            <div class="search-form">
+                                <div class="form-group">
+                                    <label class="form-label">企業名検索</label>
+                                    <div style="position: relative;">
+                                        <input type="text" class="form-input" id="companySearchStep1" 
+                                               placeholder="企業名で検索..." 
+                                               oninput="filterCompaniesStep1()" 
+                                               onfocus="showCompanySuggestionsStep1()" 
+                                               onblur="hideCompanySuggestionsStep1()"
+                                               style="width: 100%;">
+                                        <div id="companySuggestionsStep1" class="suggestions-dropdown" style="display: none;">
+                                            <div class="suggestion-item" onmousedown="selectCompanyStep1('株式会社山田建設')">株式会社山田建設</div>
+                                            <div class="suggestion-item" onmousedown="selectCompanyStep1('田中不動産株式会社')">田中不動産株式会社</div>
+                                            <div class="suggestion-item" onmousedown="selectCompanyStep1('佐藤ハウジング')">佐藤ハウジング</div>
+                                            <div class="suggestion-item" onmousedown="selectCompanyStep1('中部建設株式会社')">中部建設株式会社</div>
+                                            <div class="suggestion-item" onmousedown="selectCompanyStep1('愛知住宅販売')">愛知住宅販売</div>
+                                            <div class="suggestion-item" onmousedown="selectCompanyStep1('すべての企業')" data-value="">すべての企業</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">キーワード</label>
+                                    <input type="text" class="form-input" id="keywordSearchStep1" placeholder="物件名で検索..." onkeypress="handleEnterKeyStep1(event)">
+                                </div>
+                                <div class="search-controls">
+                                    <button class="btn btn-primary" onclick="searchModelHouses()">
+                                        <i data-lucide="search" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+                                        検索
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="clearSearchStep1()">クリア</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- モデルハウス一覧 -->
+                        <div id="modelHouseList" style="display: none;">
+                            <div class="model-house-grid">
+                                <div class="model-house-card" onclick="selectModelHouseCard('MH001')">
+                                    <div class="model-house-card-header">
+                                        <div class="model-house-id">MH001</div>
+                                        <div class="model-house-status status-active">公開中</div>
+                                    </div>
+                                    <div class="model-house-card-content">
+                                        <div class="model-house-name">ファミリーモデルハウス</div>
+                                        <div class="model-house-title">家族と過ごす理想の住まい</div>
+                                        <div class="model-house-company">株式会社山田建設</div>
+                                        <div class="model-house-address">東京都品川区西五反田 2-27-1</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="model-house-card" onclick="selectModelHouseCard('MH002')">
+                                    <div class="model-house-card-header">
+                                        <div class="model-house-id">MH002</div>
+                                        <div class="model-house-status status-active">公開中</div>
+                                    </div>
+                                    <div class="model-house-card-content">
+                                        <div class="model-house-name">エコハウス展示場</div>
+                                        <div class="model-house-title">環境に優しいスマートホーム</div>
+                                        <div class="model-house-company">株式会社山田建設</div>
+                                        <div class="model-house-address">神奈川県横浜市港北区大豆戸町1-10</div>
+                                    </div>
+                                </div>
+
+                                <div class="model-house-card" onclick="selectModelHouseCard('MH003')">
+                                    <div class="model-house-card-header">
+                                        <div class="model-house-id">MH003</div>
+                                        <div class="model-house-status status-inactive">非公開</div>
+                                    </div>
+                                    <div class="model-house-card-content">
+                                        <div class="model-house-name">モダン住宅展示場</div>
+                                        <div class="model-house-title">都市型スタイリッシュな住まい</div>
+                                        <div class="model-house-company">株式会社山田建設</div>
+                                        <div class="model-house-address">愛知県名古屋市中区錦3-6-29</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 検索結果なし -->
+                        <div id="noResultsMessage" style="display: none;">
+                            <div class="no-results">
+                                <i data-lucide="search-x" style="width: 48px; height: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                                <div style="font-size: 16px; margin-bottom: 8px;">該当するモデルハウスが見つかりません</div>
+                                <div style="font-size: 14px;">検索条件を変更して再度お試しください</div>
+                            </div>
+                        </div>
+
+                        <!-- 初期状態 -->
+                        <div id="initialStateMessage">
+                            <div class="initial-state">
+                                <i data-lucide="search" style="width: 48px; height: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                                <div style="font-size: 16px; margin-bottom: 8px;">検索条件を入力して「検索」ボタンを押してください</div>
+                                <div style="font-size: 14px;">対象のモデルハウスを選択できます</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ステップ2: 予約日設定 -->
+            <div class="step-content" id="step2" style="display: none;">
+                <!-- 選択されたモデルハウス表示 -->
+                <div class="form-section">
+                    <div class="section-content">
+                        <div>
+                            <div class="selected-model-house-content">
+                                <i data-lucide="building-2" style="width: 24px; height: 24px; color: #1976d2;"></i>
+                                <div class="selected-model-house-info">
+                                    <div class="selected-model-house-name" id="selectedModelHouseName">ファミリーモデルハウス</div>
+                                    <div class="selected-model-house-address" id="selectedModelHouseAddress">東京都品川区西五反田 2-27-1</div>
+                                </div>
+                                <button class="btn btn-secondary" onclick="backToStep1()">変更</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 一括操作 -->
+                <div class="form-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i data-lucide="zap" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+                        一括操作
+                    </h3>
+                </div>
+                <div class="section-content">
+                    <div class="bulk-actions">
+                        <div class="bulk-controls">
+                            <div class="date-range-picker">
+                                <label class="form-label">期間選択:</label>
+                                <input type="date" class="form-input" id="bulkStartDate">
+                                <span>〜</span>
+                                <input type="date" class="form-input" id="bulkEndDate">
+                            </div>
+                            <div class="form-group">
+                                <select class="form-select" id="bulkStatus">
+                                    <option value="0">予約可能（〇）</option>
+                                    <option value="1">予約制限あり（△）</option>
+                                    <option value="2">予約不可（✕）</option>
+                                    <option value="3">Tel</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success" onclick="applyBulkOperation()">一括適用</button>
+                            <button class="btn btn-danger" onclick="clearBulkSelection()">選択クリア</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- カレンダー・時間枠設定 -->
+            <div class="form-section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <i data-lucide="calendar" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+                        予約可能日
+                    </h3>
+                </div>
+                <div class="section-content">
+                    <div class="calendar-container">
+                        <!-- カレンダー -->
+                        <div class="calendar-sidebar">
+                            <div class="calendar-controls">
+                                <div class="month-nav">
+                                    <button class="nav-button" onclick="previousMonth()">
+                                        <i data-lucide="chevron-left" style="width: 16px; height: 16px;"></i>
+                                    </button>
+                                    <div class="current-month" id="currentMonth">2025年9月</div>
+                                    <button class="nav-button" onclick="nextMonth()">
+                                        <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="calendar-grid" id="calendarGrid">
+                                <div class="calendar-header">日</div>
+                                <div class="calendar-header">月</div>
+                                <div class="calendar-header">火</div>
+                                <div class="calendar-header">水</div>
+                                <div class="calendar-header">木</div>
+                                <div class="calendar-header">金</div>
+                                <div class="calendar-header">土</div>
+                                <!-- カレンダー日付は JavaScript で生成 -->
+                            </div>
+
+                            <div style="margin-top: 20px;">
+                                <div style="display: flex; flex-direction: column; gap: 5px; font-size: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <div style="width: 16px; height: 16px; background: #e8f5e8; border: 1px solid #4caf50; border-radius: 2px;"></div>
+                                        <span>予約設定済み</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <div style="width: 16px; height: 16px; background: #2196f3; border-radius: 2px;"></div>
+                                        <span>選択中</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <div style="width: 16px; height: 16px; border: 2px solid #ff9800; border-radius: 2px;"></div>
+                                        <span>今日</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 時間枠設定 -->
+                        <div class="time-slots-container" id="timeSlotsContainer" style="display: none;">
+                            <div class="date-display" id="selectedDateDisplay">2025年9月15日（月）</div>
+                            
+                            <!-- ステータス選択 -->
+                            <div class="status-selector">
+                                <button class="status-button status-available" data-status="0" onclick="selectStatusButton(0)">
+                                    <div class="status-icon"><i data-lucide="circle"></i></div>
+                                    <div class="status-label">予約可能</div>
+                                </button>
+                                <button class="status-button status-limited" data-status="1" onclick="selectStatusButton(1)">
+                                    <div class="status-icon"><i data-lucide="triangle-alert"></i></div>
+                                    <div class="status-label">予約制限あり</div>
+                                </button>
+                                <button class="status-button status-unavailable" data-status="2" onclick="selectStatusButton(2)">
+                                    <div class="status-icon"><i data-lucide="ban"></i></div>
+                                    <div class="status-label">予約不可</div>
+                                </button>
+                                <button class="status-button status-tel" data-status="3" onclick="selectStatusButton(3)">
+                                    <div class="status-icon"><i data-lucide="phone"></i></div>
+                                    <div class="status-label">Tel</div>
+                                </button>
+                            </div>
+
+                            <!-- 時間枠リスト -->
+                            <div id="timeSlotsList">
+                                <div class="time-slot">
+                                    <div class="time-slot-header">
+                                        <div class="time-input">
+                                            <div class="form-group">
+                                                <label class="form-label">開始時間</label>
+                                                <input type="time" class="form-input" value="10:00">
+                                            </div>
+                                            <span>〜</span>
+                                            <div class="form-group">
+                                                <label class="form-label">終了時間</label>
+                                                <input type="time" class="form-input" value="11:00">
+                                            </div>
+                                        </div>
+                                        <button class="remove-time-slot" onclick="removeTimeSlot(this)">
+                                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="add-time-slot" onclick="addTimeSlot()">
+                                <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+                                時間枠追加
+                            </button>
+                            
+                            <!-- 個別登録ボタン -->
+                            <div class="individual-register-section">
+                                <button class="btn btn-primary btn-register-individual" onclick="registerIndividualSchedule()">
+                                    <i data-lucide="save" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+                                    この日程を登録
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 初期状態のメッセージ -->
+                        <div class="time-slots-container" id="noDateSelected">
+                            <div style="text-align: center; padding: 50px; color: #6a6a6a;">
+                                <i data-lucide="calendar" style="width: 48px; height: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                                <div style="font-size: 16px; margin-bottom: 8px;">日付を選択してください</div>
+                                <div style="font-size: 14px;">カレンダーから設定する日付をクリックしてください</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        </div> <!-- End step2 -->
+    </div>
+
+    <script>
+        // カレンダー関連の変数
+        let currentDate = new Date();
+        let selectedDate = null;
+        let scheduleData = {}; // 日付別のスケジュールデータ
+        let selectedModelHouse = null; // 選択されたモデルハウス
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+
+        // ステップ1: 企業検索オートコンプリート
+        function showCompanySuggestionsStep1() {
+            document.getElementById('companySuggestionsStep1').style.display = 'block';
+        }
+
+        function hideCompanySuggestionsStep1() {
+            setTimeout(() => {
+                document.getElementById('companySuggestionsStep1').style.display = 'none';
+            }, 200);
+        }
+
+        function filterCompaniesStep1() {
+            const searchTerm = document.getElementById('companySearchStep1').value.toLowerCase();
+            const suggestions = document.querySelectorAll('#companySuggestionsStep1 .suggestion-item');
+            
+            suggestions.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm) || item.getAttribute('data-value') === '') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function selectCompanyStep1(companyName) {
+            const input = document.getElementById('companySearchStep1');
+            if (companyName === 'すべての企業') {
+                input.value = '';
+            } else {
+                input.value = companyName;
+            }
+            document.getElementById('companySuggestionsStep1').style.display = 'none';
+        }
+
+        // Enterキーでの検索実行
+        function handleEnterKeyStep1(event) {
+            if (event.key === 'Enter') {
+                searchModelHouses();
+            }
+        }
+
+        // モデルハウス検索
+        function searchModelHouses() {
+            const companyFilter = document.getElementById('companySearchStep1').value.toLowerCase();
+            const keywordFilter = document.getElementById('keywordSearchStep1').value.toLowerCase();
+            
+            // 検索処理（実際の実装では API を呼び出し）
+            console.log('Searching model houses:', { companyFilter,  keywordFilter });
+            
+            // 初期状態メッセージを非表示
+            document.getElementById('initialStateMessage').style.display = 'none';
+            document.getElementById('noResultsMessage').style.display = 'none';
+            
+            // モデルハウス一覧を表示（サンプルデータの場合は常に表示）
+            document.getElementById('modelHouseList').style.display = 'block';
+            
+            // フィルター処理
+            const cards = document.querySelectorAll('.model-house-card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                let showCard = true;
+                
+                // 企業名フィルター
+                if (companyFilter) {
+                    const companyText = card.querySelector('.model-house-company').textContent.toLowerCase();
+                    if (!companyText.includes(companyFilter)) {
+                        showCard = false;
+                    }
+                }
+                
+               
+                // キーワードフィルター
+                if (keywordFilter) {
+                    const nameText = card.querySelector('.model-house-name').textContent.toLowerCase();
+                    if (!nameText.includes(keywordFilter)) {
+                        showCard = false;
+                    }
+                }
+                
+                if (showCard) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 検索結果なしの場合
+            if (visibleCount === 0) {
+                document.getElementById('modelHouseList').style.display = 'none';
+                document.getElementById('noResultsMessage').style.display = 'block';
+            }
+        }
+
+        // 検索クリア
+        function clearSearchStep1() {
+            document.getElementById('companySearchStep1').value = '';
+            document.getElementById('keywordSearchStep1').value = '';
+            
+            document.getElementById('modelHouseList').style.display = 'none';
+            document.getElementById('noResultsMessage').style.display = 'none';
+            document.getElementById('initialStateMessage').style.display = 'block';
+        }
+
+        // モデルハウス選択
+        function selectModelHouseCard(modelHouseId) {
+            // 選択状態の更新
+            document.querySelectorAll('.model-house-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // モデルハウス情報を取得（実際の実装では API から取得）
+            const card = event.currentTarget;
+            selectedModelHouse = {
+                id: modelHouseId,
+                name: card.querySelector('.model-house-name').textContent,
+                title: card.querySelector('.model-house-title').textContent,
+                company: card.querySelector('.model-house-company').textContent,
+                address: card.querySelector('.model-house-address').textContent
+            };
+            
+            // ステップ2への遷移
+            setTimeout(() => {
+                goToStep2();
+            }, 300);
+        }
+
+        // ステップ2への遷移
+        function goToStep2() {
+            // ステップインジケーター更新
+            document.querySelector('.step[data-step="1"]').classList.remove('active');
+            document.querySelector('.step[data-step="1"]').classList.add('completed');
+            document.querySelector('.step[data-step="2"]').classList.add('active');
+            
+            // ステップコンテンツ切り替え
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+            
+            // 選択されたモデルハウス情報を表示
+            document.getElementById('selectedModelHouseName').textContent = selectedModelHouse.name;
+            document.getElementById('selectedModelHouseAddress').textContent = selectedModelHouse.address;
+            
+            // カレンダー初期化
+            initializeStep2();
+        }
+
+        // ステップ1に戻る
+        function backToStep1() {
+            // ステップインジケーター更新
+            document.querySelector('.step[data-step="2"]').classList.remove('active');
+            document.querySelector('.step[data-step="1"]').classList.remove('completed');
+            document.querySelector('.step[data-step="1"]').classList.add('active');
+            
+            // ステップコンテンツ切り替え
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step1').style.display = 'block';
+        }
+
+        // ステップ2初期化
+        function initializeStep2() {
+            renderCalendar();
+            
+            // 今日の日付を設定
+            const today = new Date();
+            document.getElementById('bulkStartDate').value = formatDateForInput(today);
+            document.getElementById('bulkEndDate').value = formatDateForInput(new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)); // 1週間後
+        }
+
+        // カレンダー描画
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // 月表示更新
+            document.getElementById('currentMonth').textContent = `${year}年${month + 1}月`;
+            
+            // カレンダーグリッドクリア
+            const grid = document.getElementById('calendarGrid');
+            const headers = grid.querySelectorAll('.calendar-header');
+            grid.innerHTML = '';
+            headers.forEach(header => grid.appendChild(header));
+            
+            // 月の最初と最後の日付
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const firstDayOfWeek = firstDay.getDay();
+            
+            // 前月の最後の日付から表示開始
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDayOfWeek);
+            
+            // 6週間分の日付を生成（42日）
+            for (let i = 0; i < 42; i++) {
+                const date = new Date(startDate);
+                date.setDate(date.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = date.getDate();
+                
+                // 他月の日付
+                if (date.getMonth() !== month) {
+                    dayElement.classList.add('other-month');
+                }
+                
+                // 今日の日付
+                const today = new Date();
+                if (date.toDateString() === today.toDateString()) {
+                    dayElement.classList.add('today');
+                }
+                
+                // 選択された日付
+                if (selectedDate && date.toDateString() === selectedDate.toDateString()) {
+                    dayElement.classList.add('selected');
+                }
+                
+                // スケジュール設定済みの日付
+                const dateKey = formatDateKey(date);
+                if (scheduleData[dateKey]) {
+                    dayElement.classList.add('has-schedule');
+                }
+                
+                // クリックイベント
+                dayElement.onclick = () => selectDate(date);
+                
+                grid.appendChild(dayElement);
+            }
+        }
+
+        // 日付選択
+        function selectDate(date) {
+            selectedDate = new Date(date);
+            renderCalendar();
+            showTimeSlots();
+        }
+
+        // 時間枠表示
+        function showTimeSlots() {
+            document.getElementById('noDateSelected').style.display = 'none';
+            document.getElementById('timeSlotsContainer').style.display = 'block';
+            
+            // 選択日付表示
+            const dateStr = formatDateDisplay(selectedDate);
+            document.getElementById('selectedDateDisplay').textContent = dateStr;
+            
+            // 既存のスケジュールデータを読み込み
+            loadScheduleForDate(selectedDate);
+        }
+
+        // 指定日のスケジュール読み込み
+        function loadScheduleForDate(date) {
+            const dateKey = formatDateKey(date);
+            const schedule = scheduleData[dateKey];
+            
+            if (schedule) {
+                // ステータス選択（ボタン形式）
+                selectStatusButton(schedule.status);
+                
+                // 時間枠設定
+                const timeSlotsList = document.getElementById('timeSlotsList');
+                timeSlotsList.innerHTML = '';
+                
+                schedule.timeSlots.forEach((slot, index) => {
+                    addTimeSlotElement(slot, index);
+                });
+            } else {
+                // デフォルト設定
+                selectStatusButton(0); // 予約可能
+                resetTimeSlots();
+            }
+        }
+
+        // 時間枠リセット
+        function resetTimeSlots() {
+            const timeSlotsList = document.getElementById('timeSlotsList');
+            timeSlotsList.innerHTML = '';
+            addTimeSlotElement({
+                startTime: '10:00',
+                endTime: '11:00',
+                maxCapacity: 5,
+                currentCapacity: 0,
+                isMain: true
+            }, 0);
+        }
+
+        // ステータス選択（ボタン形式）
+        function selectStatusButton(status) {
+            document.querySelectorAll('.status-button').forEach(button => {
+                button.classList.remove('selected');
+            });
+            
+            const statusButton = document.querySelector(`[data-status="${status}"]`);
+            if (statusButton) {
+                statusButton.classList.add('selected');
+            }
+            
+            // スケジュールデータに保存
+            saveCurrentSchedule();
+        }
+
+        // 旧互換性のためのステータス選択関数
+        function selectStatus(status) {
+            selectStatusButton(status);
+        }
+
+        // 時間枠追加
+        function addTimeSlot() {
+            const newSlot = {
+                startTime: '10:00',
+                endTime: '11:00',
+                maxCapacity: 5,
+                currentCapacity: 0,
+                isMain: false
+            };
+            
+            const timeSlotsList = document.getElementById('timeSlotsList');
+            const index = timeSlotsList.children.length;
+            addTimeSlotElement(newSlot, index);
+            
+            saveCurrentSchedule();
+        }
+
+        // 時間枠要素追加
+        function addTimeSlotElement(slot, index) {
+            const timeSlotsList = document.getElementById('timeSlotsList');
+            
+            const timeSlotDiv = document.createElement('div');
+            timeSlotDiv.className = 'time-slot';
+            timeSlotDiv.innerHTML = `
+                <div class="time-slot-header">
+                    <div class="time-input">
+                        <div class="form-group">
+                            <label class="form-label">開始時間</label>
+                            <input type="time" class="form-input" value="${slot.startTime}" onchange="saveCurrentSchedule()">
+                        </div>
+                        <span>〜</span>
+                        <div class="form-group">
+                            <label class="form-label">終了時間</label>
+                            <input type="time" class="form-input" value="${slot.endTime}" onchange="saveCurrentSchedule()">
+                        </div>
+                    </div>
+                    <button class="remove-time-slot" onclick="removeTimeSlot(this)">
+                        <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                    </button>
+                </div>
+            `;
+            
+            timeSlotsList.appendChild(timeSlotDiv);
+            
+            // 新しく追加された要素のアイコンを初期化
+            lucide.createIcons();
+        }
+
+        // 時間枠削除
+        function removeTimeSlot(button) {
+            const timeSlotsList = document.getElementById('timeSlotsList');
+            if (timeSlotsList.children.length > 1) {
+                button.closest('.time-slot').remove();
+                saveCurrentSchedule();
+            } else {
+                alert('最低1つの時間枠が必要です。');
+            }
+        }
+
+        // 現在のスケジュール保存
+        function saveCurrentSchedule() {
+            if (!selectedDate) return;
+            
+            const dateKey = formatDateKey(selectedDate);
+            
+            // ステータス取得（ボタン形式）
+            const selectedStatusButton = document.querySelector('.status-button.selected');
+            const statusIndex = selectedStatusButton ? parseInt(selectedStatusButton.getAttribute('data-status')) : 0;
+            
+            // 時間枠データ取得
+            const timeSlots = [];
+            const timeSlotElements = document.querySelectorAll('.time-slot');
+            
+            timeSlotElements.forEach((element, index) => {
+                const startTime = element.querySelector('input[type="time"]:first-child').value;
+                const endTime = element.querySelector('input[type="time"]:last-child').value;
+                const maxCapacity = parseInt(element.querySelector('input[type="number"]:first-child')?.value || 5);
+                const currentCapacity = parseInt(element.querySelector('input[type="number"]:last-child')?.value || 0);
+                const isMain = element.querySelector('input[type="checkbox"]')?.checked || false;
+                
+                timeSlots.push({
+                    startTime,
+                    endTime,
+                    maxCapacity,
+                    currentCapacity,
+                    isMain
+                });
+            });
+            
+            // スケジュールデータ保存
+            scheduleData[dateKey] = {
+                status: statusIndex,
+                timeSlots: timeSlots
+            };
+            
+            // カレンダー再描画（has-schedule クラス反映）
+            renderCalendar();
+            
+            // 保存ステータス更新
+            updateSaveStatus('変更を自動保存しました');
+        }
+
+        // 個別日程登録
+        function registerIndividualSchedule() {
+            if (!selectedDate) {
+                alert('日付が選択されていません。');
+                return;
+            }
+            
+            const selectedStatusButton = document.querySelector('.status-button.selected');
+            if (!selectedStatusButton) {
+                alert('予約ステータスを選択してください。');
+                return;
+            }
+            
+            const timeSlotElements = document.querySelectorAll('.time-slot');
+            if (timeSlotElements.length === 0) {
+                alert('時間枠が設定されていません。');
+                return;
+            }
+            
+            // 入力値チェック
+            let hasInvalidTimeSlot = false;
+            timeSlotElements.forEach(element => {
+                const startTime = element.querySelector('input[type="time"]:first-child').value;
+                const endTime = element.querySelector('input[type="time"]:last-child').value;
+                if (!startTime || !endTime) {
+                    hasInvalidTimeSlot = true;
+                }
+            });
+            
+            if (hasInvalidTimeSlot) {
+                alert('時間枠の開始時間と終了時間を設定してください。');
+                return;
+            }
+            
+            // スケジュール保存
+            saveCurrentSchedule();
+            
+            const dateStr = formatDateDisplay(selectedDate);
+            const statusText = selectedStatusButton.querySelector('.status-label').textContent;
+            
+            // 登録処理（実際の実装では API 呼び出し）
+            updateSaveStatus('登録中...');
+            
+            setTimeout(() => {
+                updateSaveStatus(`${dateStr} のスケジュールを登録しました`);
+                alert(`${dateStr} の予約スケジュールを「${statusText}」として登録しました。`);
+            }, 1000);
+        }
+
+        // 一括操作適用
+        function applyBulkOperation() {
+            const startDate = new Date(document.getElementById('bulkStartDate').value);
+            const endDate = new Date(document.getElementById('bulkEndDate').value);
+            const status = parseInt(document.getElementById('bulkStatus').value);
+            
+            if (!startDate || !endDate) {
+                alert('開始日と終了日を選択してください。');
+                return;
+            }
+            
+            if (startDate > endDate) {
+                alert('開始日は終了日より前の日付を選択してください。');
+                return;
+            }
+            
+            // 期間内の全日程に適用
+            const currentDate = new Date(startDate);
+            let appliedCount = 0;
+            
+            while (currentDate <= endDate) {
+                const dateKey = formatDateKey(currentDate);
+                
+                // デフォルトの時間枠設定
+                scheduleData[dateKey] = {
+                    status: status,
+                    timeSlots: [{
+                        startTime: '10:00',
+                        endTime: '17:00',
+                        maxCapacity: 5,
+                        currentCapacity: 0,
+                        isMain: true
+                    }]
+                };
+                
+                appliedCount++;
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            // カレンダー再描画
+            renderCalendar();
+            
+            alert(`${appliedCount}日間にスケジュールを適用しました。`);
+            updateSaveStatus(`一括操作完了: ${appliedCount}日間`);
+        }
+
+        // 一括選択クリア
+        function clearBulkSelection() {
+            if (confirm('選択期間のスケジュールをすべて削除しますか？')) {
+                const startDate = new Date(document.getElementById('bulkStartDate').value);
+                const endDate = new Date(document.getElementById('bulkEndDate').value);
+                
+                if (!startDate || !endDate) {
+                    alert('開始日と終了日を選択してください。');
+                    return;
+                }
+                
+                // 期間内のスケジュール削除
+                const currentDate = new Date(startDate);
+                let clearedCount = 0;
+                
+                while (currentDate <= endDate) {
+                    const dateKey = formatDateKey(currentDate);
+                    if (scheduleData[dateKey]) {
+                        delete scheduleData[dateKey];
+                        clearedCount++;
+                    }
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+                
+                // カレンダー再描画
+                renderCalendar();
+                
+                alert(`${clearedCount}日間のスケジュールを削除しました。`);
+                updateSaveStatus(`${clearedCount}日間のスケジュールを削除`);
+            }
+        }
+
+        // 月移動
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        // モデルハウス選択
+        function selectModelHouse() {
+            alert('モデルハウス選択画面に遷移します。');
+            // 実際の実装では選択モーダルまたは別画面に遷移
+        }
+
+        // プレビュー
+        function previewSchedule() {
+            const scheduleCount = Object.keys(scheduleData).length;
+            alert(`設定済みスケジュール: ${scheduleCount}日間\n\nプレビュー画面を開きます。`);
+        }
+
+        // 保存
+        function saveSchedule() {
+            const scheduleCount = Object.keys(scheduleData).length;
+            
+            if (scheduleCount === 0) {
+                alert('保存するスケジュールがありません。');
+                return;
+            }
+            
+            // 実際の保存処理をシミュレート
+            updateSaveStatus('保存中...');
+            
+            setTimeout(() => {
+                updateSaveStatus(`${scheduleCount}日間のスケジュールを保存しました`);
+                alert('スケジュールを保存しました。');
+            }, 1000);
+        }
+
+        // 保存ステータス更新
+        function updateSaveStatus(message) {
+            document.getElementById('saveStatus').textContent = message;
+            
+            // 3秒後に元のメッセージに戻す
+            setTimeout(() => {
+                document.getElementById('saveStatus').textContent = '変更は自動保存されます';
+            }, 3000);
+        }
+
+        // ユーティリティ関数
+        function formatDateKey(date) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        function formatDateDisplay(date) {
+            const days = ['日', '月', '火', '水', '木', '金', '土'];
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const dayOfWeek = days[date.getDay()];
+            
+            return `${year}年${month}月${day}日（${dayOfWeek}）`;
+        }
+
+        function formatDateForInput(date) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+    </script>
+</body>
+</html>

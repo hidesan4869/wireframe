@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>モデルハウス詳細 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #4a4a4a;
+        }
+
+        /* ヘッダー情報 */
+        .detail-header {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .property-title-section {
+            flex: 1;
+        }
+
+        .property-id {
+            font-size: 14px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .property-main-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 8px;
+        }
+
+        .property-subtitle {
+            font-size: 18px;
+            color: #4a4a4a;
+            margin-bottom: 15px;
+        }
+
+        .property-status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7a7a7a;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        /* 基本情報 */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #2c2c2c;
+            font-weight: 500;
+        }
+
+        /* タブナビゲーション */
+        .tab-nav {
+            display: flex;
+            gap: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+            background: white;
+            padding: 0 20px;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .tab-item {
+            padding: 15px 10px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            color: #6a6a6a;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-item:hover {
+            color: #4a4a4a;
+        }
+
+        .tab-item.active {
+            color: #2c2c2c;
+            border-bottom-color: #4a4a4a;
+            font-weight: 600;
+        }
+
+        /* タブコンテンツ */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 詳細カード */
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 画像ギャラリー */
+        .gallery-container {
+            margin-bottom: 30px;
+        }
+
+        .main-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .thumbnail {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .thumbnail:hover {
+            border-color: #4a4a4a;
+        }
+
+        .thumbnail.active {
+            border-color: #2c2c2c;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 内容セクション */
+        .content-section {
+            margin-bottom: 25px;
+        }
+
+        .content-item {
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .content-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 10px;
+        }
+
+        .content-description {
+            color: #4a4a4a;
+            line-height: 1.6;
+        }
+
+        /* 見どころセクション */
+        .highlight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .highlight-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .highlight-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .highlight-content {
+            padding: 15px;
+        }
+
+        .highlight-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 8px;
+        }
+
+        .highlight-description {
+            color: #6a6a6a;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* 間取り図 */
+        .floor-plan-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .floor-tab {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .floor-tab:hover {
+            background: #e0e0e0;
+        }
+
+        .floor-tab.active {
+            background: #4a4a4a;
+            color: white;
+            border-color: #4a4a4a;
+        }
+
+        .floor-plan-content {
+            display: none;
+        }
+
+        .floor-plan-content.active {
+            display: block;
+        }
+
+        .floor-plan-image {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        .floor-plan-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        /* 特徴タグ */
+        .feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .feature-tag {
+            padding: 6px 14px;
+            background: #f0f0f0;
+            border: 1px solid #d0d0d0;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #4a4a4a;
+        }
+
+        /* 予約カレンダー */
+        .calendar-container {
+            overflow-x: auto;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .calendar-table th,
+        .calendar-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .calendar-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        .calendar-day {
+            position: relative;
+            height: 80px;
+            vertical-align: top;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover {
+            background: #f9f9f9;
+        }
+
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .reservation-status {
+            font-size: 20px;
+        }
+
+        .status-available {
+            color: #2e7d32;
+        }
+
+        .status-limited {
+            color: #f57c00;
+        }
+
+        .status-full {
+            color: #d32f2f;
+        }
+
+        /* 時間枠 */
+        .time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .time-slot {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .time-slot:hover {
+            background: #f5f5f5;
+        }
+
+        .time-slot.main {
+            background: #e8f5e8;
+            border-color: #4caf50;
+        }
+
+        .slot-time {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .slot-capacity {
+            font-size: 12px;
+            color: #6a6a6a;
+        }
+
+        /* 予約リスト */
+        .reservation-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .reservation-table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 14px;
+        }
+
+        .reservation-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+
+        .reservation-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .customer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .customer-contact {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        /* 統計カード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7a7a7a;
+            font-size: 13px;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                不動産ポータル管理システム
+            </h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="#">物件管理</a> > 
+                <a href="#">注文住宅</a> > 
+                <a href="model_house_list.html">モデルハウス物件一覧</a> > ファミリーモデルハウス
+            </div>
+
+            <!-- ヘッダー情報 -->
+            <div class="detail-header">
+                <div class="header-top">
+                    <div class="property-title-section">
+                        <div class="property-id">物件ID: MH001</div>
+                        <h2 class="property-main-title">ファミリーモデルハウス</h2>
+                        <div class="property-subtitle">家族と過ごす理想の住まい</div>
+                        <span class="property-status status-active">公開中</span>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="window.location.href='model_house_edit.html'">
+                            <i data-lucide="edit" style="width: 16px; height: 16px;"></i> 編集
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteModelHouse()">
+                            <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i> 削除
+                        </button>
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">企業名</span>
+                        <span class="info-value">株式会社山田建設</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">所在地</span>
+                        <span class="info-value">東京都品川区西五反田2-27-1</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">展示場</span>
+                        <span class="info-value">品川住宅展示場</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">営業時間</span>
+                        <span class="info-value">10:00-18:00</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">定休日</span>
+                        <span class="info-value">水曜定休</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">予約期限</span>
+                        <span class="info-value">見学希望日の3日前まで</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- タブナビゲーション -->
+            <div class="tab-nav">
+                <div class="tab-item active" onclick="switchTab('overview', this)">
+                    <i data-lucide="info" style="width: 16px; height: 16px;"></i>
+                    概要
+                </div>
+                <div class="tab-item" onclick="switchTab('gallery', this)">
+                    <i data-lucide="images" style="width: 16px; height: 16px;"></i>
+                    画像ギャラリー
+                </div>
+                <div class="tab-item" onclick="switchTab('floorplan', this)">
+                    <i data-lucide="layout-grid" style="width: 16px; height: 16px;"></i>
+                    間取り図
+                </div>
+                <div class="tab-item" onclick="switchTab('schedule', this)">
+                    <i data-lucide="calendar" style="width: 16px; height: 16px;"></i>
+                    予約スケジュール
+                </div>
+                <div class="tab-item" onclick="switchTab('reservations', this)">
+                    <i data-lucide="users" style="width: 16px; height: 16px;"></i>
+                    予約一覧
+                </div>
+            </div>
+
+            <!-- 概要タブ -->
+            <div id="overview" class="tab-content active">
+                <!-- 説明 -->
+                <div class="detail-card">
+                    <h3 class="card-title">
+                        <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
+                        モデルハウス説明
+                    </h3>
+                    <p style="line-height: 1.8; color: #4a4a4a;">
+                        このファミリーモデルハウスは、家族との絆を深める理想の住まいとして設計されました。
+                        広々としたリビングダイニングは家族が自然と集まる空間となり、大きな窓から差し込む光が暖かな雰囲気を演出します。
+                        子育て世代に配慮した間取りと、将来の家族構成の変化にも対応できる可変性の高い設計が特徴です。
+                        最新の省エネ設備と自然素材を活用し、快適で健康的な住環境を実現しています。
+                    </p>
+                </div>
+
+                <!-- アクセス -->
+                <div class="detail-card">
+                    <h3 class="card-title">
+                        <i data-lucide="map-pin" style="width: 18px; height: 18px;"></i>
+                        アクセス情報
+                    </h3>
+                    <p style="line-height: 1.8; color: #4a4a4a;">
+                        JR山手線「五反田駅」西口より徒歩5分<br>
+                        東急池上線「大崎広小路駅」より徒歩7分<br>
+                        都営浅草線「五反田駅」A3出口より徒歩6分<br>
+                        <br>
+                        駐車場：展示場内に5台分の無料駐車場完備<br>
+                        ※満車の場合は近隣のコインパーキングをご案内いたします
+                    </p>
+                </div>
+
+                <!-- 内容情報 -->
+                <div class="detail-card">
+                    <h3 class="card-title">
+                        <i data-lucide="list" style="width: 18px; height: 18px;"></i>
+                        内容情報
+                    </h3>
+                    <div class="content-section">
+                        <div class="content-item">
+                            <div class="content-title">リビング・ダイニング</div>
+                            <div class="content-description">
+                                約25畳の広々としたLDKは、家族が自然と集まる設計。吹き抜けの開放感と大きな窓からの採光で、明るく快適な空間を実現しています。
+                            </div>
+                        </div>
+                        <div class="content-item">
+                            <div class="content-title">キッチン</div>
+                            <div class="content-description">
+                                対面式のアイランドキッチンは、料理をしながら家族との会話を楽しめる設計。最新の食洗機とIHクッキングヒーターを完備しています。
+                            </div>
+                        </div>
+                        <div class="content-item">
+                            <div class="content-title">主寝室</div>
+                            <div class="content-description">
+                                約10畳の主寝室には、ウォークインクローゼットを併設。プライベートバルコニーからは緑豊かな景色を楽しめます。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 見どころ -->
+                <div class="detail-card">
+                    <h3 class="card-title">
+                        <i data-lucide="star" style="width: 18px; height: 18px;"></i>
+                        見どころ
+                    </h3>
+                    <div class="highlight-grid">
+                        <div class="highlight-item">
+                            <img src="https://via.placeholder.com/400x200" alt="吹き抜けリビング" class="highlight-image">
+                            <div class="highlight-content">
+                                <div class="highlight-title">開放感あふれる吹き抜けリビング</div>
+                                <div class="highlight-description">
+                                    2階まで続く吹き抜けが、圧倒的な開放感を演出。家族の気配を感じながら、それぞれの時間を過ごせます。
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <img src="https://via.placeholder.com/400x200" alt="ウッドデッキ" class="highlight-image">
+                            <div class="highlight-content">
+                                <div class="highlight-title">リビングと一体化したウッドデッキ</div>
+                                <div class="highlight-description">
+                                    リビングから直接アクセスできるウッドデッキは、第二のリビングとして活用可能。BBQや家族団らんの場として最適です。
+                                </div>
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <img src="https://via.placeholder.com/400x200" alt="子供部屋" class="highlight-image">
+                            <div class="highlight-content">
+                                <div class="highlight-title">可変性のある子供部屋</div>
+                                <div class="highlight-description">
+                                    将来的に2部屋に分割可能な設計。子供の成長に合わせて、フレキシブルに対応できます。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 特徴タグ -->
+                <div class="detail-card">
+                    <h3 class="card-title">
+                        <i data-lucide="tags" style="width: 18px; height: 18px;"></i>
+                        特徴タグ
+                    </h3>
+                    <div class="feature-tags">
+                        <span class="feature-tag">省エネ住宅</span>
+                        <span class="feature-tag">自然素材</span>
+                        <span class="feature-tag">スマートハウス</span>
+                        <span class="feature-tag">太陽光発電</span>
+                        <span class="feature-tag">吹き抜け</span>
+                        <span class="feature-tag">ウッドデッキ</span>
+                        <span class="feature-tag">ガレージ付き</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 画像ギャラリータブ -->
+            <div id="gallery" class="tab-content">
+                <div class="detail-card">
+                    <h3 class="card-title">
+                        <i data-lucide="images" style="width: 18px; height: 18px;"></i>
+                        画像ギャラリー
+                    </h3>
+                    <div class="gallery-container">
+                        <img id="mainImage" src="https://via.placeholder.com/1200x600" alt="メイン画像" class="main-image">
+                        <div class="thumbnail-grid">
+                            <div class="thumbnail active" onclick="changeMainImage('https://via.placeholder.com/1200x600', this)">
+                                <img src="https://via.placeholder.com/150" alt="サムネイル1">
+                            </div>
+                            <div class="thumbnail" onclick="changeMainImage('https://via.placeholder.com/1200x600/ff0000', this)">
+                                <img src="https://via.placeholder.com/150/ff0000" alt="サムネイル2">
+                            </div>
+                            <div class="thumbnail" onclick="changeMainImage('https://via.placeholder.com/1200x600/00ff00', this)">
+                                <img src="https://via.placeholder.com/150/00ff00" alt="サムネイル3">
+                            </div>
+                            <div class="thumbnail" onclick="changeMainImage('https://via.placeholder.com/1200x600/0000ff', this)">
+                                <img src="https://via.placeholder.com/150/0000ff" alt="サムネイル4">
+                            </div>
+                            <div class="thumbnail" onclick="changeMainImage('https://via.placeholder.com/1200x600/ffff00', this)">
+                                <img src="https://via.placeholder.com/150/ffff00" alt="サムネイル5">
+                            </div>
+                            <div class="thumbnail" onclick="changeMainImage('https://via.placeholder.com/1200x600/ff00ff', this)">
+                                <img src="https://via.placeholder.com/150/ff00ff" alt="サムネイル6">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 間取り図タブ -->
+            <div id="floorplan" class="tab-content">
+                <div class="detail-card">
+                    <h3 class="card-title">
+                        <i data-lucide="layout-grid" style="width: 18px; height: 18px;"></i>
+                        間取り図
+                    </h3>
+                    <div class="floor-plan-tabs">
+                        <div class="floor-tab active" onclick="switchFloor('1f', this)">1F</div>
+                        <div class="floor-tab" onclick="switchFloor('2f', this)">2F</div>
+                    </div>
+                    
+                    <div id="1f" class="floor-plan-content active">
+                        <img src="https://via.placeholder.com/800x600" alt="1階間取り図" class="floor-plan-image">
+                        <div class="floor-plan-info">
+                            <strong>1階間取り</strong><br>
+                            LDK（25畳）、和室（6畳）、浴室、トイレ、玄関、ガレージ<br>
+                            1階の床面積：85.5㎡
+                        </div>
+                    </div>
+                    
+                    <div id="2f" class="floor-plan-content">
+                        <img src="https://via.placeholder.com/800x600/cccccc" alt="2階間取り図" class="floor-plan-image">
+                        <div class="floor-plan-info">
+                            <strong>2階間取り</strong><br>
+                            主寝室（10畳）、子供部屋（12畳・将来分割可能）、書斎（4.5畳）、トイレ、バルコニー<br>
+                            2階の床面積：72.3㎡
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 予約スケジュールタブ -->
+            <div id="schedule" class="tab-content">
+                <div class="detail-card">
+                    <h3 class="card-title">
+                        <i data-lucide="calendar" style="width: 18px; height: 18px;"></i>
+                        予約スケジュール管理
+                    </h3>
+                    
+                    <div class="calendar-header">
+                        <h4>2025年8月</h4>
+                        <div class="calendar-nav">
+                            <button class="btn btn-secondary">前月</button>
+                            <button class="btn btn-secondary">次月</button>
+                        </div>
+                    </div>
+
+                    <div class="calendar-container">
+                        <table class="calendar-table">
+                            <thead>
+                                <tr>
+                                    <th>日</th>
+                                    <th>月</th>
+                                    <th>火</th>
+                                    <th>水</th>
+                                    <th>木</th>
+                                    <th>金</th>
+                                    <th>土</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="calendar-day">
+                                        <div class="day-number">25</div>
+                                        <div class="reservation-status status-available">〇</div>
+                                    </td>
+                                    <td class="calendar-day">
+                                        <div class="day-number">26</div>
+                                        <div class="reservation-status status-available">〇</div>
+                                    </td>
+                                    <td class="calendar-day">
+                                        <div class="day-number">27</div>
+                                        <div class="reservation-status status-limited">△</div>
+                                    </td>
+                                    <td class="calendar-day" style="background: #f0f0f0;">
+                                        <div class="day-number">28</div>
+                                        <div style="color: #999;">定休日</div>
+                                    </td>
+                                    <td class="calendar-day">
+                                        <div class="day-number">29</div>
+                                        <div class="reservation-status status-available">〇</div>
+                                    </td>
+                                    <td class="calendar-day">
+                                        <div class="day-number">30</div>
+                                        <div class="reservation-status status-full">✕</div>
+                                    </td>
+                                    <td class="calendar-day">
+                                        <div class="day-number">31</div>
+                                        <div class="reservation-status status-limited">△</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button class="btn btn-primary" style="margin-top: 20px;" onclick="openScheduleEditModal()">
+                        <i data-lucide="edit" style="width: 16px; height: 16px;"></i>
+                        スケジュール編集
+                    </button>
+                </div>
+
+                <!-- 時間枠設定 -->
+                <div class="detail-card">
+                    <h3 class="card-title">
+                        <i data-lucide="clock" style="width: 18px; height: 18px;"></i>
+                        本日の時間枠（2025年8月25日）
+                    </h3>
+                    <div class="time-slots-grid">
+                        <div class="time-slot main">
+                            <div class="slot-time">10:00</div>
+                            <div class="slot-capacity">空き: 2/3</div>
+                        </div>
+                        <div class="time-slot">
+                            <div class="slot-time">11:00</div>
+                            <div class="slot-capacity">空き: 1/2</div>
+                        </div>
+                        <div class="time-slot main">
+                            <div class="slot-time">13:00</div>
+                            <div class="slot-capacity">空き: 3/3</div>
+                        </div>
+                        <div class="time-slot">
+                            <div class="slot-time">14:00</div>
+                            <div class="slot-capacity">空き: 0/2</div>
+                        </div>
+                        <div class="time-slot main">
+                            <div class="slot-time">15:00</div>
+                            <div class="slot-capacity">空き: 2/3</div>
+                        </div>
+                        <div class="time-slot">
+                            <div class="slot-time">16:00</div>
+                            <div class="slot-capacity">空き: 1/2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 予約一覧タブ -->
+            <div id="reservations" class="tab-content">
+                <div class="detail-card">
+                    <h3 class="card-title">
+                        <i data-lucide="users" style="width: 18px; height: 18px;"></i>
+                        見学予約一覧
+                    </h3>
+
+                    <!-- 予約リスト -->
+                    <table class="reservation-table">
+                        <thead>
+                            <tr>
+                                <th>予約ID</th>
+                                <th>予約日時</th>
+                                <th>顧客情報</th>
+                                <th>人数</th>
+                                <th>ステータス</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>RV001</td>
+                                <td>2025-08-27 10:00</td>
+                                <td>
+                                    <div class="customer-info">
+                                        <div class="customer-name">山田 太郎</div>
+                                        <div class="customer-contact">yamada@example.com / 090-1234-5678</div>
+                                    </div>
+                                </td>
+                                <td>大人2名、子供1名</td>
+                                <td><span class="property-status status-active">予約確定</span></td>
+                                <td>
+                                    <button class="btn btn-secondary btn-sm" onclick="openReservationDetail('RV001')">詳細</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>RV002</td>
+                                <td>2025-08-27 13:00</td>
+                                <td>
+                                    <div class="customer-info">
+                                        <div class="customer-name">佐藤 花子</div>
+                                        <div class="customer-contact">sato@example.com / 080-9876-5432</div>
+                                    </div>
+                                </td>
+                                <td>大人2名</td>
+                                <td><span class="property-status status-active">予約確定</span></td>
+                                <td>
+                                    <button class="btn btn-secondary btn-sm" onclick="openReservationDetail('RV002')">詳細</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>RV003</td>
+                                <td>2025-08-29 15:00</td>
+                                <td>
+                                    <div class="customer-info">
+                                        <div class="customer-name">鈴木 一郎</div>
+                                        <div class="customer-contact">suzuki@example.com / 070-1111-2222</div>
+                                    </div>
+                                </td>
+                                <td>大人3名</td>
+                                <td><span class="property-status status-active">予約確定</span></td>
+                                <td>
+                                    <button class="btn btn-secondary btn-sm" onclick="openReservationDetail('RV003')">詳細</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>RV004</td>
+                                <td>2025-08-30 10:00</td>
+                                <td>
+                                    <div class="customer-info">
+                                        <div class="customer-name">田中 美咲</div>
+                                        <div class="customer-contact">tanaka@example.com / 090-3333-4444</div>
+                                    </div>
+                                </td>
+                                <td>大人2名、子供2名</td>
+                                <td><span class="property-status status-inactive">キャンセル</span></td>
+                                <td>
+                                    <button class="btn btn-secondary btn-sm" onclick="openReservationDetail('RV004')">詳細</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- スケジュール編集モーダル -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">スケジュール編集</h3>
+                <button class="close" onclick="closeModal('scheduleModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>詳細なスケジュール編集機能をここに実装</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('scheduleModal')">キャンセル</button>
+                <button class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // タブ切り替え
+        function switchTab(tabName, tabElement) {
+            // すべてのタブコンテンツを非表示
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // すべてのタブを非アクティブ化
+            const tabs = document.querySelectorAll('.tab-item');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 選択されたタブとコンテンツをアクティブ化
+            document.getElementById(tabName).classList.add('active');
+            tabElement.classList.add('active');
+        }
+
+        // 間取り図切り替え
+        function switchFloor(floorId, tabElement) {
+            // すべての間取り図コンテンツを非表示
+            const contents = document.querySelectorAll('.floor-plan-content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // すべてのタブを非アクティブ化
+            const tabs = document.querySelectorAll('.floor-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 選択された間取り図とタブをアクティブ化
+            document.getElementById(floorId).classList.add('active');
+            tabElement.classList.add('active');
+        }
+
+        // メイン画像変更
+        function changeMainImage(imageSrc, thumbnail) {
+            document.getElementById('mainImage').src = imageSrc;
+            
+            // すべてのサムネイルから active クラスを削除
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            thumbnails.forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            
+            // クリックされたサムネイルに active クラスを追加
+            thumbnail.classList.add('active');
+        }
+
+        // モーダル表示
+        function openScheduleEditModal() {
+            document.getElementById('scheduleModal').classList.add('show');
+        }
+
+        // モーダル閉じる
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // 予約詳細を開く
+        function openReservationDetail(reservationId) {
+            console.log('Opening reservation detail:', reservationId);
+            alert(`予約 ${reservationId} の詳細を表示します`);
+        }
+
+        // モデルハウス削除
+        function deleteModelHouse() {
+            if (confirm('このモデルハウスを削除してもよろしいですか？\nこの操作は取り消せません。')) {
+                alert('モデルハウスを削除しました');
+                window.location.href = 'model_house_list.html';
+            }
+        }
+
+        // Lucideアイコンを初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+
+        // モーダルの外側クリックで閉じる
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+    </script>
+</body>
+</html>

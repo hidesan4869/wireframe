@@ -576,6 +576,24 @@
                     <i data-lucide="bar-chart" style="width: 16px; height: 16px; margin-right: 8px;"></i>ダッシュボード
                 </div>
             </div>
+            <!-- 物件管理 -->
+            <div class="nav-item admin-only">
+                <div class="nav-header" onclick="toggleNav(this)">
+                    <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>物件管理
+                    <span class="arrow">▶</span>
+                </div>
+                <div class="nav-subitems">
+                    <div class="nav-subitem" onclick="toggleSubNav(this)">
+                        <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>注文住宅
+                        <span class="arrow">▶</span>
+                    </div>
+                    <div class="sub-subitems">
+                        <div class="sub-subitem" onclick="window.location.href='model_house_list.html'">モデルハウス一覧</div>
+                        <div class="sub-subitem" onclick="window.location.href='model_house_register.html'">モデルハウス登録</div>
+                        <div class="sub-subitem" onclick="window.location.href='model_house_schedule_register.html'">モデルハウス見学予約日登録</div>
+                    </div>
+                </div>
+            </div>
 
             <!-- カタログ請求管理 -->
             <div class="nav-item admin-only">
@@ -646,12 +664,6 @@
                     <div class="nav-subitem" onclick="window.location.href='tour_user_reservation_list.html'">
                         <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 8px;"></i>見学予約者一覧
                     </div>
-                    <div class="nav-subitem" onclick="window.location.href='tour_schedule_list.html'">
-                        <i data-lucide="calendar" style="width: 16px; height: 16px; margin-right: 8px;"></i>予約日時設定一覧
-                    </div>
-                    <div class="nav-subitem" onclick="window.location.href='tour_schedule_register.html'">
-                        <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 8px;"></i>予約日時設定
-                    </div>
                 </div>
             </div>
 
@@ -692,24 +704,6 @@
                     </div>
                     <div class="nav-subitem" onclick="window.location.href='inquiry_management.html'">
                         <i data-lucide="message-circle" style="width: 16px; height: 16px; margin-right: 8px;"></i>問い合わせ管理
-                    </div>
-                </div>
-            </div>
-
-            <!-- 物件管理 -->
-            <div class="nav-item admin-only">
-                <div class="nav-header" onclick="toggleNav(this)">
-                    <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>物件管理
-                    <span class="arrow">▶</span>
-                </div>
-                <div class="nav-subitems">
-                    <div class="nav-subitem" onclick="toggleSubNav(this)">
-                        <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>注文住宅
-                        <span class="arrow">▶</span>
-                    </div>
-                    <div class="sub-subitems">
-                        <div class="sub-subitem" onclick="showContent('property-custom-home-list', event)">物件一覧</div>
-                        <div class="sub-subitem" onclick="showContent('property-custom-home-register', event)">物件登録</div>
                     </div>
                 </div>
             </div>
