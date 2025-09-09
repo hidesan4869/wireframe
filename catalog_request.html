@@ -405,6 +405,124 @@
             }
         }
 
+        /* トグルスイッチ */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #4a4a4a;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .toggle-status {
+            font-size: 13px;
+            color: #6a6a6a;
+            font-weight: 500;
+        }
+
+        /* アクションメニュー */
+        .action-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-button {
+            background: #4a4a4a;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .action-button:hover {
+            background: #3a3a3a;
+            transform: scale(1.1);
+        }
+
+        .action-popover {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #2c2c2c;
+            transition: background 0.2s ease;
+        }
+
+        .action-item:hover {
+            background: #f5f5f5;
+        }
+
+        .action-item-icon {
+            width: 18px;
+            height: 18px;
+        }
+
         /* タブナビゲーション */
         .tab-nav {
             display: flex;
@@ -531,7 +649,9 @@
                             <td>モダンハウスカタログ2025</td>
                             <td>株式会社山田建設</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025001')">詳細</button>
+                                <div class="action-menu">
+                                    <div onclick="openDetailModal('CR2025001')"><i data-lucide="square-pen" style="color: black; cursor: pointer;"></i></div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -544,7 +664,9 @@
                             <td>都心エリア土地情報</td>
                             <td>田中不動産株式会社</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025002')">詳細</button>
+                                <div class="action-menu">
+                                    <div onclick="openDetailModal('CR2025001')"><i data-lucide="square-pen" style="color: black; cursor: pointer;"></i></div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -557,7 +679,9 @@
                             <td>ファミリー向け新築特集</td>
                             <td>佐藤ハウジング</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025003')">詳細</button>
+                                <div class="action-menu">
+                                    <div onclick="openDetailModal('CR2025001')"><i data-lucide="square-pen" style="color: black; cursor: pointer;"></i></div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -570,7 +694,9 @@
                             <td>エコハウスコレクション</td>
                             <td>株式会社山田建設</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025004')">詳細</button>
+                                <div class="action-menu">
+                                    <div onclick="openDetailModal('CR2025001')"><i data-lucide="square-pen" style="color: black; cursor: pointer;"></i></div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -583,7 +709,9 @@
                             <td>郊外土地活用ガイド</td>
                             <td>田中不動産株式会社</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025005')">詳細</button>
+                                <div class="action-menu">
+                                    <div onclick="openDetailModal('CR2025001')"><i data-lucide="square-pen" style="color: black; cursor: pointer;"></i></div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -596,7 +724,9 @@
                             <td>スマートホーム最新情報</td>
                             <td>佐藤ハウジング</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('CR2025006')">詳細</button>
+                                <div class="action-menu">
+                                    <div onclick="openDetailModal('CR2025001')"><i data-lucide="square-pen" style="color: black; cursor: pointer;"></i></div>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -605,70 +735,206 @@
         </main>
     </div>
 
-    <!-- 詳細モーダル -->
+    <!-- 詳細モーダル（編集フォーム） -->
     <div id="detailModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">カタログ請求詳細</h3>
+                <h3 class="modal-title">カタログ請求編集</h3>
                 <button class="close" onclick="closeDetailModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <h4 style="margin-bottom: 15px; color: #4a4a4a;">請求情報</h4>
-                <div class="detail-grid">
-                    <div class="detail-label">ID:</div>
-                    <div class="detail-value" id="detailRequestId">10001</div>
-                    
-                    <div class="detail-label">請求日時:</div>
-                    <div class="detail-value" id="detailRequestDate">2025-08-25 10:30</div>
-                </div>
+                <form id="editForm">
+                    <h4 style="margin-bottom: 15px; color: #4a4a4a;">請求情報</h4>
+                    <div class="detail-grid">
+                        <div class="detail-label">ID:</div>
+                        <div class="detail-value" id="detailRequestId">10001</div>
+                        
+                        <div class="detail-label">請求日時:</div>
+                        <div class="detail-value" id="detailRequestDate">2025-08-25 10:30</div>
+                    </div>
 
-                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">お客様情報</h4>
-                <div class="detail-grid">
-                    <div class="detail-label">氏名:</div>
-                    <div class="detail-value" id="detailName">山田 太郎</div>
-                    
-                    <div class="detail-label">フリガナ:</div>
-                    <div class="detail-value" id="detailKana">ヤマダ タロウ</div>
-                    
-                    <div class="detail-label">メールアドレス:</div>
-                    <div class="detail-value" id="detailEmail">yamada@example.com</div>
-                    
-                    <div class="detail-label">電話番号:</div>
-                    <div class="detail-value" id="detailPhone">09012345678</div>
-                    
-                    <div class="detail-label">郵便番号:</div>
-                    <div class="detail-value" id="detailZip">100-0001</div>
-                    
-                    <div class="detail-label">住所:</div>
-                    <div class="detail-value" id="detailAddress">東京都千代田区千代田1-1-1</div>
-                    
-                    <div class="detail-label">年齢:</div>
-                    <div class="detail-value">30歳</div>
-                    <div class="detail-label">建設予定地:</div>
-                    <div class="detail-value">東京都ほげほげほげ1-1-1</div>
-                    <div class="detail-label">土地の有無:</div>
-                    <div class="detail-value">なし</div>
-                    <div class="detail-label">メルマガ・メール配信希望:</div>
-                    <div class="detail-value">あり</div>
-                </div>
+                    <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">お客様情報</h4>
+                    <div class="detail-grid">
+                        <div class="detail-label">姓:</div>
+                        <div class="detail-value">
+                            <input type="text" class="form-input" id="editLastName" value="山田" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                        </div>
+                        
+                        <div class="detail-label">名:</div>
+                        <div class="detail-value">
+                            <input type="text" class="form-input" id="editFirstName" value="太郎" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                        </div>
+                        
+                        <div class="detail-label">姓（カナ）:</div>
+                        <div class="detail-value">
+                            <input type="text" class="form-input" id="editLastNameKana" value="ヤマダ" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                        </div>
+                        
+                        <div class="detail-label">名（カナ）:</div>
+                        <div class="detail-value">
+                            <input type="text" class="form-input" id="editFirstNameKana" value="タロウ" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                        </div>
+                        
+                        <div class="detail-label">メールアドレス:</div>
+                        <div class="detail-value">
+                            <input type="email" class="form-input" id="editEmail" value="yamada@example.com" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                        </div>
+                        
+                        <div class="detail-label">電話番号:</div>
+                        <div class="detail-value">
+                            <input type="tel" class="form-input" id="editPhone" value="09012345678" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                        </div>
+                        
+                        <div class="detail-label">郵便番号:</div>
+                        <div class="detail-value">
+                            <input type="text" class="form-input" id="editZip" value="100-0001" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                        </div>
+                        
+                        <div class="detail-label">住所1:</div>
+                        <div class="detail-value">
+                            <input type="text" class="form-input" id="editAddress" value="東京都千代田区千代田" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                        </div>
+                        <div class="detail-label">住所2:</div>
+                        <div class="detail-value">
+                            <input type="text" class="form-input" id="editAddress" value="番地・建物名" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                        </div>
+                        
+                        <div class="detail-label">年齢:</div>
+                        <div class="detail-value">
+                            <input type="number" class="form-input" id="editAge" value="30" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                        </div>
 
-                <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">カタログ情報</h4>
-                <div class="detail-grid">
-                    <div class="detail-label">物件種別:</div>
-                    <div class="detail-value" id="detailPropertyType">注文住宅</div>
-                    
-                    <div class="detail-label">カタログ名:</div>
-                    <div class="detail-value" id="detailCatalogName">モダンハウスカタログ2025</div>
-                    <div class="detail-label">お問い合わせコード:</div>
-                    <div class="detail-value" id="detailCatalogName">FZ1234567890</div>
-                    
-                    <div class="detail-label">企業名:</div>
-                    <div class="detail-value" id="detailCompany">株式会社山田建設</div>
-                </div>
+                        <div class="detail-label">希望連絡時間:</div>
+                        <div class="detail-value">
+                            <input type="text" class="form-input" id="editContactTime" value="18時頃" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                        </div>
+                        
+                        <div class="detail-label">建築予定地・希望地:</div>
+                        <div class="detail-value">
+                            <label style="margin-right: 15px;">
+                                <input type="radio" name="constructionLocation" value="0" onchange="toggleConstructionFields()" checked> 現住所と同じ
+                            </label>
+                            <label style="margin-right: 15px;">
+                                <input type="radio" name="constructionLocation" value="1" onchange="toggleConstructionFields()"> 予定・希望
+                            </label>
+                            <label>
+                                <input type="radio" name="constructionLocation" value="2" onchange="toggleConstructionFields()"> 決まっていない
+                            </label>
+                        </div>
+                        
+                        <div class="detail-label" id="constructionSiteLabel" style="display: none;">建設予定地:</div>
+                        <div class="detail-value" id="constructionSiteField" style="display: none;">
+                            <div style="margin-bottom: 10px;">
+                                <label style="display: block; margin-bottom: 5px; font-size: 12px; color: #6a6a6a;">都道府県</label>
+                                <select class="form-select" id="editPrefecture" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                                    <option value="">選択してください</option>
+                                    <option value="北海道">北海道</option>
+                                    <option value="青森県">青森県</option>
+                                    <option value="岩手県">岩手県</option>
+                                    <option value="宮城県">宮城県</option>
+                                    <option value="秋田県">秋田県</option>
+                                    <option value="山形県">山形県</option>
+                                    <option value="福島県">福島県</option>
+                                    <option value="茨城県">茨城県</option>
+                                    <option value="栃木県">栃木県</option>
+                                    <option value="群馬県">群馬県</option>
+                                    <option value="埼玉県">埼玉県</option>
+                                    <option value="千葉県">千葉県</option>
+                                    <option value="東京都" selected>東京都</option>
+                                    <option value="神奈川県">神奈川県</option>
+                                    <option value="新潟県">新潟県</option>
+                                    <option value="富山県">富山県</option>
+                                    <option value="石川県">石川県</option>
+                                    <option value="福井県">福井県</option>
+                                    <option value="山梨県">山梨県</option>
+                                    <option value="長野県">長野県</option>
+                                    <option value="岐阜県">岐阜県</option>
+                                    <option value="静岡県">静岡県</option>
+                                    <option value="愛知県">愛知県</option>
+                                    <option value="三重県">三重県</option>
+                                    <option value="滋賀県">滋賀県</option>
+                                    <option value="京都府">京都府</option>
+                                    <option value="大阪府">大阪府</option>
+                                    <option value="兵庫県">兵庫県</option>
+                                    <option value="奈良県">奈良県</option>
+                                    <option value="和歌山県">和歌山県</option>
+                                    <option value="鳥取県">鳥取県</option>
+                                    <option value="島根県">島根県</option>
+                                    <option value="岡山県">岡山県</option>
+                                    <option value="広島県">広島県</option>
+                                    <option value="山口県">山口県</option>
+                                    <option value="徳島県">徳島県</option>
+                                    <option value="香川県">香川県</option>
+                                    <option value="愛媛県">愛媛県</option>
+                                    <option value="高知県">高知県</option>
+                                    <option value="福岡県">福岡県</option>
+                                    <option value="佐賀県">佐賀県</option>
+                                    <option value="長崎県">長崎県</option>
+                                    <option value="熊本県">熊本県</option>
+                                    <option value="大分県">大分県</option>
+                                    <option value="宮崎県">宮崎県</option>
+                                    <option value="鹿児島県">鹿児島県</option>
+                                    <option value="沖縄県">沖縄県</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; font-size: 12px; color: #6a6a6a;">詳細住所</label>
+                                <input type="text" class="form-input" id="editConstructionSiteDetail" value="ほげほげほげ1-1-1" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;" placeholder="市区町村・番地を入力">
+                            </div>
+                        </div>
+                        
+                        <div class="detail-label" id="landOwnershipLabel" style="display: none;">土地の有無:</div>
+                        <div class="detail-value" id="landOwnershipField" style="display: none;">
+                            <select class="form-select" id="editLandOwnership" style="width: 100%; padding: 8px; border: 1px solid #c0c0c0; border-radius: 4px;">
+                                <option value="なし">なし</option>
+                                <option value="あり">あり</option>
+                                <option value="検討中">検討中</option>
+                            </select>
+                        </div>
+
+                        
+                        
+                        <div class="detail-label">メール配信希望:</div>
+                        <div class="detail-value">
+                            <div class="toggle-container">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="editMailMagazine" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="toggle-status" id="mailStatus">配信希望</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h4 style="margin-bottom: 15px; margin-top: 25px; color: #4a4a4a;">カタログ情報</h4>
+                    <div class="detail-grid">
+                        <div class="detail-label">物件種別:</div>
+                        <div class="detail-value">
+                            <p>注文住宅</p>
+                        </div>
+                        
+                        <div class="detail-label">カタログ名:</div>
+                        <div class="detail-value">
+                            <p>モダンハウスカタログ2025</p>
+                        </div>
+                        
+                        <div class="detail-label">カタログコード:</div>
+                        <div class="detail-value">
+                            <p>CH001</p>
+                        </div>
+                        
+                        <div class="detail-label">登録企業名:</div>
+                        <div class="detail-value">
+                            <p>株式会社山田建設</p>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <div>
-                    <button class="btn btn-secondary" onclick="closeDetailModal()">閉じる</button>
+                    <button class="btn btn-secondary" onclick="closeDetailModal()">キャンセル</button>
+                    <button class="btn btn-primary" onclick="saveRequestData()">保存</button>
                 </div>
             </div>
         </div>
@@ -775,14 +1041,109 @@
             console.log('Exporting selected items...');
         }
 
-        // 新規請求登録モーダル
+        // 新規請求登録ページへ遷移
         function openNewRequestModal() {
-            alert('新規請求登録機能は実装予定です');
+            window.location.href = 'catalog_request_register.html';
+        }
+
+        // データ保存
+        function saveRequestData() {
+            const formData = {
+                lastName: document.getElementById('editLastName').value,
+                firstName: document.getElementById('editFirstName').value,
+                lastNameKana: document.getElementById('editLastNameKana').value,
+                firstNameKana: document.getElementById('editFirstNameKana').value,
+                email: document.getElementById('editEmail').value,
+                phone: document.getElementById('editPhone').value,
+                zip: document.getElementById('editZip').value,
+                address: document.getElementById('editAddress').value,
+                age: document.getElementById('editAge').value,
+                contactTime: document.getElementById('editContactTime').value,
+                constructionLocation: document.querySelector('input[name="constructionLocation"]:checked').value,
+                prefecture: document.getElementById('editPrefecture') ? document.getElementById('editPrefecture').value : '',
+                constructionSiteDetail: document.getElementById('editConstructionSiteDetail') ? document.getElementById('editConstructionSiteDetail').value : '',
+                landOwnership: document.getElementById('editLandOwnership') ? document.getElementById('editLandOwnership').value : '',
+                mailMagazine: document.getElementById('editMailMagazine').checked
+            };
+            
+            console.log('保存データ:', formData);
+            alert('カタログ請求情報を保存しました');
+            closeDetailModal();
+        }
+
+        // アクションメニューの切り替え
+        function toggleActionMenu(button, requestId) {
+            const popover = button.nextElementSibling;
+            const isVisible = popover.style.display === 'block';
+            
+            // 他のメニューをすべて閉じる
+            document.querySelectorAll('.action-popover').forEach(p => {
+                p.style.display = 'none';
+            });
+            
+            // クリックされたメニューを表示/非表示
+            popover.style.display = isVisible ? 'none' : 'block';
+            
+            event.stopPropagation();
+        }
+
+        // トグルスイッチの状態を更新
+        function updateMailStatus() {
+            const checkbox = document.getElementById('editMailMagazine');
+            const statusText = document.getElementById('mailStatus');
+            
+            if (checkbox.checked) {
+                statusText.textContent = '配信希望';
+                statusText.style.color = '#2e7d32';
+            } else {
+                statusText.textContent = '配信停止';
+                statusText.style.color = '#d32f2f';
+            }
+        }
+
+        // 建築予定地フィールドの表示/非表示を切り替え
+        function toggleConstructionFields() {
+            const selectedValue = document.querySelector('input[name="constructionLocation"]:checked').value;
+            const siteLabel = document.getElementById('constructionSiteLabel');
+            const siteField = document.getElementById('constructionSiteField');
+            const landLabel = document.getElementById('landOwnershipLabel');
+            const landField = document.getElementById('landOwnershipField');
+            
+            if (selectedValue === '1') {
+                // 「予定・希望」が選択された場合のみ表示
+                siteLabel.style.display = 'block';
+                siteField.style.display = 'block';
+                landLabel.style.display = 'block';
+                landField.style.display = 'block';
+            } else {
+                // それ以外は非表示
+                siteLabel.style.display = 'none';
+                siteField.style.display = 'none';
+                landLabel.style.display = 'none';
+                landField.style.display = 'none';
+            }
         }
         
         // Lucide icons 初期化
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
+
+            // ドキュメント全体のクリックイベントでポップオーバーを閉じる
+            document.addEventListener('click', function() {
+                document.querySelectorAll('.action-popover').forEach(popover => {
+                    popover.style.display = 'none';
+                });
+            });
+
+            // メール配信トグルのイベントリスナーを追加
+            const mailToggle = document.getElementById('editMailMagazine');
+            if (mailToggle) {
+                mailToggle.addEventListener('change', updateMailStatus);
+                updateMailStatus(); // 初期状態を設定
+            }
+
+            // 建築予定地フィールドの初期状態を設定
+            toggleConstructionFields();
         });
     </script>
 </body>

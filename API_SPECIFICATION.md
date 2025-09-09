@@ -6,7 +6,6 @@
 2. [イベント詳細API](#イベント詳細api)
 3. [イベント登録API](#イベント登録api)
 4. [イベント更新API](#イベント更新api)
-6. [イベント予約一覧API](#イベント予約一覧api)
 
 ---
 
@@ -81,12 +80,16 @@ HTTP: GET
             "created_at": "2024-12-01T10:30:00Z",
             "updated_at": "2024-12-15T14:20:00Z",
             "reservations_count": 12,
+            "created_at": "2025-09-08T05:38:34.000000Z",
+            "updated_at": "2025-09-08T05:38:34.000000Z",
             "company": {
                 "id": 10001,
                 "name": "株式会社モダン",
                 "contact_person": "田中太郎",
                 "contact_phone": "052-123-4567",
-                "url": "https://example.com"
+                "url": "https://example.com",
+                "created_at": "2025-09-08T05:38:34.000000Z",
+                "updated_at": "2025-09-08T05:38:34.000000Z",
             },
             "features": [
                 {
@@ -119,8 +122,9 @@ HTTP: GET
 #### エラー時（400 Bad Request）
 ```json
 {
-    "message": "リクエストパラメータに誤りがあります",
-    "errors": ""
+    "success": false,
+    "message": "エラーが検出されました",
+    "errors": {}
 }
 ```
 
@@ -147,75 +151,79 @@ HTTP: GET
 #### 成功時（200 OK）
 ```json
 {
-    "data": {
-        "id": 1000,
-        "title": "まちなかジーヴォ緑区桃山見学会",
-        "description": "新築戸建て住宅の見学会です。最新の設備や間取りをご確認いただけます。",
-        "venue": "ジーヴォ緑区桃山展示場\n名鉄犬山線「岩倉」駅からバス乗車。「三ツ渕東」バス停より徒歩5分",
-        "start_date": "2025-01-15",
-        "end_date": "2025-01-16",
-        "start_time": "10:00:00",
-        "end_time": "18:00:00",
-        "is_active": 1,
-        "postal_code": "458-0021",
-        "prefecture_id": 23,
-        "prefecture_name": "愛知県",
-        "address01": "名古屋市緑区桃山3丁目",
-        "address02": "1-15",
-        "time_required": "約1時間30分",
-        "about_reservations": "事前予約が必要です。当日受付も可能ですが、予約優先となります。",
-        "reservation_deadline": "2025-01-14",
-        "participation_fee": "無料",
-        "tmp_save": 0,
-        "created_at": "2024-12-01T10:30:00Z",
-        "updated_at": "2024-12-15T14:20:00Z",
-        "reservations_count": 12,
-        "company": {
-            "id": 10001,
-            "name": "株式会社モダン",
-            "contact_person": "田中太郎",
-            "contact_phone": "052-123-4567",
-            "business_hours": "9:00-18:00",
-            "url": "https://example.com"
-        },
-        "genres": [
-            {
-                "id": 1,
-                "name": "見学会",
-                "description": "住宅見学会"
-            }
-        ],
-        "features": [
-            {
-                "id": 99,
-                "name": "特典あり",
-                "description": "来場特典をご用意しております",
-                "is_active": 1,
-            }
-        ],
-        "contexts": [
-            {
-                "id": 201,
-                "title": "住宅見学",
-                "description": "最新の住宅設備をご覧いただけます",
-            }
-        ],
-        "flows": [
-            {
-                "id": 301,
-                "title": "受付・案内",
-                "description": "受付にて資料をお渡しし、見学ルートをご案内いたします",
-                "image_path": "/images/flows/reception.jpg"
-            }
-        ]
-    }
+    "id": 1000,
+    "title": "まちなかジーヴォ緑区桃山見学会",
+    "description": "新築戸建て住宅の見学会です。最新の設備や間取りをご確認いただけます。",
+    "venue": "ジーヴォ緑区桃山展示場\n名鉄犬山線「岩倉」駅からバス乗車。「三ツ渕東」バス停より徒歩5分",
+    "start_date": "2025-01-15",
+    "end_date": "2025-01-16",
+    "start_time": "10:00:00",
+    "end_time": "18:00:00",
+    "is_active": 1,
+    "postal_code": "458-0021",
+    "prefecture_id": 23,
+    "prefecture_name": "愛知県",
+    "address01": "名古屋市緑区桃山3丁目",
+    "address02": "1-15",
+    "time_required": "約1時間30分",
+    "about_reservations": "事前予約が必要です。当日受付も可能ですが、予約優先となります。",
+    "reservation_deadline": "2025-01-14",
+    "participation_fee": "無料",
+    "tmp_save": 0,
+    "created_at": "2024-12-01T10:30:00Z",
+    "updated_at": "2024-12-15T14:20:00Z",
+    "reservations_count": 12,
+    "created_at": "2025-09-08T05:38:34.000000Z",
+    "updated_at": "2025-09-08T05:38:34.000000Z",
+    "company": {
+        "id": 10001,
+        "name": "株式会社モダン",
+        "contact_person": "田中太郎",
+        "contact_phone": "052-123-4567",
+        "business_hours": "9:00-18:00",
+        "url": "https://example.com",
+        "created_at": "2025-09-08T05:38:34.000000Z",
+        "updated_at": "2025-09-08T05:38:34.000000Z"
+    },
+    "genres": [
+        {
+            "id": 1,
+            "name": "見学会",
+            "description": "住宅見学会"
+        }
+    ],
+    "features": [
+        {
+            "id": 99,
+            "name": "特典あり",
+            "description": "来場特典をご用意しております",
+            "is_active": 1,
+        }
+    ],
+    "contexts": [
+        {
+            "id": 201,
+            "title": "住宅見学",
+            "description": "最新の住宅設備をご覧いただけます",
+        }
+    ],
+    "flows": [
+        {
+            "id": 301,
+            "title": "受付・案内",
+            "description": "受付にて資料をお渡しし、見学ルートをご案内いたします",
+            "image_path": "/images/flows/reception.jpg"
+        }
+    ]
 }
 ```
 
 #### エラー時（404 Not Found）
 ```json
 {
-    "message": "指定されたイベントが見つかりません",
+    "success": false,
+    "message": "エラーが検出されました",
+    "errors": {}
 }
 ```
 
@@ -234,44 +242,44 @@ HTTP: POST
 ### リクエストボディ
 ```json
 {
-    "company_id": 10001,
-    "title": "住宅ローンセミナー",
-    "description": "住宅購入時のローンについて詳しく説明いたします",
-    "venue": "ジーヴォ緑区桃山展示場\n名鉄犬山線「岩倉」駅からバス乗車。「三ツ渕東」バス停より徒歩5分", //改行コードを含めてリクエストするので、DBへは文字列のまま登録してください
-    "start_date": "2025-02-01",
-    "end_date": "2025-02-01",
-    "start_time": "14:00:00",
-    "end_time": "16:00:00",
-    "is_active": 1,
-    "postal_code": "450-0002",
-    "prefecture_id": 23,
-    "address01": "名古屋市中村区名駅3-15-1",
-    "address02": "名古屋ビル5F",
-    "time_required": "約2時間",
-    "about_reservations": "事前予約必須",
-    "reservation_deadline": "2025-01-30",
-    "participation_fee": "無料",
-    "tmp_save": 0,
-    "genre_ids": [2],
-    "feature_ids": [100, 101],
+    [〇]"company_id": 10001,
+    [〇]"title": "住宅ローンセミナー",
+    []"description": "住宅購入時のローンについて詳しく説明いたします",
+    []"venue": "ジーヴォ緑区桃山展示場\n名鉄犬山線「岩倉」駅からバス乗車。「三ツ渕東」バス停より徒歩5分", //改行コードを含めてリクエストするので、DBへは文字列のまま登録してください
+    []"start_date": "2025-02-01",
+    []"end_date": "2025-02-01",
+    []"start_time": "14:00:00",
+    []"end_time": "16:00:00",
+    [〇]"is_active": 1,
+    []"postal_code": "450-0002",
+    []"prefecture_id": 23,
+    []"address01": "名古屋市中村区名駅3-15-1",
+    []"address02": "名古屋ビル5F",
+    []"time_required": "約2時間",
+    []"about_reservations": "事前予約必須",
+    []"reservation_deadline": "2025-01-30",
+    []"participation_fee": "無料",
+    [〇]"tmp_save": 0,
+    []"genre_ids": [2],
+    []"feature_ids": [100, 101],
     "contexts": [
         {
-            "title": "住宅ローン基礎知識",
-            "description": "住宅ローンの基本的な仕組みについて説明します"
+            [〇]"title": "住宅ローン基礎知識",
+            []"description": "住宅ローンの基本的な仕組みについて説明します"
         }
     ],
     "flows": [
         {
-            "title": "受付",
-            "description": "受付でお名前を確認いたします",
-            "sort_order": 1,
-            "image_path": "/images/flows/reception.jpg"
+            [〇]"title": "受付",
+            []"description": "受付でお名前を確認いたします",
+            []"sort_order": 1,
+            []"image_path": "/images/flows/reception.jpg"
         },
         {
-            "title": "セミナー開始",
-            "description": "住宅ローンについて詳しく説明いたします",
-            "sort_order": 2,
-            "image_path": ""
+            [〇]"title": "セミナー開始",
+            []"description": "住宅ローンについて詳しく説明いたします",
+            []"sort_order": 2,
+            []"image_path": ""
         }
     ]
 }
@@ -287,6 +295,14 @@ HTTP: POST
     "data": {
         "id": 1001,
     }
+}
+```
+
+```json
+{
+    "success": false,
+    "message": "エラーが検出されました",
+    "errors": {}
 }
 ```
 
@@ -311,48 +327,52 @@ HTTP: PUT
 ### リクエストボディ
 ```json
 {
-    "id": 10001,
-    "company_id": 10001,
-    "title": "住宅ローンセミナー（更新版）",
-    "description": "住宅購入時のローンについて詳しく説明いたします（内容更新）",
-    "venue": "ジーヴォ緑区桃山展示場\n名鉄犬山線「岩倉」駅からバス乗車。「三ツ渕東」バス停より徒歩5分",
-    "start_date": "2025-02-01",
-    "end_date": "2025-02-01",
-    "start_time": "14:00:00",
-    "end_time": "16:00:00",
-    "is_active": 1,
-    "postal_code": "450-0002",
-    "prefecture_id": 23,
-    "address01": "名古屋市中村区名駅3-15-1",
-    "address02": "名古屋ビル5F",
-    "time_required": "約2時間",
-    "about_reservations": "事前予約必須",
-    "reservation_deadline": "2025-01-30",
-    "participation_fee": "無料",
-    "tmp_save": 0,
-    "genre_ids": [2],
-    "feature_ids": [100, 101],
+    [〇]"id": 10001,
+    [〇]"title": "住宅ローンセミナー（更新版）",
+    []"description": "住宅購入時のローンについて詳しく説明いたします（内容更新）",
+    []"venue": "ジーヴォ緑区桃山展示場\n名鉄犬山線「岩倉」駅からバス乗車。「三ツ渕東」バス停より徒歩5分",
+    []"start_date": "2025-02-01",
+    []"end_date": "2025-02-01",
+    []"start_time": "14:00:00",
+    []"end_time": "16:00:00",
+    [〇]"is_active": 1,
+    []"postal_code": "450-0002",
+    []"prefecture_id": 23,
+    []"address01": "名古屋市中村区名駅3-15-1",
+    []"address02": "名古屋ビル5F",
+    []"time_required": "約2時間",
+    []"about_reservations": "事前予約必須",
+    []"reservation_deadline": "2025-01-30",
+    []"participation_fee": "無料",
+    [〇]"tmp_save": 0,
+    []"genre_ids": [2],
+    []"feature_ids": [100, 101],
     "contexts": [
         {
-            "id": 201,
-            "title": "住宅ローン基礎知識（更新）",
-            "description": "住宅ローンの基本的な仕組みについて詳しく説明します"
+            []"id": 201,
+            [〇]"title": "住宅ローン基礎知識（更新）",
+            []"description": "住宅ローンの基本的な仕組みについて詳しく説明します"
+        },
+        {
+            []"id": "",
+            [〇]"title": "住宅ローン基礎知識（更新）",
+            []"description": "住宅ローンの基本的な仕組みについて詳しく説明します"
         }
     ],
     "flows": [
         {
-            "id": 301,
-            "title": "受付",
-            "description": "受付でお名前を確認いたします",
-            "sort_order": 1,
-            "image_path": "/images/flows/reception.jpg"
+            []"id": 301,
+            [〇]"title": "受付",
+            []"description": "受付でお名前を確認いたします",
+            []"sort_order": 1,
+            []"image_path": "/images/flows/reception.jpg"
         },
         {
-            "id": 302,
-            "title": "セミナー開始",
-            "description": "住宅ローンについて詳しく説明いたします",
-            "sort_order": 2,
-            "image_path": ""
+            []"id": "",
+            [〇]"title": "セミナー開始",
+            []"description": "住宅ローンについて詳しく説明いたします",
+            []"sort_order": 2,
+            []"image_path": ""
         }
     ]
 }
@@ -372,183 +392,10 @@ HTTP: PUT
 }
 ```
 
----
-
-## イベント[イベントフロー]削除API [物理削除]
-
-### HTTP
-```
-HTTP: DELETE
-```
-
-### 概要
-指定されたIDのイベントフローを削除します。
-
-### パスパラメータ
-
-| パラメータ名 | 型 | 必須 | 説明 |
-|------------|---|-----|-----|
-| `id` | integer | Yes | イベントID |
-
-### リクエストボディ
-```json
-{
-    "id": 1001
-}
-```
-
-### レスポンス
-
-#### 成功時（200 OK）
-```json
-{
-    "success": true,
-    "message": "イベント（イベントフロー）情報を削除しました",
-    "data": {
-        "id": 1001,
-    }
-}
-```
----
-
-## イベント[イベント詳細]削除API [物理削除]
-
-### HTTP
-```
-HTTP: DELETE
-```
-
-### 概要
-指定されたIDのイベント詳細を削除します。
-
-### パスパラメータ
-
-| パラメータ名 | 型 | 必須 | 説明 |
-|------------|---|-----|-----|
-| `id` | integer | Yes | イベントID |
-
-### リクエストボディ
-```json
-{
-    "id": 1001
-}
-```
-
-### レスポンス
-
-#### 成功時（200 OK）
-```json
-{
-    "success": true,
-    "message": "イベント（イベント詳細）情報を削除しました",
-    "data": {
-        "id": 1001,
-    }
-}
-```
-
----
-
-## 予約者一覧API
-
-### HTTP
-```
-HTTP: GET
-```
-
-### 概要
-予約者一覧を取得します。フィルタリング、ページネーション、ソート機能をサポートしています。
-
-### リクエストパラメータ
-
-| パラメータ名 | 型 | 必須 | デフォルト値 | 説明 |
-|------------|---|-----|------------|-----|
-| `page` | integer | No | 1 | ページ番号（1以上） |
-| `per_page` | integer | No | 50 | 1ページ当たりの件数（1-100） |
-| `keyword` | string | No | "" | 顧客名、メールアドレスで検索 |
-| `event_id` | integer | No | "" | 特定のイベントIDで絞り込み |
-| `company_id` | integer | No | "" | 特定の企業IDで絞り込み |
-| `status` | string | No | "" | 予約ステータス（confirmed, pending, cancelled） |
-| `order_by` | string | No | "DESC" | ソート順（ASC: 昇順、DESC: 降順） |
-
-### リクエスト例
-```
-HTTP: GET
-```
-
-### レスポンス
-
-#### 成功時（200 OK）
-```json
-{
-    "meta": {
-        "total_count": 125,
-        "page": 1,
-        "per_page": 50,
-        "from": 1,
-        "to": 2,
-        "last_page": 1,
-    },
-    "links": {
-        "first": "https://api.example.com/api/admin/catalog-requests?page=1",
-        "last": "https://api.example.com/api/admin/catalog-requests?page=3",
-        "prev": null,
-        "next": "https://api.example.com/api/admin/catalog-requests?page=2"
-    },
-    "data": [
-        {
-            "id": 5001,
-            "customer_name": "山田花子",
-            "customer_phone": "090-1234-5678",
-            "customer_email": "yamada@example.com",
-            "reservation_date": "2025-01-15",
-            "reservation_time": "14:00:00",
-            "participants_count": 2,
-            "status": "confirmed",
-            "status_name": "予約確定",
-            "special_requests": "車椅子対応をお願いします",
-            "created_at": "2024-12-10T09:00:00Z",
-            "updated_at": "2024-12-10T09:00:00Z",
-            "event": {
-                "id": 1000,
-                "title": "まちなかジーヴォ緑区桃山見学会",
-            },
-            "company": {
-                "id": 10001,
-                "name": "株式会社モダン"
-            }
-        },
-        {
-            "id": 5002,
-            "customer_name": "佐藤太郎",
-            "customer_phone": "080-5678-9012",
-            "customer_email": "sato@example.com",
-            "reservation_date": "2025-01-16",
-            "reservation_time": "10:00:00",
-            "participants_count": 4,
-            "status": "pending",
-            "status_name": "予約待ち",
-            "special_requests": "",
-            "created_at": "2024-12-11T14:30:00Z",
-            "updated_at": "2024-12-11T14:30:00Z",
-            "event": {
-                "id": 1002,
-                "title": "住宅ローンセミナー"
-            },
-            "company": {
-                "id": 10001,
-                "name": "株式会社モダン"
-            }
-        }
-    ]
-}
-```
-
-#### エラー時（400 Bad Request）
 ```json
 {
     "success": false,
-    "message": "リクエストパラメータに誤りがあります",
+    "message": "エラーが検出されました",
     "errors": {}
 }
 ```
