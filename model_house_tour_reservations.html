@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>モデルハウス見学予約者一覧 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;   
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #4a4a4a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* モデルハウス情報 */
+        .model-house-info {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #90caf9;
+        }
+
+        .model-house-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .model-house-details {
+            flex: 1;
+        }
+
+        .model-house-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 5px;
+        }
+
+        .model-house-address {
+            color: #424242;
+            font-size: 14px;
+        }
+
+        /* フィルター */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        /* データテーブル */
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 14px;
+        }
+
+        tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* 顧客情報 */
+        .customer-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 2px;
+        }
+
+        .customer-kana {
+            font-size: 12px;
+            color: #7a7a7a;
+            margin-bottom: 2px;
+        }
+
+        .customer-contact {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        /* 希望日時情報 */
+        .preferred-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preferred-date {
+            font-weight: 500;
+            color: #2c2c2c;
+            margin-bottom: 2px;
+        }
+
+        .preferred-time {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        /* ニュースレター購読状態 */
+        .newsletter-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .newsletter-subscribed {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .newsletter-unsubscribed {
+            background: #f5f5f5;
+            color: #6a6a6a;
+        }
+
+        /* アクションメニュー */
+        .action-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-popover {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .action-popover.show {
+            display: block;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #2c2c2c;
+            transition: background 0.2s ease;
+        }
+
+        .action-item:hover {
+            background: #f5f5f5;
+        }
+
+        .action-item-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .action-item.detail:hover {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                不動産ポータル管理システム
+            </h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="#">物件管理</a> > 
+                <a href="#">注文住宅</a> > 
+                <a href="model_house_list.html">モデルハウス物件一覧</a> > 見学予約者一覧
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">
+                    <i data-lucide="users" style="width: 24px; height: 24px; margin-right: 8px;"></i>
+                    モデルハウス見学予約者一覧
+                </h2>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="exportReservations()">CSVエクスポート</button>
+                    <button class="btn btn-secondary" onclick="window.location.href='model_house_list.html'">物件一覧に戻る</button>
+                </div>
+            </div>
+
+            <!-- モデルハウス情報 -->
+            <div class="model-house-info">
+                <div class="model-house-content">
+                    <i data-lucide="building-2" style="width: 24px; height: 24px; color: #1976d2;"></i>
+                    <div class="model-house-details">
+                        <div class="model-house-name" id="modelHouseName">ファミリーモデルハウス</div>
+                        <div class="model-house-address" id="modelHouseAddress">東京都品川区西五反田 2-27-1 | 株式会社山田建設</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- フィルター -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">顧客名検索</label>
+                        <input type="text" class="filter-input" id="customerSearch" placeholder="顧客名、カナで検索..." onkeypress="handleEnterKey(event)">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">希望見学日</label>
+                        <input type="date" class="filter-input" id="preferredDateFilter" onchange="applyFilters()">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">ニュースレター購読</label>
+                        <select class="filter-select" id="newsletterFilter" onchange="applyFilters()">
+                            <option value="">すべて</option>
+                            <option value="subscribed">購読中</option>
+                            <option value="unsubscribed">未購読</option>
+                        </select>
+                    </div>
+                    <div class="search-controls">
+                        <button class="btn btn-secondary" onclick="clearFilters()">フィルタークリア</button>
+                        <button class="btn btn-primary" onclick="applyFilters()">検索</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- データテーブル -->
+            <div class="data-table">
+                <div class="table-header">
+                    <h3 class="table-title">見学予約者リスト</h3>
+                    <span style="font-size: 14px; color: #6a6a6a;">合計: 5件</span>
+                </div>
+                
+                <table id="reservationTable">
+                    <thead>
+                        <tr>
+                            <th>予約ID</th>
+                            <th>顧客情報</th>
+                            <th>希望見学日時</th>
+                            <th>希望連絡時間</th>
+                            <th>ニュースレター</th>
+                            <th>予約日時</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>TR001</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">山田 太郎</div>
+                                    <div class="customer-kana">ヤマダ タロウ</div>
+                                    <div class="customer-contact">yamada@example.com / 090-1234-5678</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="preferred-info">
+                                    <div class="preferred-date">2025-09-15</div>
+                                    <div class="preferred-time">10:00-12:00</div>
+                                </div>
+                            </td>
+                            <td>平日 18:00以降</td>
+                            <td><span class="newsletter-status newsletter-subscribed">購読中</span></td>
+                            <td>2025-09-09 14:30</td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, 'TR001')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="window.location.href='model_house_tour_reservation_detail.html'">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TR002</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">佐藤 花子</div>
+                                    <div class="customer-kana">サトウ ハナコ</div>
+                                    <div class="customer-contact">sato@example.com / 080-9876-5432</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="preferred-info">
+                                    <div class="preferred-date">2025-09-16</div>
+                                    <div class="preferred-time">14:00-16:00</div>
+                                </div>
+                            </td>
+                            <td>土日祝日</td>
+                            <td><span class="newsletter-status newsletter-unsubscribed">未購読</span></td>
+                            <td>2025-09-08 16:45</td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, 'TR002')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openReservationDetail('TR002')">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TR003</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">鈴木 一郎</div>
+                                    <div class="customer-kana">スズキ イチロウ</div>
+                                    <div class="customer-contact">suzuki@example.com / 070-1111-2222</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="preferred-info">
+                                    <div class="preferred-date">2025-09-20</div>
+                                    <div class="preferred-time">午前中</div>
+                                </div>
+                            </td>
+                            <td>いつでも</td>
+                            <td><span class="newsletter-status newsletter-subscribed">購読中</span></td>
+                            <td>2025-09-07 10:20</td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, 'TR003')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openReservationDetail('TR003')">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TR004</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">田中 美咲</div>
+                                    <div class="customer-kana">タナカ ミサキ</div>
+                                    <div class="customer-contact">tanaka.m@example.com / 090-3333-4444</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="preferred-info">
+                                    <div class="preferred-date">2025-09-22</div>
+                                    <div class="preferred-time">15:00-17:00</div>
+                                </div>
+                            </td>
+                            <td>平日 19:00以降</td>
+                            <td><span class="newsletter-status newsletter-subscribed">購読中</span></td>
+                            <td>2025-09-06 20:15</td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, 'TR004')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openReservationDetail('TR004')">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TR005</td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">高橋 健太</div>
+                                    <div class="customer-kana">タカハシ ケンタ</div>
+                                    <div class="customer-contact">takahashi@example.com / 080-5555-6666</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="preferred-info">
+                                    <div class="preferred-date">2025-09-25</div>
+                                    <div class="preferred-time">13:00-15:00</div>
+                                </div>
+                            </td>
+                            <td>土日祝日 午後</td>
+                            <td><span class="newsletter-status newsletter-unsubscribed">未購読</span></td>
+                            <td>2025-09-05 11:30</td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, 'TR005')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="openReservationDetail('TR005')">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 予約詳細画面へ遷移
+        function openReservationDetail(reservationId) {
+            console.log('Opening tour reservation detail page for:', reservationId);
+            window.location.href = `model_house_tour_reservation_detail.html?id=${reservationId}`;
+        }
+
+        // アクションメニューの表示/非表示切り替え
+        function toggleActionMenu(button, reservationId) {
+            const popover = button.nextElementSibling;
+            
+            // 他のポップオーバーを全て閉じる
+            document.querySelectorAll('.action-popover').forEach(p => {
+                if (p !== popover) {
+                    p.classList.remove('show');
+                }
+            });
+            
+            // 現在のポップオーバーの表示を切り替え
+            popover.classList.toggle('show');
+        }
+
+        // Enterキーでの検索実行
+        function handleEnterKey(event) {
+            if (event.key === 'Enter') {
+                applyFilters();
+            }
+        }
+
+        // フィルター適用
+        function applyFilters() {
+            const customerFilter = document.getElementById('customerSearch').value.toLowerCase();
+            const dateFilter = document.getElementById('preferredDateFilter').value;
+            const newsletterFilter = document.getElementById('newsletterFilter').value;
+            const rows = document.querySelectorAll('#reservationTable tbody tr');
+            
+            rows.forEach(row => {
+                let showRow = true;
+                
+                // 顧客名フィルタリング
+                if (customerFilter) {
+                    const customerCell = row.cells[1];
+                    const customerText = customerCell.textContent.toLowerCase();
+                    if (!customerText.includes(customerFilter)) {
+                        showRow = false;
+                    }
+                }
+                
+                // 日付フィルタリング
+                if (dateFilter) {
+                    const dateCell = row.cells[2];
+                    const preferredDate = dateCell.querySelector('.preferred-date').textContent;
+                    if (preferredDate !== dateFilter) {
+                        showRow = false;
+                    }
+                }
+                
+                // ニュースレターフィルタリング
+                if (newsletterFilter) {
+                    const newsletterCell = row.cells[4];
+                    const isSubscribed = newsletterCell.querySelector('.newsletter-subscribed') !== null;
+                    if ((newsletterFilter === 'subscribed' && !isSubscribed) || 
+                        (newsletterFilter === 'unsubscribed' && isSubscribed)) {
+                        showRow = false;
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        // フィルタークリア
+        function clearFilters() {
+            document.getElementById('customerSearch').value = '';
+            document.getElementById('preferredDateFilter').value = '';
+            document.getElementById('newsletterFilter').value = '';
+            
+            // すべての行を表示
+            const rows = document.querySelectorAll('#reservationTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+
+        // データエクスポート
+        function exportReservations() {
+            console.log('Exporting tour reservations...');
+            alert('見学予約データをCSVエクスポートしています...');
+        }
+
+        // ページのどこかをクリックしたときにポップオーバーを閉じる
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.action-menu')) {
+                document.querySelectorAll('.action-popover').forEach(popover => {
+                    popover.classList.remove('show');
+                });
+            }
+        });
+
+        // Lucideアイコンを初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

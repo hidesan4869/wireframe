@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>見学予約ユーザー一覧 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         * {
             margin: 0;
@@ -449,6 +450,54 @@
             font-weight: 600;
             color: #4a4a4a;
         }
+
+        /* アクションメニュー */
+        .action-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-popover {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .action-popover.show {
+            display: block;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #2c2c2c;
+            transition: background 0.2s ease;
+        }
+
+        .action-item:hover {
+            background: #f5f5f5;
+        }
+
+        .action-item-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .action-item.detail:hover {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
     </style>
 </head>
 <body>
@@ -465,11 +514,11 @@
         <!-- メインコンテンツ -->
         <main class="main-content">
             <div class="breadcrumb">
-                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 見学予約管理 > ユーザー見学予約一覧
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 見学予約管理 > 見学予約者一覧
             </div>
 
             <div class="page-header">
-                <h2 class="page-title">👥 見学予約ユーザー一覧</h2>
+                <h2 class="page-title">👥 見学予約者一覧</h2>
                 <div class="action-buttons">
                     <button class="btn btn-secondary" onclick="exportReservations()">CSVエクスポート</button>
                 </div>
@@ -555,7 +604,7 @@
                                 <a href="#">株式会社モダン</a>
                             </td>
                             <td>
-                                <a href="#">モダンハウス新宿</a>
+                                <a href="model_house_tour_reservations.html">モダンハウス新宿</a>
                             </td>
                             <td>
                                 <div class="customer-info">
@@ -568,7 +617,17 @@
                             </td>
                             <td>2025-08-25</td>
                             <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('R2025001')">詳細</button>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, 'R2025001')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="window.location.href='model_house_tour_reservation_detail.html?id=R2025001'">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -820,6 +879,21 @@
             }
         }
 
+        // アクションメニューの表示/非表示切り替え
+        function toggleActionMenu(button, reservationId) {
+            const popover = button.nextElementSibling;
+            
+            // 他のポップオーバーを全て閉じる
+            document.querySelectorAll('.action-popover').forEach(p => {
+                if (p !== popover) {
+                    p.classList.remove('show');
+                }
+            });
+            
+            // 現在のポップオーバーの表示を切り替え
+            popover.classList.toggle('show');
+        }
+
         // モーダル外クリックで閉じる
         window.onclick = function(event) {
             const modal = document.getElementById('reservationModal');
@@ -827,6 +901,20 @@
                 closeModal();
             }
         }
+
+        // ページのどこかをクリックしたときにポップオーバーを閉じる
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.action-menu')) {
+                document.querySelectorAll('.action-popover').forEach(popover => {
+                    popover.classList.remove('show');
+                });
+            }
+        });
+
+        // Lucideアイコンを初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
     </script>
 </body>
 </html>

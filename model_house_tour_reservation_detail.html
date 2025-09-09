@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>イベント予約詳細 - 不動産ポータル管理画面</title>
+    <title>モデルハウス見学予約詳細 - 不動産ポータル管理画面</title>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         * {
@@ -57,8 +57,8 @@
             flex: 1;
             margin-top: 60px;
             padding: 30px;
-            overflow-y: auto;   
-            max-width: 1400px;
+            overflow-y: auto;
+            max-width: 1200px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -129,14 +129,35 @@
             background: #5a6268;
         }
 
-        .btn-warning {
-            background: #f57c00;
-            color: white;
+        /* モデルハウス情報 */
+        .model-house-info {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #90caf9;
         }
 
-        .btn-warning:hover {
-            background: #e65100;
-            transform: translateY(-1px);
+        .model-house-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .model-house-details {
+            flex: 1;
+        }
+
+        .model-house-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 5px;
+        }
+
+        .model-house-address {
+            color: #424242;
+            font-size: 14px;
         }
 
         /* 詳細情報カード */
@@ -200,13 +221,9 @@
             color: #6a6a6a;
         }
 
-        .event-type-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            background: #fff3e0;
-            color: #f57c00;
+        .preferred-date {
+            color: #1976d2;
+            font-weight: 600;
         }
 
         /* メッセージエリア */
@@ -412,7 +429,6 @@
                 opacity: 1;
             }
         }
-
     </style>
 </head>
 <body>
@@ -433,21 +449,24 @@
         <main class="main-content">
             <div class="breadcrumb">
                 <a href="index.html">ホーム</a> > 
-                <a href="event_requests.html">イベント予約管理</a> > イベント予約詳細
+                <a href="#">物件管理</a> > 
+                <a href="#">注文住宅</a> > 
+                <a href="model_house_list.html">モデルハウス物件一覧</a> > 
+                <a href="model_house_tour_reservations.html">見学予約者一覧</a> > 見学予約詳細
             </div>
 
             <div class="page-header">
                 <h2 class="page-title">
-                    <i data-lucide="calendar-check" style="width: 24px; height: 24px; margin-right: 8px;"></i>
-                    イベント予約詳細
+                    <i data-lucide="user" style="width: 24px; height: 24px; margin-right: 8px;"></i>
+                    モデルハウス見学予約詳細
                 </h2>
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="openEditModal()">編集</button>
-                    <button class="btn btn-secondary" onclick="window.location.href='event_requests.html'">一覧に戻る</button>
+                    <button class="btn btn-secondary" onclick="window.location.href='model_house_tour_reservations.html'">一覧に戻る</button>
                 </div>
             </div>
 
-            <!-- 上段の2カラム: 顧客情報 - イベント予約情報 -->
+            <!-- 上段の2カラム: 顧客情報 - 見学予約情報 -->
             <div class="detail-cards">
                 <!-- 顧客情報 -->
                 <div class="detail-card">
@@ -457,7 +476,7 @@
                     </h3>
                     <div class="detail-grid">
                         <div class="detail-label">予約ID</div>
-                        <div class="detail-value">EVT001</div>
+                        <div class="detail-value">TR001</div>
                         
                         <div class="detail-label">氏名</div>
                         <div class="detail-value">山田 太郎</div>
@@ -481,26 +500,29 @@
                     </div>
                 </div>
 
-                <!-- イベント予約情報 -->
+                <!-- 見学予約情報 -->
                 <div class="detail-card">
                     <h3 class="card-title">
                         <i data-lucide="calendar" style="width: 20px; height: 20px;"></i>
-                        イベント予約情報
+                        見学予約情報
                     </h3>
                     <div class="detail-grid">
-                        <div class="detail-label">参加希望日</div>
-                        <div class="detail-value" style="color: #1976d2; font-weight: 600;">2025年8月30日（土）</div>
+                        <div class="detail-label">希望見学日</div>
+                        <div class="detail-value preferred-date">2025年9月15日（日）</div>
                         
-                        <div class="detail-label">参加希望時間</div>
-                        <div class="detail-value">16:00</div>
+                        <div class="detail-label">希望見学時間</div>
+                        <div class="detail-value">10:00-12:00</div>
                         
                         <div class="detail-label">予約申込日時</div>
-                        <div class="detail-value">2025年8月25日 15:30</div>
+                        <div class="detail-value">2025年9月9日 14:30</div>
+                        
+                        <div class="detail-label">最終更新日時</div>
+                        <div class="detail-value">2025年9月10日 16:30</div>
                     </div>
                 </div>
             </div>
 
-            <!-- 下段の2カラム: 企業情報 - イベント詳細 -->
+            <!-- 下段の2カラム: 企業情報 - モデルハウス詳細 -->
             <div class="detail-cards">
                 <!-- 企業情報 -->
                 <div class="detail-card">
@@ -510,7 +532,7 @@
                     </h3>
                     <div class="detail-grid">
                         <div class="detail-label">企業名</div>
-                        <div class="detail-value"><a href="company_detail.html?id=C001">株式会社山田建設</a></div>
+                        <div class="detail-value"><a href="http://localhost:5500/wire_frame/company_detail.html?id=C001">株式会社山田建設</a></div>
                         
                         <div class="detail-label">代表者名</div>
                         <div class="detail-value">山田 一郎</div>
@@ -523,26 +545,24 @@
                     </div>
                 </div>
 
-                <!-- イベント詳細 -->
+                <!-- モデルハウス詳細 -->
                 <div class="detail-card">
                     <h3 class="card-title">
-                        <i data-lucide="calendar-days" style="width: 20px; height: 20px;"></i>
-                        イベント詳細
+                        <i data-lucide="building-2" style="width: 20px; height: 20px;"></i>
+                        モデルハウス詳細
                     </h3>
                     <div class="detail-grid">
-                        <div class="detail-label">イベント名</div>
-                        <div class="detail-value"><a href="event_setting.html">まちなかジーヴォ緑区桃山見学会</a></div>
+                        <div class="detail-label">モデルハウス名</div>
+                        <div class="detail-value"><a href="model_house_edit.html">ファミリーモデルハウス</a></div>
                         
-                        <div class="detail-label">開催場所</div>
-                        <div class="detail-value">愛知県名古屋市緑区桃山1-2-3</div>
+                        <div class="detail-label">所在地</div>
+                        <div class="detail-value">東京都品川区西五反田 2-27-1</div>
                         
-                        <div class="detail-label">開催日時</div>
-                        <div class="detail-value">2025年8月30日～202510月31日</div>
-
-                        <div class="detail-label">ステータス</div>
-                        <div class="detail-value">
-                            <span class="event-type-badge">公開中</span>
-                        </div>
+                        <div class="detail-label">営業時間</div>
+                        <div class="detail-value">10:00-18:00（水曜定休）</div>
+                        
+                        <div class="detail-label">予約日登録</div>
+                        <div class="detail-value"><a href="model_house_schedule_register.html">リンク</a></div>
                     </div>
                 </div>
             </div>
@@ -553,7 +573,7 @@
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">イベント予約編集</h3>
+                <h3 class="modal-title">モデルハウス見学予約編集</h3>
                 <button class="close" onclick="closeEditModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -609,25 +629,20 @@
                         </div>
                     </div>
 
-                    <h4 style="margin: 25px 0 15px; color: #4a4a4a;">イベント予約情報</h4>
+                    <h4 style="margin: 25px 0 15px; color: #4a4a4a;">見学予約情報</h4>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">参加希望日</label>
-                            <input type="date" class="form-input" id="editPreferredDate" value="2025-08-30">
+                            <label class="form-label">希望見学日</label>
+                            <input type="date" class="form-input" id="editPreferredDate" value="2025-09-15">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">参加希望時間</label>
+                            <label class="form-label">希望見学時間</label>
                             <select class="form-select" id="editPreferredTime">
-                                <option value="10:00">10:00</option>
-                                <option value="11:00">11:00</option>
-                                <option value="12:00">12:00</option>
-                                <option value="13:00">13:00</option>
-                                <option value="14:00">14:00</option>
-                                <option value="15:00">15:00</option>
-                                <option value="16:00" selected>16:00</option>
-                                <option value="17:00">17:00</option>
-                                <option value="18:00">18:00</option>
+                                <option value="10:00-12:00" selected>10:00</option>
+                                <option value="12:00-14:00">12:00</option>
+                                <option value="14:00-16:00">14:00</option>
+                                <option value="16:00-18:00">16:00</option>
                             </select>
                         </div>
                     </div>
@@ -667,14 +682,13 @@
                 contactTime: document.getElementById('editContactTime').value,
                 newsletter: document.getElementById('editNewsletter').checked,
                 preferredDate: document.getElementById('editPreferredDate').value,
-                preferredTime: document.getElementById('editPreferredTime').value,
-                questions: document.getElementById('editQuestions').value
+                preferredTime: document.getElementById('editPreferredTime').value
             };
 
             console.log('Saving reservation data:', formData);
 
             // 実際の保存処理をここに実装
-            alert('イベント予約情報を更新しました。');
+            alert('モデルハウス見学予約情報を更新しました。');
             
             // 画面の表示を更新
             updateDisplayData(formData);
@@ -718,7 +732,7 @@
                 }
             }
 
-            // 参加希望日時の更新
+            // 希望見学日時の更新
             const preferredDateElement = document.querySelector('[data-field="preferredDate"]');
             if (preferredDateElement) {
                 const date = new Date(data.preferredDate);
@@ -730,12 +744,6 @@
             const preferredTimeElement = document.querySelector('[data-field="preferredTime"]');
             if (preferredTimeElement) {
                 preferredTimeElement.textContent = data.preferredTime;
-            }
-
-            // 質問・要望の更新
-            const questionsElement = document.querySelector('[data-field="questions"]');
-            if (questionsElement) {
-                questionsElement.textContent = data.questions;
             }
         }
 
@@ -771,13 +779,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             const reservationId = getReservationIdFromUrl();
             if (reservationId) {
-                console.log('Loading event reservation details for:', reservationId);
+                console.log('Loading model house tour reservation details for:', reservationId);
                 // 実際のアプリケーションでは、ここでAPIから詳細データを取得
-                // 予約IDに応じて表示内容を更新
-                const firstDetailValue = document.querySelector('.detail-value');
-                if (firstDetailValue) {
-                    firstDetailValue.textContent = reservationId;
-                }
             }
 
             // ニュースレタートグルのイベントリスナー
