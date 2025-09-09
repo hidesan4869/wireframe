@@ -475,39 +475,6 @@
                 </div>
             </div>
 
-            <!-- 統計カード -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">156</div>
-                    <div class="stat-label">総予約数</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">89</div>
-                    <div class="stat-label">予約確定</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">42</div>
-                    <div class="stat-label">予約待ち</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">25</div>
-                    <div class="stat-label">完了</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">18</div>
-                    <div class="stat-label">今月新規</div>
-                </div>
-            </div>
-
-            <!-- タブナビゲーション -->
-            <div class="tab-nav">
-                <div class="tab-item active" onclick="switchTab('all')">全て (156)</div>
-                <div class="tab-item" onclick="switchTab('pending')">予約待ち (42)</div>
-                <div class="tab-item" onclick="switchTab('confirmed')">予約確定 (89)</div>
-                <div class="tab-item" onclick="switchTab('completed')">完了 (25)</div>
-                <div class="tab-item" onclick="switchTab('cancelled')">キャンセル (8)</div>
-            </div>
-
             <!-- フィルター -->
             <div class="filter-section">
                 <div class="filter-row">
@@ -563,9 +530,9 @@
                             <th>予約ID</th>
                             <th>住宅及び土地</th>
                             <th>見学日時</th>
-                            <th>物件情報</th>
+                            <th>企業名</th>
+                            <th>モデルハウス</th>
                             <th>顧客情報</th>
-                            <th>集合場所</th>
                             <th>申込日</th>
                             <th>操作</th>
                         </tr>
@@ -577,7 +544,7 @@
                             </td>
                             <td>R2025001</td>
                             <td>
-                                <div class="property-info">
+                                <div>
                                     <strong>新築戸建て</strong><br>
                                 </div>
                             </td>
@@ -585,162 +552,27 @@
                                 <div class="datetime-info">2025-09-05<br>14:00</div>
                             </td>
                             <td>
-                                <div class="property-info">
-                                    <strong>モダンハウス新宿</strong><br>
-                                </div>
+                                <a href="#">株式会社モダン</a>
+                            </td>
+                            <td>
+                                <a href="#">モダンハウス新宿</a>
                             </td>
                             <td>
                                 <div class="customer-info">
                                     <div>
                                         <div style="font-weight: 600;">山田 太郎</div>
-                                        <small style="color: #7a7a7a;">090-1234-5678</small>
+                                        <small style="color: #7a7a7a;">090-1234-5678</small><br>
+                                        <small style="color: #7a7a7a;">test@gmail.com</small>
                                     </div>
                                 </div>
                             </td>
-                            <td>現地</td>
                             <td>2025-08-25</td>
                             <td>
                                 <button class="btn btn-primary btn-sm" onclick="openDetailModal('R2025001')">詳細</button>
                             </td>
                         </tr>
-                        <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
-                            <td>R2025002</td>
-                            <td>
-                                <div class="property-info">
-                                    <strong>新築戸建て</strong><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="datetime-info">2025-09-06<br>10:30</div>
-                            </td>
-                            <td>
-                                <div class="property-info">
-                                    <strong>新宿駅前土地</strong><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="customer-info">
-                                    <div>
-                                        <div style="font-weight: 600;">佐藤 花子</div>
-                                        <small style="color: #7a7a7a;">080-9876-5432</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>最寄り駅</td>
-                            <td>2025-08-24</td>
-                            <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('R2025002')">詳細</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
-                            <td>R2025003</td>
-                            <td>
-                                <div class="property-info">
-                                    <strong>新築戸建て</strong><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="datetime-info">2025-09-03<br>16:00</div>
-                            </td>
-                            <td>
-                                <div class="property-info">
-                                    <strong>エコハウス渋谷</strong><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="customer-info">
-                                    <div>
-                                        <div style="font-weight: 600;">鈴木 一郎</div>
-                                        <small style="color: #7a7a7a;">070-1111-2222</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>現地</td>
-                            <td>2025-08-20</td>
-                            <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('R2025003')">詳細</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
-                            <td>R2025004</td>
-                            <td>
-                                <div class="property-info">
-                                    <strong>新築戸建て</strong><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="datetime-info">2025-09-07<br>11:15</div>
-                            </td>
-                            <td>
-                                <div class="property-info">
-                                    <strong>世田谷住宅用地</strong><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="customer-info">
-                                    <div>
-                                        <div style="font-weight: 600;">田中 美咲</div>
-                                        <small style="color: #7a7a7a;">090-3333-4444</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>現地</td>
-                            <td>2025-08-23</td>
-                            <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('R2025004')">詳細</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="checkbox-cell">
-                                <input type="checkbox" class="row-checkbox" onchange="updateSelectedCount()">
-                            </td>
-                            <td>R2025005</td>
-                            <td>
-                                <div class="property-info">
-                                    <strong>新築戸建て</strong><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="datetime-info">2025-09-08<br>13:45</div>
-                            </td>
-                            <td>
-                                <div class="property-info">
-                                    <strong>ファミリーハウス池袋</strong><br>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="customer-info">
-                                    <div>
-                                        <div style="font-weight: 600;">高橋 健太</div>
-                                        <small style="color: #7a7a7a;">080-5555-6666</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>現地</td>
-                            <td>2025-08-22</td>
-                            <td>
-                                <button class="btn btn-primary btn-sm" onclick="openDetailModal('R2025005')">詳細</button>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
-                
-                <!-- 一括操作 -->
-                <div class="bulk-actions">
-                    <span class="selected-count">0件選択中</span>
-                    <button class="btn btn-secondary" onclick="bulkConfirm()">一括確定</button>
-                    <button class="btn btn-secondary" onclick="bulkCancel()">一括キャンセル</button>
-                    <button class="btn btn-secondary" onclick="bulkExport()">選択をエクスポート</button>
-                </div>
             </div>
         </main>
     </div>

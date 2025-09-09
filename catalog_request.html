@@ -202,6 +202,48 @@
             align-items: end;
         }
 
+        /* 企業検索オートコンプリート */
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #c0c0c0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .suggestions-dropdown.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .suggestion-item:hover {
+            background: #f5f5f5;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item[data-value=""] {
+            font-weight: 600;
+            color: #666;
+            background: #f8f8f8;
+        }
+
         /* テーブル */
         .data-table {
             background: white;
@@ -597,13 +639,24 @@
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label class="filter-label">企業</label>
-                        <select class="filter-select" id="companyFilter" onchange="filterTable()">
-                            <option value="">すべて</option>
-                            <option value="C001">株式会社山田建設</option>
-                            <option value="C002">田中不動産株式会社</option>
-                            <option value="C003">佐藤ハウジング</option>
-                        </select>
+                        <label class="filter-label">企業名検索</label>
+                        <div style="position: relative;">
+                            <input type="text" class="filter-input" id="companySearch" 
+                                   placeholder="企業名で検索..." 
+                                   oninput="handleCompanySearch()" 
+                                   onfocus="showCompanySuggestions()" 
+                                   onblur="hideCompanySuggestions()"
+                                   onkeypress="handleEnterKey(event)"
+                                   style="width: 100%;">
+                            <div id="companySuggestions" class="suggestions-dropdown">
+                                <div class="suggestion-item" onmousedown="selectCompany('株式会社山田建設')">株式会社山田建設</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('田中不動産株式会社')">田中不動産株式会社</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('佐藤ハウジング')">佐藤ハウジング</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('中部建設株式会社')">中部建設株式会社</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('愛知住宅販売')">愛知住宅販売</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('すべての企業')" data-value="">すべての企業</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="filter-row">
@@ -972,31 +1025,140 @@
             document.getElementById('detailModal').classList.remove('show');
         }
 
-        // 検索機能
+        // 検索機能（総合フィルターを呼び出し）
         function searchRequests() {
-            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            filterTable();
+        }
+
+        // 企業名による絞り込み
+        // 企業検索のオートコンプリート機能
+        function showCompanySuggestions() {
+            const suggestions = document.getElementById('companySuggestions');
+            showAllSuggestions();
+            suggestions.classList.add('show');
+        }
+
+        function hideCompanySuggestions() {
+            setTimeout(() => {
+                document.getElementById('companySuggestions').classList.remove('show');
+            }, 200);
+        }
+
+        function handleCompanySearch() {
+            const searchTerm = document.getElementById('companySearch').value.toLowerCase();
+            const suggestions = document.querySelectorAll('#companySuggestions .suggestion-item');
+            
+            suggestions.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm) || item.getAttribute('data-value') === '') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function showAllSuggestions() {
+            const suggestions = document.querySelectorAll('#companySuggestions .suggestion-item');
+            suggestions.forEach(item => {
+                item.style.display = 'block';
+            });
+        }
+
+        function selectCompany(companyName) {
+            const input = document.getElementById('companySearch');
+            if (companyName === 'すべての企業') {
+                input.value = '';
+            } else {
+                input.value = companyName;
+            }
+            document.getElementById('companySuggestions').classList.remove('show');
+        }
+
+        function filterByCompany() {
+            const companyTerm = document.getElementById('companySearch').value.toLowerCase();
             const rows = document.querySelectorAll('#requestTable tbody tr');
             
             rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
+                const companyCell = row.cells[7].textContent.toLowerCase(); // 企業名列（8番目の列）
+                if (companyTerm === '' || companyCell.includes(companyTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             });
+        }
+
+        // Enterキーでの検索実行
+        function handleEnterKey(event) {
+            if (event.key === 'Enter') {
+                applyFilters();
+            }
         }
 
         // フィルタークリア
         function clearFilters() {
-            document.getElementById('statusFilter').value = '';
             document.getElementById('periodFilter').value = '';
             document.getElementById('typeFilter').value = '';
-            document.getElementById('companyFilter').value = '';
+            document.getElementById('companySearch').value = '';
             document.getElementById('searchBox').value = '';
+            filterByCompany(); // 企業フィルターもクリア
             filterTable();
         }
 
-        // フィルター適用
+        // 総合フィルター適用
         function filterTable() {
-            // 実際のフィルタリング処理
-            console.log('Applying filters...');
+            const periodFilter = document.getElementById('periodFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const companyTerm = document.getElementById('companySearch').value.toLowerCase();
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const rows = document.querySelectorAll('#requestTable tbody tr');
+            
+            rows.forEach(row => {
+                let showRow = true;
+                
+                // 企業名フィルター
+                if (companyTerm) {
+                    const companyCell = row.cells[7].textContent.toLowerCase();
+                    if (!companyCell.includes(companyTerm)) {
+                        showRow = false;
+                    }
+                }
+                
+                // 物件種別フィルター
+                if (typeFilter) {
+                    const typeCell = row.cells[5].textContent.toLowerCase();
+                    const typeMap = {
+                        'custom-home': '注文住宅',
+                        'land': '土地',
+                        'new-house': '新築戸建て'
+                    };
+                    if (!typeCell.includes(typeMap[typeFilter])) {
+                        showRow = false;
+                    }
+                }
+                
+                // キーワード検索
+                if (searchTerm) {
+                    const text = row.textContent.toLowerCase();
+                    if (!text.includes(searchTerm)) {
+                        showRow = false;
+                    }
+                }
+                
+                // 期間フィルター（実装予定）
+                if (periodFilter) {
+                    // 実際の日付比較処理をここに実装
+                    console.log('Period filter:', periodFilter);
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        // フィルター適用（企業名とキーワード検索を統合）
+        function applyFilters() {
+            filterTable();
         }
 
         // タブ切り替え
