@@ -584,31 +584,37 @@
                 </div>
                 <div class="nav-subitems">
                     <div class="nav-subitem" onclick="toggleSubNav(this)">
-                        <i data-lucide="building-2" style="width: 16px; height: 16px; margin-right: 8px;"></i>モデルハウス
+                        <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>注文住宅
                         <span class="arrow">▶</span>
                     </div>
                     <div class="sub-subitems">
-                        <div class="sub-subitem" onclick="window.location.href='model_house_list.html'">一覧</div>
-                        <div class="sub-subitem" onclick="window.location.href='model_house_register_no_validation.html'">登録</div>
-                        <div class="sub-subitem" onclick="window.location.href='model_house_schedule_search.html'">見学予約日登録</div>
-                    </div>
-                    
-                    <div class="nav-subitem" onclick="window.location.href='company_overview_step.html'">
-                        <i data-lucide="building" style="width: 16px; height: 16px; margin-right: 8px;"></i>会社概要
-                    </div>
-                    
-                    <div class="nav-subitem" onclick="window.location.href='company_strengths.html'">
-                        <i data-lucide="star" style="width: 16px; height: 16px; margin-right: 8px;"></i>強みこだわり
-                    </div>
-                    
-                    <div class="nav-subitem" onclick="toggleSubNav(this)">
-                        <i data-lucide="calendar" style="width: 16px; height: 16px; margin-right: 8px;"></i>イベント
-                        <span class="arrow">▶</span>
-                    </div>
-                    <div class="sub-subitems">
-                        <div class="sub-subitem" onclick="window.location.href='all_events.html'">イベント一覧</div>
-                        <div class="sub-subitem" onclick="window.location.href='event_setting.html'">イベント登録</div>
-                        <div class="sub-subitem" onclick="window.location.href='event_requests.html'">予約者情報</div>
+                        <div class="sub-subitem" onclick="toggleSubNav(this)">
+                            <i data-lucide="building-2" style="width: 16px; height: 16px; margin-right: 8px;"></i>モデルハウス
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="sub-sub-subitems" style="margin-left: 20px; background: #ffffff;">
+                            <div class="sub-subitem" onclick="window.location.href='model_house_list.html'" style="padding: 8px 20px; font-size: 13px;">一覧</div>
+                            <div class="sub-subitem" onclick="window.location.href='model_house_register_no_validation.html'" style="padding: 8px 20px; font-size: 13px;">登録</div>
+                            <div class="sub-subitem" onclick="window.location.href='model_house_schedule_search.html'" style="padding: 8px 20px; font-size: 13px;">見学予約日登録</div>
+                        </div>
+                        
+                        <div class="sub-subitem" onclick="window.location.href='company_overview_step.html'">
+                            <i data-lucide="building" style="width: 16px; height: 16px; margin-right: 8px;"></i>会社概要
+                        </div>
+                        
+                        <div class="sub-subitem" onclick="window.location.href='company_strengths.html'">
+                            <i data-lucide="star" style="width: 16px; height: 16px; margin-right: 8px;"></i>強みこだわり
+                        </div>
+                        
+                        <div class="sub-subitem" onclick="toggleSubNav(this)">
+                            <i data-lucide="calendar" style="width: 16px; height: 16px; margin-right: 8px;"></i>イベント
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="sub-sub-subitems" style="margin-left: 20px; background: #ffffff;">
+                            <div class="sub-subitem" onclick="window.location.href='all_events.html'" style="padding: 8px 20px; font-size: 13px;">イベント一覧</div>
+                            <div class="sub-subitem" onclick="window.location.href='event_setting.html'" style="padding: 8px 20px; font-size: 13px;">イベント登録</div>
+                            <div class="sub-subitem" onclick="window.location.href='event_requests.html'" style="padding: 8px 20px; font-size: 13px;">予約者情報</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -663,11 +669,8 @@
                     <div class="nav-subitem" onclick="window.location.href='event_requests.html'">
                         <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 8px;"></i>イベント予約者情報
                     </div>
-                    <div class="nav-subitem" onclick="window.location.href='all_events.html'">
-                        <i data-lucide="bar-chart" style="width: 16px; height: 16px; margin-right: 8px;"></i>イベント一覧
-                    </div>
-                    <div class="nav-subitem" onclick="window.location.href='event_setting.html'">
-                        <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 8px;"></i>イベント設定
+                    <div class="nav-subitem" onclick="window.location.href=''">
+                        <i data-lucide="bar-chart" style="width: 16px; height: 16px; margin-right: 8px;"></i>イベント予約者登録
                     </div>
                 </div>
             </div>
@@ -681,6 +684,9 @@
                 <div class="nav-subitems">
                     <div class="nav-subitem" onclick="window.location.href='tour_user_reservation_list.html'">
                         <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 8px;"></i>見学予約者一覧
+                    </div>
+                    <div class="nav-subitem" onclick="window.location.href='tour_user_reservation_list.html'">
+                        <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 8px;"></i>見学予約者登録
                     </div>
                 </div>
             </div>
