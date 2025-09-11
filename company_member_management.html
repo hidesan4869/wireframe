@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>企業メンバー管理 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         * {
             margin: 0;
@@ -245,6 +246,7 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 15px;
+            align-items: end;
         }
 
         .filter-group {
@@ -474,6 +476,99 @@
             gap: 10px;
         }
 
+        /* アクションメニュー */
+        .action-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-popover {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .action-popover.show {
+            display: block;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #2c2c2c;
+            transition: background 0.2s ease;
+        }
+
+        .action-item:hover {
+            background: #f5f5f5;
+        }
+
+        .action-item-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* トグルスイッチ */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2e7d32;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
         /* レスポンシブ */
         @media (max-width: 768px) {
             .main-content {
@@ -508,21 +603,10 @@
             メンバー管理
         </div>
 
-        <!-- 企業情報 -->
-        <div class="company-card">
-            <div class="company-header">
-                <div>
-                    <h2 class="company-name">株式会社山田建設</h2>
-                    <span class="company-status status-active">契約中</span>
-                </div>
-                <button class="btn btn-secondary" onclick="goBack()">企業一覧に戻る</button>
-            </div>
-        </div>
-
         <div class="page-header">
-            <h3 class="page-title">👥 メンバー管理</h3>
+            <h3 class="page-title"><i data-lucide="user"></i> メンバー管理</h3>
             <div class="action-buttons">
-                <button class="btn btn-primary" onclick="showAddModal()">メンバー追加</button>
+                <button class="btn btn-primary" style="display: flex; align-items: center;" onclick="showAddModal()"><i data-lucide="user"></i>メンバー追加</button>
             </div>
         </div>
 
@@ -547,12 +631,11 @@
                     <select class="filter-select">
                         <option value="">全て</option>
                         <option value="active">アクティブ</option>
-                        <option value="pending">招待中</option>
                         <option value="inactive">停止中</option>
                     </select>
                 </div>
-                <div class="filter-group" style="display: flex; align-items: flex-end;">
-                    <button class="btn btn-primary" onclick="applyFilters()" style="width: 100%;">検索</button>
+                <div class="filter-group" style="display: flex; align-items: ;">
+                    <button class="btn btn-primary" onclick="applyFilters()" style="width: 120px; border-radius: 50px;">検索</button>
                 </div>
             </div>
         </div>
@@ -567,16 +650,19 @@
             <table>
                 <thead>
                     <tr>
+                        <th>ID</th>
+                        <th>企業名</th>
                         <th>メンバー情報</th>
                         <th>役職</th>
                         <th>ステータス</th>
-                        <th>最終ログイン</th>
                         <th>登録日</th>
                         <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
+                        <td>M001</td>
+                        <td>株式会社山田建設</td>
                         <td>
                             <div class="member-info">
                                 <div class="member-name">山田 次郎</div>
@@ -586,13 +672,22 @@
                         </td>
                         <td><span class="role-badge role-admin">管理者</span></td>
                         <td><span class="status-badge member-active">アクティブ</span></td>
-                        <td>2025-08-26 09:30</td>
                         <td>2024-04-01</td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="editMember('M001')">編集</button>
+                            <div class="action-menu">
+                                <div class="" style="cursor: pointer;" onclick="toggleActionMenu(this, 'M001')"><i data-lucide="more-horizontal"></i></div>
+                                <div class="action-popover">
+                                    <div class="action-item" onclick="editMember('M001')">
+                                        <i data-lucide="edit" class="action-item-icon"></i>
+                                        <span>編集</span>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
+                        <td>M002</td>
+                        <td>株式会社山田建設</td>
                         <td>
                             <div class="member-info">
                                 <div class="member-name">山田 花子</div>
@@ -602,13 +697,22 @@
                         </td>
                         <td><span class="role-badge role-manager">マネージャー</span></td>
                         <td><span class="status-badge member-active">アクティブ</span></td>
-                        <td>2025-08-25 16:45</td>
                         <td>2024-04-15</td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="editMember('M002')">編集</button>
+                            <div class="action-menu">
+                                <div class="" style="cursor: pointer;" onclick="toggleActionMenu(this, 'M002')"><i data-lucide="more-horizontal"></i></div>
+                                <div class="action-popover">
+                                    <div class="action-item" onclick="editMember('M002')">
+                                        <i data-lucide="edit" class="action-item-icon"></i>
+                                        <span>編集</span>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
+                        <td>M003</td>
+                        <td>株式会社山田建設</td>
                         <td>
                             <div class="member-info">
                                 <div class="member-name">佐藤 一郎</div>
@@ -618,13 +722,22 @@
                         </td>
                         <td><span class="role-badge role-staff">スタッフ</span></td>
                         <td><span class="status-badge member-active">アクティブ</span></td>
-                        <td>2025-08-26 08:15</td>
                         <td>2024-05-01</td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="editMember('M003')">編集</button>
+                            <div class="action-menu">
+                                <div class="" style="cursor: pointer;" onclick="toggleActionMenu(this, 'M003')"><i data-lucide="more-horizontal"></i></div>
+                                <div class="action-popover">
+                                    <div class="action-item" onclick="editMember('M003')">
+                                        <i data-lucide="edit" class="action-item-icon"></i>
+                                        <span>編集</span>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
+                        <td>M004</td>
+                        <td>株式会社田中工務店</td>
                         <td>
                             <div class="member-info">
                                 <div class="member-name">田中 美咲</div>
@@ -633,14 +746,23 @@
                             </div>
                         </td>
                         <td><span class="role-badge role-staff">スタッフ</span></td>
-                        <td><span class="status-badge member-pending">招待中</span></td>
-                        <td>-</td>
+                        <td><span class="status-badge member-active">アクティブ</span></td>
                         <td>2025-08-20</td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="editMember('M004')">編集</button>
+                            <div class="action-menu">
+                                <div class="" style="cursor: pointer;" onclick="toggleActionMenu(this, 'M004')"><i data-lucide="more-horizontal"></i></div>
+                                <div class="action-popover">
+                                    <div class="action-item" onclick="editMember('M004')">
+                                        <i data-lucide="edit" class="action-item-icon"></i>
+                                        <span>編集</span>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
+                        <td>M005</td>
+                        <td>鈴木ハウジング</td>
                         <td>
                             <div class="member-info">
                                 <div class="member-name">鈴木 健太</div>
@@ -650,10 +772,17 @@
                         </td>
                         <td><span class="role-badge role-staff">スタッフ</span></td>
                         <td><span class="status-badge member-inactive">停止中</span></td>
-                        <td>2025-07-30 14:20</td>
                         <td>2024-06-15</td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="editMember('M005')">編集</button>
+                            <div class="action-menu">
+                                <div class="" style="cursor: pointer;" onclick="toggleActionMenu(this, 'M005')"><i data-lucide="more-horizontal"></i></div>
+                                <div class="action-popover">
+                                    <div class="action-item" onclick="editMember('M005')">
+                                        <i data-lucide="edit" class="action-item-icon"></i>
+                                        <span>編集</span>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -669,10 +798,16 @@
                 <button class="close" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">氏名 <span class="required">*</span></label>
-                    <input type="text" class="form-input" id="memberName" placeholder="氏名を入力">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                <div class="form-group" style="width: 100%;">
+                    <label class="form-label">姓 <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="memberName" placeholder="山田">
                 </div>
+                <div class="form-group" style="width: 100%;">
+                    <label class="form-label">名 <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="memberName" placeholder="太郎">
+                </div>
+            </div>
                 <div class="form-group">
                     <label class="form-label">メールアドレス <span class="required">*</span></label>
                     <input type="email" class="form-input" id="memberEmail" placeholder="メールアドレスを入力">
@@ -691,8 +826,14 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">備考</label>
-                    <textarea class="form-textarea" id="memberNotes" placeholder="備考があれば入力してください"></textarea>
+                    <label class="form-label">ステータス</label>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="memberStatus" onchange="updateMemberStatusText()">
+                            <span class="slider"></span>
+                        </label>
+                        <span id="memberStatusText">停止中</span>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -711,7 +852,7 @@
             isEditMode = false;
             currentMemberId = null;
             document.getElementById('modalTitle').textContent = 'メンバー追加';
-            document.getElementById('saveBtn').textContent = '招待送信';
+            document.getElementById('saveBtn').textContent = '追加';
             clearForm();
             document.getElementById('memberModal').classList.add('show');
         }
@@ -735,6 +876,7 @@
                     email: 'yamada.jiro@yamada-kensetsu.co.jp',
                     phone: '090-1111-2222',
                     role: 'admin',
+                    status: true, // アクティブ
                     notes: '代表取締役社長'
                 },
                 'M002': {
@@ -742,7 +884,32 @@
                     email: 'yamada.hanako@yamada-kensetsu.co.jp',
                     phone: '080-2222-3333',
                     role: 'manager',
+                    status: true, // アクティブ
                     notes: '営業部長'
+                },
+                'M003': {
+                    name: '佐藤 一郎',
+                    email: 'sato.ichiro@yamada-kensetsu.co.jp',
+                    phone: '070-3333-4444',
+                    role: 'staff',
+                    status: true, // アクティブ
+                    notes: 'スタッフ'
+                },
+                'M004': {
+                    name: '田中 美咲',
+                    email: 'tanaka.misaki@yamada-kensetsu.co.jp',
+                    phone: '080-4444-5555',
+                    role: 'staff',
+                    status: true, // アクティブ
+                    notes: 'スタッフ'
+                },
+                'M005': {
+                    name: '鈴木 健太',
+                    email: 'suzuki.kenta@yamada-kensetsu.co.jp',
+                    phone: '090-5555-6666',
+                    role: 'staff',
+                    status: false, // 停止中
+                    notes: 'スタッフ'
                 }
             };
 
@@ -752,7 +919,22 @@
                 document.getElementById('memberEmail').value = data.email;
                 document.getElementById('memberPhone').value = data.phone;
                 document.getElementById('memberRole').value = data.role;
-                document.getElementById('memberNotes').value = data.notes;
+                document.getElementById('memberStatus').checked = data.status;
+                updateMemberStatusText();
+            }
+        }
+
+        // メンバーステータステキスト更新
+        function updateMemberStatusText() {
+            const toggle = document.getElementById('memberStatus');
+            const text = document.getElementById('memberStatusText');
+            
+            if (toggle.checked) {
+                text.textContent = 'アクティブ';
+                text.style.color = '#2e7d32';
+            } else {
+                text.textContent = '停止中';
+                text.style.color = '#d32f2f';
             }
         }
 
@@ -762,7 +944,8 @@
             document.getElementById('memberEmail').value = '';
             document.getElementById('memberPhone').value = '';
             document.getElementById('memberRole').value = '';
-            document.getElementById('memberNotes').value = '';
+            document.getElementById('memberStatus').checked = true; // デフォルトはアクティブ
+            updateMemberStatusText();
         }
 
         // モーダル閉じる
@@ -773,7 +956,7 @@
         // メンバー保存
         function saveMember() {
             if (validateForm()) {
-                const action = isEditMode ? '更新' : '招待送信';
+                const action = isEditMode ? '更新' : '追加';
                 if (confirm(`メンバー情報を${action}しますか？`)) {
                     alert(`メンバー情報を${action}しました。`);
                     closeModal();
@@ -834,6 +1017,21 @@
             alert('フィルターが適用されました。');
         }
 
+        // アクションメニューの表示/非表示切り替え
+        function toggleActionMenu(button, memberId) {
+            const popover = button.nextElementSibling;
+            
+            // 他のポップオーバーを全て閉じる
+            document.querySelectorAll('.action-popover').forEach(p => {
+                if (p !== popover) {
+                    p.classList.remove('show');
+                }
+            });
+            
+            // 現在のポップオーバーの表示を切り替え
+            popover.classList.toggle('show');
+        }
+
         // 戻るボタン
         function goBack() {
             window.location.href = 'company_list.html';
@@ -845,7 +1043,19 @@
             if (event.target === modal) {
                 closeModal();
             }
+            
+            // アクションメニュー外クリックで閉じる
+            if (!event.target.closest('.action-menu')) {
+                document.querySelectorAll('.action-popover').forEach(popover => {
+                    popover.classList.remove('show');
+                });
+            }
         }
+
+        // Lucideアイコンを初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
     </script>
 </body>
 </html>

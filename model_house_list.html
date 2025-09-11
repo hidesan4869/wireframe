@@ -452,8 +452,7 @@
                     モデルハウス物件一覧
                 </h2>
                 <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="exportCSV()">CSVエクスポート</button>
-                    <button class="btn btn-primary" onclick="window.location.href='model_house_register.html'">新規物件登録</button>
+                    <button class="btn btn-primary" style="display: flex; align-items: center;" onclick="window.location.href='model_house_register_no_validation.html'"><i data-lucide="building-2"></i>新規物件登録</button>
                 </div>
             </div>
 
@@ -496,8 +495,8 @@
                         <input type="text" class="filter-input" id="searchBox" placeholder="物件名、住所、展示場名で検索..." onkeypress="handleEnterKey(event)">
                     </div>
                     <div class="search-controls">
-                        <button class="btn btn-secondary" onclick="clearFilters()">フィルタークリア</button>
-                        <button class="btn btn-primary" onclick="applyFilters()">検索</button>
+                        <button class="btn btn-secondary" style="display: flex; align-items: center;" onclick="clearFilters()"><i data-lucide="funnel"></i>フィルタークリア</button>
+                        <button class="btn btn-primary" style="display: flex; align-items: center;" onclick="applyFilters()"><i data-lucide="search"></i>検索</button>
                     </div>
                 </div>
             </div>

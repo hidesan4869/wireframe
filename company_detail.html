@@ -365,6 +365,56 @@
             from { transform: translateY(30px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+
+        /* トグルスイッチ */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2e7d32;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
     </style>
 </head>
 <body>
@@ -607,18 +657,57 @@
                         <h4 class="section-title">契約情報</h4>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label">契約ステータス <span class="required">*</span></label>
-                                <select id="edit-contract-status" class="form-input" required>
-                                    <option value="有効">アクティブ</option>
-                                    <option value="無効">無効</option>
-                                </select>
+                                <label class="form-label">契約ステータス</label>
+                                <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="edit-contract-status" onchange="updateContractStatusText()">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span id="contractStatusText">無効</span>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">インボイス制度</label>
-                                <select id="edit-invoice-status" class="form-input">
-                                    <option value="対応済み">対応済み</option>
-                                    <option value="登録予定">登録予定</option>
-                                    <option value="未対応">未対応</option>
+                                <label class="form-label">インボイスステータス <span class="required">*</span></label>
+                                <select id="edit-invoice-status" class="form-input" required onchange="toggleInvoiceFields()">
+                                    <option value="0">未登録</option>
+                                    <option value="1">登録済み</option>
+                                    <option value="2">登録予定</option>
+                                    <option value="3">登録不要</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- インボイス登録番号 -->
+                        <div class="form-group" id="invoiceNumberGroup" style="display:none;">
+                            <label class="form-label">インボイス登録番号 <span class="required">*</span></label>
+                            <input type="text" id="edit-invoice-number" class="form-input" 
+                                   placeholder="例：T1234567890123" 
+                                   maxlength="14"
+                                   pattern="T\d{13}">
+                        </div>
+
+                        <!-- インボイス登録予定年月 -->
+                        <div class="form-group" id="invoiceScheduledGroup" style="display:none;">
+                            <label class="form-label">インボイス登録予定 <span class="required">*</span></label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="number" id="edit-invoice-scheduled-year" class="form-input" 
+                                       placeholder="年（例：2024）" 
+                                       min="2024" max="2050"
+                                       style="flex: 1;">
+                                <select id="edit-invoice-scheduled-month" class="form-input" style="flex: 1;">
+                                    <option value="">月を選択</option>
+                                    <option value="1">1月</option>
+                                    <option value="2">2月</option>
+                                    <option value="3">3月</option>
+                                    <option value="4">4月</option>
+                                    <option value="5">5月</option>
+                                    <option value="6">6月</option>
+                                    <option value="7">7月</option>
+                                    <option value="8">8月</option>
+                                    <option value="9">9月</option>
+                                    <option value="10">10月</option>
+                                    <option value="11">11月</option>
+                                    <option value="12">12月</option>
                                 </select>
                             </div>
                         </div>
@@ -656,8 +745,11 @@
                 city: '新宿区',
                 address1: '西新宿1-1-1',
                 address2: '新宿ビル 10階',
-                contractStatus: '有効',
-                invoiceStatus: '対応済み',
+                contractStatus: true, // トグル用にboolean
+                invoiceStatusId: 1, // 0:未登録, 1:登録済み, 2:登録予定, 3:登録不要
+                invoiceNumber: 'T1234567890123',
+                invoiceScheduledYear: null,
+                invoiceScheduledMonth: null,
                 contractStartDate: '2024年1月15日',
                 contractEndDate: '2025年1月14日',
                 registrationDate: '2024年1月10日',
@@ -683,8 +775,11 @@
                 city: '横浜市中区',
                 address1: '太田町6-78',
                 address2: 'ヨコハマタワー 15階',
-                contractStatus: '有効',
-                invoiceStatus: '登録予定',
+                contractStatus: true,
+                invoiceStatusId: 2, // 登録予定
+                invoiceNumber: null,
+                invoiceScheduledYear: 2025,
+                invoiceScheduledMonth: 3,
                 contractStartDate: '2024年3月1日',
                 contractEndDate: '2025年2月28日',
                 registrationDate: '2024年2月25日',
@@ -731,19 +826,35 @@
             
             // ステータス表示
             const contractStatusElement = document.getElementById('contract-status');
-            contractStatusElement.textContent = companyData.contractStatus;
-            if (companyData.contractStatus === '無効') {
-                contractStatusElement.className = 'status-badge status-inactive';
-            } else if (companyData.contractStatus === '一時停止') {
-                contractStatusElement.className = 'status-badge status-scheduled';
-            }
+            contractStatusElement.textContent = companyData.contractStatus ? '有効' : '無効';
+            contractStatusElement.className = companyData.contractStatus ? 'status-badge status-active' : 'status-badge status-inactive';
             
             const invoiceStatusElement = document.getElementById('invoice-status');
-            invoiceStatusElement.textContent = companyData.invoiceStatus;
-            if (companyData.invoiceStatus === '登録予定') {
+            const invoiceStatusTexts = ['未登録', '登録済み', '登録予定', '登録不要'];
+            invoiceStatusElement.textContent = invoiceStatusTexts[companyData.invoiceStatusId] || '未登録';
+            
+            if (companyData.invoiceStatusId === 2) { // 登録予定
                 invoiceStatusElement.className = 'status-badge status-scheduled';
-            } else if (companyData.invoiceStatus === '未対応') {
+            } else if (companyData.invoiceStatusId === 0 || companyData.invoiceStatusId === 3) { // 未登録または登録不要
                 invoiceStatusElement.className = 'status-badge status-inactive';
+            } else {
+                invoiceStatusElement.className = 'status-badge status-active';
+            }
+
+            // インボイス番号表示
+            const invoiceNumberElement = document.getElementById('invoice-number');
+            if (companyData.invoiceStatusId === 1 && companyData.invoiceNumber) {
+                invoiceNumberElement.textContent = companyData.invoiceNumber;
+            } else {
+                invoiceNumberElement.textContent = '-';
+            }
+
+            // インボイス登録年月表示
+            const invoiceScheduledElement = document.getElementById('invoice-scheduled-year');
+            if (companyData.invoiceStatusId === 2 && companyData.invoiceScheduledYear && companyData.invoiceScheduledMonth) {
+                invoiceScheduledElement.textContent = `${companyData.invoiceScheduledYear}年${companyData.invoiceScheduledMonth}月`;
+            } else {
+                invoiceScheduledElement.textContent = '-';
             }
 
             // 統計情報を表示
@@ -782,8 +893,24 @@
             document.getElementById('edit-prefecture').value = companyData.prefecture || '';
             document.getElementById('edit-city').value = companyData.city || '';
             document.getElementById('edit-address1').value = companyData.address1 || '';
-            document.getElementById('edit-contract-status').value = companyData.contractStatus;
-            document.getElementById('edit-invoice-status').value = companyData.invoiceStatus;
+            document.getElementById('edit-contract-status').checked = companyData.contractStatus;
+            document.getElementById('edit-invoice-status').value = companyData.invoiceStatusId;
+            
+            // インボイス関連フィールドの設定
+            if (companyData.invoiceStatusId === 1 && companyData.invoiceNumber) {
+                document.getElementById('edit-invoice-number').value = companyData.invoiceNumber;
+            }
+            if (companyData.invoiceStatusId === 2) {
+                if (companyData.invoiceScheduledYear) {
+                    document.getElementById('edit-invoice-scheduled-year').value = companyData.invoiceScheduledYear;
+                }
+                if (companyData.invoiceScheduledMonth) {
+                    document.getElementById('edit-invoice-scheduled-month').value = companyData.invoiceScheduledMonth;
+                }
+            }
+            
+            updateContractStatusText();
+            toggleInvoiceFields();
             
             document.getElementById('editModal').classList.add('show');
         }
@@ -816,8 +943,14 @@
                     prefecture: document.getElementById('edit-prefecture').value,
                     city: document.getElementById('edit-city').value,
                     address1: document.getElementById('edit-address1').value,
-                    contractStatus: document.getElementById('edit-contract-status').value,
-                    invoiceStatus: document.getElementById('edit-invoice-status').value,
+                    contractStatus: document.getElementById('edit-contract-status').checked,
+                    invoiceStatusId: parseInt(document.getElementById('edit-invoice-status').value),
+                    invoiceNumber: document.getElementById('edit-invoice-status').value === '1' 
+                        ? document.getElementById('edit-invoice-number').value : null,
+                    invoiceScheduledYear: document.getElementById('edit-invoice-status').value === '2' 
+                        ? parseInt(document.getElementById('edit-invoice-scheduled-year').value) : null,
+                    invoiceScheduledMonth: document.getElementById('edit-invoice-status').value === '2' 
+                        ? parseInt(document.getElementById('edit-invoice-scheduled-month').value) : null,
                     contractStartDate: companiesData[companyId].contractStartDate,
                     contractEndDate: companiesData[companyId].contractEndDate,
                     registrationDate: companiesData[companyId].registrationDate,
@@ -838,6 +971,50 @@
             });
         });
         
+        // 契約ステータステキスト更新
+        function updateContractStatusText() {
+            const toggle = document.getElementById('edit-contract-status');
+            const text = document.getElementById('contractStatusText');
+            
+            if (toggle.checked) {
+                text.textContent = '有効';
+                text.style.color = '#2e7d32';
+            } else {
+                text.textContent = '無効';
+                text.style.color = '#d32f2f';
+            }
+        }
+
+        // インボイスフィールドの表示切替（company_register.htmlから参考）
+        function toggleInvoiceFields() {
+            const invoiceStatus = document.getElementById('edit-invoice-status').value;
+            const numberGroup = document.getElementById('invoiceNumberGroup');
+            const scheduledGroup = document.getElementById('invoiceScheduledGroup');
+            
+            // 全て非表示にする
+            numberGroup.style.display = 'none';
+            scheduledGroup.style.display = 'none';
+            
+            // 必要に応じて表示
+            if (invoiceStatus === '1') { // 登録済み
+                numberGroup.style.display = 'block';
+                document.getElementById('edit-invoice-number').setAttribute('required', 'required');
+            } else if (invoiceStatus === '2') { // 登録予定
+                scheduledGroup.style.display = 'block';
+                document.getElementById('edit-invoice-scheduled-year').setAttribute('required', 'required');
+                document.getElementById('edit-invoice-scheduled-month').setAttribute('required', 'required');
+            }
+            
+            // 必要でない場合はrequiredを削除
+            if (invoiceStatus !== '1') {
+                document.getElementById('edit-invoice-number').removeAttribute('required');
+            }
+            if (invoiceStatus !== '2') {
+                document.getElementById('edit-invoice-scheduled-year').removeAttribute('required');
+                document.getElementById('edit-invoice-scheduled-month').removeAttribute('required');
+            }
+        }
+
         // モーダル外クリックで閉じる
         window.onclick = function(event) {
             const modals = document.querySelectorAll('.modal');
