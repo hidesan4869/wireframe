@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会社概要登録 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 20px;
+            overflow-y: auto;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #4a4a4a;
+        }
+
+        /* プログレスバー */
+        .progress-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .step-counter {
+            font-size: 14px;
+            color: #6a6a6a;
+            font-weight: 600;
+        }
+
+        .step-indicators {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .step-bar {
+            flex: 1;
+            height: 3px;
+            background-color: #e9ecef;
+            border-radius: 2px;
+            transition: background-color 0.3s ease;
+        }
+
+        .step-bar.completed {
+            background-color: #2c2c2c;
+        }
+
+        .step-bar.active {
+            background-color: #6c757d;
+        }
+
+        .step-indicator {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .step-indicator.completed {
+            background-color: #2c2c2c;
+            color: white;
+        }
+
+        .step-indicator.active {
+            background-color: #6c757d;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step-labels {
+            display: flex;
+            gap: 12px;
+        }
+
+        .step-label {
+            flex: 1;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 500;
+            padding: 0 4px;
+        }
+
+        .step-label.completed {
+            color: #2c2c2c;
+        }
+
+        .step-label.active {
+            color: #2c2c2c;
+            font-weight: 600;
+        }
+
+        /* ステップコンテンツ */
+        .step-content {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c2c2c;
+            margin-bottom: 8px;
+            border-bottom: 3px solid #6c757d;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-title i {
+            width: 28px;
+            height: 28px;
+        }
+
+        .step-description {
+            color: #6a6a6a;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* フォームスタイル */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group.required label::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            background-color: #fff;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #6c757d;
+            box-shadow: 0 0 0 0.2rem rgba(108,117,125,0.25);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* ファイルアップロード */
+        .file-upload-area {
+            border: 2px dashed #6c757d;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #2c2c2c;
+            background-color: #e9ecef;
+        }
+
+        .file-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-text {
+            color: #6c757d;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .upload-btn {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background-color: #000;
+        }
+
+        /* 動的項目 */
+        .dynamic-item {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            position: relative;
+        }
+
+        .dynamic-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .item-number {
+            background-color: #2c2c2c;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* ボタン */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.3s ease;
+            line-height: 1.5;
+        }
+
+        .btn-primary {
+            background-color: #2c2c2c;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #000;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-success {
+            background-color: #2c2c2c;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #000;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid #6c757d;
+            color: #6c757d;
+        }
+
+        .btn-outline:hover {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        /* ナビゲーションボタン */
+        .step-navigation {
+            display: flex;
+            justify-content: end;
+            gap: 1rem;
+            align-items: center;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* プレビューセクション */
+        .preview-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .preview-section h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .preview-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            min-height: 100px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* 確認画面 */
+        .confirmation-section {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+
+        .confirmation-section h4 {
+            color: #2c2c2c;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .confirmation-row {
+            display: flex;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 12px 0;
+        }
+
+        .confirmation-row:last-child {
+            border-bottom: none;
+        }
+
+        .confirmation-label {
+            font-weight: 600;
+            color: #495057;
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .confirmation-value {
+            color: #212529;
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .step-indicators {
+                justify-content: center;
+            }
+
+            .step-indicator {
+                width: 32px;
+                height: 32px;
+            }
+
+            .step-navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        /* プレビューモーダル（前回のコードから追加） */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .preview-modal-content {
+            background-color: #fff;
+            margin: 2% auto;
+            padding: 0;
+            width: 95%;
+            height: 90%;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-modal-header {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .device-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .device-btn {
+            background: transparent;
+            border: 1px solid #666;
+            color: #ccc;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .device-btn.active {
+            background-color: #2c2c2c;
+            border-color: #2c2c2c;
+            color: white;
+        }
+
+        .preview-iframe-container {
+            width: 100%;
+            height: calc(100% - 60px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .preview-iframe {
+            background-color: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .preview-iframe.desktop {
+            width: 100%;
+            height: 100%;
+        }
+
+        .preview-iframe.tablet {
+            width: 768px;
+            height: 90%;
+        }
+
+        .preview-iframe.mobile {
+            width: 375px;
+            height: 90%;
+        }
+
+        .close-preview {
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-preview:hover {
+            color: white;
+        }
+        .hoge {
+            display: flex;
+            align-items: center;
+        }
+
+        /* トグルスイッチ */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2e7d32;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* Toggle Switch UI */
+
+        .toggle-container {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-container input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #dc3545;
+            transition: all 0.3s ease;
+            border-radius: 24px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            top: 3px;
+            background-color: white;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #28a745;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .toggle-label {
+            font-size: 11px;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .dynamic-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .item-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        /* セクション無効化スタイル */
+        .section-disabled {
+            opacity: 0.5;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .section-disabled::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(200, 200, 200, 0.1) 10px,
+                rgba(200, 200, 200, 0.1) 20px
+            );
+            border-radius: 8px;
+        }
+
+        .section-disabled .form-control,
+        .section-disabled .file-upload-area,
+        .section-disabled .btn {
+            cursor: not-allowed;
+        }
+
+        /* ギャラリーモーダル */
+        .gallery-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .gallery-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-container {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .gallery-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #2c2c2c;
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .gallery-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gallery-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .close-gallery {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .close-gallery:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .gallery-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f5f5f5;
+        }
+
+        .gallery-categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            color: #6a6a6a;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .category-btn.active {
+            background: #4a4a4a;
+            color: white;
+            border-color: #4a4a4a;
+        }
+
+        .category-btn:hover {
+            border-color: #4a4a4a;
+            color: #4a4a4a;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 3px solid transparent;
+            background: white;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .gallery-item.selected {
+            border-color: #4a4a4a;
+            box-shadow: 0 4px 15px rgba(74,74,74,0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-item-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .gallery-item:hover .gallery-item-overlay {
+            opacity: 1;
+        }
+
+        .gallery-item.selected .gallery-item-overlay {
+            opacity: 1;
+        }
+
+        .gallery-item-title {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: auto;
+        }
+
+        .gallery-checkbox {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .gallery-item:hover .gallery-checkbox,
+        .gallery-item.selected .gallery-checkbox {
+            opacity: 1;
+        }
+
+        .gallery-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .selection-count {
+            color: #6a6a6a;
+            font-size: 14px;
+        }
+
+        .gallery-btn-group {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>不動産ポータル管理画面</h1>
+        <div class="user-info">
+            <span>管理者: 田中太郎</span>
+            <a href="#" style="color: #ccc; text-decoration: none;">ログアウト</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- パンくずリスト -->
+        <div class="breadcrumb">
+            <a href="index.html">ダッシュボード</a> > 
+            <a href="#">物件管理</a> > 
+            <span>会社概要登録</span>
+        </div>
+
+        <!-- プログレスバー -->
+        <div class="progress-container">
+            <div class="progress-header">
+                <h2 style="color: #2c2c2c; font-size: 20px; font-weight: 700;">会社概要登録</h2>
+                <div class="step-counter">ステップ <span id="currentStep">1</span> / 5</div>
+            </div>
+            
+            <div class="step-indicators">
+                <div class="step-indicator active" id="step1-indicator">1</div>
+                <div class="step-bar" id="bar1"></div>
+                <div class="step-indicator" id="step2-indicator">2</div>
+                <div class="step-bar" id="bar2"></div>
+                <div class="step-indicator" id="step3-indicator">3</div>
+                <div class="step-bar" id="bar3"></div>
+                <div class="step-indicator" id="step4-indicator">4</div>
+                <div class="step-bar" id="bar4"></div>
+                <div class="step-indicator" id="step5-indicator">5</div>
+            </div>
+            
+            <div class="step-labels">
+                <div class="step-label active">基本情報</div>
+                <div class="step-label">企業詳細</div>
+                <div class="step-label">選ばれる理由</div>
+                <div class="step-label">スタッフ</div>
+                <div class="step-label">確認</div>
+            </div>
+        </div>
+
+        <!-- ステップ1: 基本情報 -->
+        <div class="step-content active" id="step1">
+            <div class="step-title">
+                <i data-lucide="file-text"></i>
+                基本情報
+            </div>
+            <div class="step-description">企業の基本的な情報を入力してください。</div>
+            
+            <div class="form-group required">
+                <label for="title">企業キャッチコピー</label>
+                <input type="text" id="title" class="form-control" placeholder="お客様の理想を叶える家づくりのプロ集団">
+            </div>
+
+            <div class="form-group required">
+                <label for="description">企業説明文</label>
+                <textarea id="description" class="form-control" style="min-height: 150px;" placeholder="私たちは、お客様一人ひとりの夢やライフスタイルに寄り添った住まいづくりを心がけております。創業以来30年の経験と実績を活かし、自然素材にこだわった健康で快適な住環境をご提案いたします。"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="description">メインビジュアル</label>
+            </div>
+            <div id="company_images">
+                <div class="dynamic-item" data-index="1">
+                    <div style="display: flex; gap: 1rem; justify-content: end;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="highlight_display[]" value="1" checked onchange="updateImageDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="highlight-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm hoge" onclick="removeImageItem(1)"><i data-lucide="trash"></i>削除</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>画像ファイル</label>
+                                <div class="file-upload-area" onclick="openGalleryModal('company_image', 'image_upload_1')">
+                                    <i data-lucide="image" class="upload-icon"></i>
+                                    <div class="upload-text">ギャラリーから画像を選択</div>
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">クリックして画像を選択してください</div>
+                                    <input type="hidden" id="image_upload_1" name="image_path[]">
+                                    <button type="button" class="upload-btn">画像を選択</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="image_title_1">画像タイトル</label>
+                                <input type="text" id="image_title_1" class="form-control" placeholder="会社外観">
+                            </div>
+                            <div class="form-group">
+                                <label for="image_description_1">画像説明</label>
+                                <textarea id="image_description_1" class="form-control" placeholder="本社ビルの外観写真です"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button type="button" class="btn btn-outline" onclick="addImageItem()">+ 画像を追加</button>
+            </div>
+        </div>
+
+        <!-- ステップ2: 企業詳細 -->
+        <div class="step-content" id="step2">
+            <div class="step-title">
+                <i data-lucide="building-2"></i>
+                企業詳細情報
+            </div>
+            <div class="step-description">企業の詳細情報と参考価格を入力してください。</div>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="min_reference_price">参考価格下限（万円）</label>
+                        <input type="number" id="min_reference_price" class="form-control" placeholder="1500" min="0">
+                    </div>
+                </div>
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="max_reference_price">参考価格上限（万円）</label>
+                        <input type="number" id="max_reference_price" class="form-control" placeholder="3000" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="form-group">
+                    <label for="capita">資本金（円）</label>
+                    <input type="number" id="capita" class="form-control" placeholder="10000000" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="employees">従業員数</label>
+                    <input type="text" id="employees" class="form-control" placeholder="25名">
+                </div>
+                <div class="form-group">
+                    <label for="service_area">施工エリア</label>
+                    <input type="text" id="service_area" class="form-control" placeholder="東京都、神奈川県、埼玉県、千葉県">
+                </div>
+                <div class="form-group">
+                    <label for="project_portfolio">施工実績</label>
+                    <input type="text" id="project_portfolio" class="form-control" placeholder="年間50棟、累計1200棟">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="construction_method">対応可能工法</label>
+                <textarea id="construction_method" class="form-control" placeholder="木造軸組工法、ツーバイフォー工法、鉄骨造、RC造"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="establishment">設立</label>
+                <input type="text" id="establishment" class="form-control" placeholder="平成5年4月1日">
+            </div>
+
+            <div class="form-group">
+                <label for="warranty">保証内容</label>
+                <textarea id="warranty" class="form-control" style="min-height: 120px;" placeholder="構造躯体10年保証、防水10年保証、設備機器2年保証、定期点検サービス（1年・3年・5年・10年）、24時間緊急対応サービス"></textarea>
+            </div>
+        </div>
+
+        <!-- ステップ3: 画像管理 -->
+        <div class="step-content" id="step3">
+            <div class="step-title">
+                <i data-lucide="image"></i>
+                選ばれる理由
+            </div>
+
+            <div id="company_images">
+                <div class="dynamic-item" data-index="1">
+                    <div style="display: flex; gap: 1rem; justify-content: end;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="highlight_display[]" value="1" checked onchange="updateImageDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="highlight-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm hoge" onclick="removeImageItem(1)"><i data-lucide="trash"></i>削除</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>画像ファイル</label>
+                                <div class="file-upload-area" onclick="openGalleryModal('company_image', 'image_upload_1')">
+                                    <i data-lucide="image" class="upload-icon"></i>
+                                    <div class="upload-text">ギャラリーから画像を選択</div>
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">クリックして画像を選択してください</div>
+                                    <input type="hidden" id="image_upload_1" name="image_path[]">
+                                    <button type="button" class="upload-btn">画像を選択</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="image_title_1">画像タイトル</label>
+                                <input type="text" id="image_title_1" class="form-control" placeholder="会社外観">
+                            </div>
+                            <div class="form-group">
+                                <label for="image_description_1">画像説明</label>
+                                <textarea id="image_description_1" class="form-control" placeholder="本社ビルの外観写真です"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button type="button" class="btn btn-outline" onclick="addImageItem()">+ 画像を追加</button>
+            </div>
+        </div>
+
+        <!-- ステップ4: スタッフインタビュー -->
+        <div class="step-content" id="step4">
+            <div class="step-title">
+                <i data-lucide="users"></i>
+                スタッフインタビュー
+            </div>
+            <div class="step-description">会社で働くスタッフのインタビューや紹介文を掲載できます。</div>
+
+            <div id="staff_interviews">
+                <div class="dynamic-item" data-index="1">
+                    <div style="display: flex; gap: 1rem; justify-content: end;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="staff_display[]" value="1" checked onchange="updateStaffDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="highlight-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm hoge" onclick="removeStaffItem(${staffCount})"><i data-lucide="trash"></i>削除</button>
+                    </div>
+                    <div class="hoge" style="gap: 1rem;">
+                        <div class="form-group">
+                            <label>アバター画像</label>
+                            <div class="file-upload-area" onclick="openGalleryModal('staff_avatar', 'staff_avatar_1')">
+                                <i data-lucide="user-circle" class="upload-icon"></i>
+                                <div class="upload-text">ギャラリーからプロフィール写真を選択</div>
+                                <input type="hidden" id="staff_avatar_1" name="staff_avatar[]">
+                                <button type="button" class="upload-btn">画像を選択</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="staff_position_1">役職</label>
+                                        <input type="text" id="staff_position_1" class="form-control" placeholder="代表取締役">
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="staff_name01_1">姓</label>
+                                        <input type="text" id="staff_name01_1" class="form-control" placeholder="田中">
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="staff_name02_1">名</label>
+                                        <input type="text" id="staff_name02_1" class="form-control" placeholder="太郎">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="staff_concept_title_1">コンセプトタイトル</label>
+                                <input type="text" id="staff_concept_title_1" class="form-control" placeholder="お客様の笑顔が私たちの原動力">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- インタビュー詳細 -->
+                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                        <h5 style="margin-bottom: 15px; color: #2c2c2c; font-size: 16px;">インタビュー詳細</h5>
+                        <div id="interview_details_1">
+                            <div class="interview-detail-item" style="border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; margin-bottom: 15px; background-color: white;">
+                                <div style="display: flex; justify-content: end;">
+                                    <button type="button" class="btn btn-danger btn-sm hoge" onclick="removeInterviewDetail(1, 1)"><i data-lucide="trash"></i>削除</button>
+                                </div>
+                                <div class="form-group">
+                                    <label for="interview_title_1_1">インタビュータイトル</label>
+                                    <input type="text" id="interview_title_1_1" class="form-control" placeholder="お客様との向き合い方について">
+                                </div>
+                                <div class="form-group">
+                                    <label for="interview_description_1_1">インタビュー内容</label>
+                                    <textarea id="interview_description_1_1" class="form-control" placeholder="お客様一人ひとりのライフスタイルや価値観を大切にし、対話を重ねながら理想の住まいを形にしていきます。"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>インタビュー画像</label>
+                                    <div class="file-upload-area" onclick="openGalleryModal('staff_interview', 'interview_image_1_1')">
+                                        <i data-lucide="camera" class="upload-icon"></i>
+                                        <div class="upload-text">ギャラリーからインタビュー写真を選択</div>
+                                        <input type="hidden" id="interview_image_1_1" name="interview_image[]">
+                                        <button type="button" class="upload-btn">画像を選択</button>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div style="text-align: center;">
+                            <button type="button" class="btn btn-outline btn-sm" onclick="addInterviewDetail(1)">+ インタビュー詳細を追加</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button type="button" class="btn btn-outline" onclick="addStaffItem()">+ スタッフを追加</button>
+            </div>
+        </div>
+
+        <!-- ステップ5: 確認 -->
+        <div class="step-content" id="step5">
+            <div class="step-title">
+                <i data-lucide="check-circle"></i>
+                入力内容確認
+            </div>
+            <div class="step-description">入力した内容を確認してください。修正がある場合は前のステップに戻って修正してください。</div>
+            <div class="form-group">
+                <h4>🌐 公開設定<label class="toggle-switch" style="margin-left: 10px;">
+                    <input type="checkbox" id="publishToggle" name="publish_status" value="published" onchange="updatePublishStatus()">
+                    <span class="slider"></span>
+                </label></h4>
+                <p class="toggle-description" id="publishLabel">非公開</p>
+            </div>
+            
+        </div>
+
+        <!-- ナビゲーション -->
+        <div class="step-navigation">
+            <button type="button" class="btn btn-primary hoge" onclick="showPreviewModal()"><i data-lucide="eye"></i>プレビュー表示</button>
+            <button type="button" class="btn btn-secondary" onclick="saveDraft()">下書き保存</button>
+            <div class="nav-buttons">
+                <button type="button" class="btn btn-secondary" id="prevBtn" onclick="previousStep()" style="display: none;">前へ</button>
+            </div>
+            <div class="nav-buttons">
+                <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStep()">次へ</button>
+                <button type="button" class="btn btn-success" id="submitBtn" onclick="submitForm()" style="display: none;">登録</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- プレビューモーダル -->
+    <div id="previewModal" class="preview-modal">
+        <div class="preview-modal-content">
+            <div class="preview-modal-header">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <h3>会社概要プレビュー</h3>
+                    <div class="device-switcher">
+                        <button class="device-btn active" onclick="switchDevice('desktop')">デスクトップ</button>
+                        <button class="device-btn" onclick="switchDevice('tablet')">タブレット</button>
+                        <button class="device-btn" onclick="switchDevice('mobile')">モバイル</button>
+                    </div>
+                </div>
+                <button class="close-preview" onclick="closePreviewModal()">&times;</button>
+            </div>
+            <div class="preview-iframe-container">
+                <div class="preview-iframe desktop" id="previewContent">
+                    <div style="padding: 40px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                        <div id="previewHTML"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStepIndex = 1;
+        let imageCount = 1;
+        let staffCount = 1;
+        let interviewDetailCounts = {1: 1};
+
+        // ステップ切り替え機能
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStepIndex < 5) {
+                    currentStepIndex++;
+                    updateStepDisplay();
+                    if (currentStepIndex === 5) {
+                        updateConfirmation();
+                    }
+                }
+            }
+        }
+
+        function previousStep() {
+            if (currentStepIndex > 1) {
+                currentStepIndex--;
+                updateStepDisplay();
+            }
+        }
+
+        function updateStepDisplay() {
+            // 全てのステップコンテンツを非表示
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // 現在のステップを表示
+            document.getElementById('step' + currentStepIndex).classList.add('active');
+
+            // ステップカウンターを更新
+            document.getElementById('currentStep').textContent = currentStepIndex;
+
+            // インジケーターを更新
+            document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+                if (index + 1 < currentStepIndex) {
+                    indicator.className = 'step-indicator completed';
+                } else if (index + 1 === currentStepIndex) {
+                    indicator.className = 'step-indicator active';
+                } else {
+                    indicator.className = 'step-indicator';
+                }
+            });
+
+            // ステップバーを更新
+            document.querySelectorAll('.step-bar').forEach((bar, index) => {
+                if (index + 1 < currentStepIndex) {
+                    bar.className = 'step-bar completed';
+                } else if (index + 1 === currentStepIndex) {
+                    bar.className = 'step-bar active';
+                } else {
+                    bar.className = 'step-bar';
+                }
+            });
+
+            // ラベルを更新
+            document.querySelectorAll('.step-label').forEach((label, index) => {
+                if (index + 1 < currentStepIndex) {
+                    label.className = 'step-label completed';
+                } else if (index + 1 === currentStepIndex) {
+                    label.className = 'step-label active';
+                } else {
+                    label.className = 'step-label';
+                }
+            });
+
+            // ボタンの表示を更新
+            document.getElementById('prevBtn').style.display = currentStepIndex === 1 ? 'none' : 'block';
+            document.getElementById('nextBtn').style.display = currentStepIndex === 5 ? 'none' : 'block';
+            document.getElementById('submitBtn').style.display = currentStepIndex === 5 ? 'block' : 'none';
+        }
+
+        function validateCurrentStep() {
+            return true;
+        }
+
+        // 画像項目の管理
+        function addImageItem() {
+            imageCount++;
+            const imageContainer = document.getElementById('company_images');
+            const newImageHTML = `
+                <div class="dynamic-item" data-index="${imageCount}">
+                    <div style="display: flex; gap: 1rem; justify-content: end;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="highlight_display[]" value="1" checked onchange="updateImageDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="highlight-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm hoge" onclick="removeImageItem(1)"><i data-lucide="trash"></i>削除</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>画像ファイル</label>
+                                <div class="file-upload-area" onclick="openGalleryModal('company_image', 'image_upload_${imageCount}')">
+                                    <i data-lucide="image" class="upload-icon"></i>
+                                    <div class="upload-text">ギャラリーから画像を選択</div>
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">クリックして画像を選択してください</div>
+                                    <input type="hidden" id="image_upload_${imageCount}" name="image_path[]">
+                                    <button type="button" class="upload-btn">画像を選択</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="image_title_${imageCount}">画像タイトル</label>
+                                <input type="text" id="image_title_${imageCount}" class="form-control" placeholder="画像タイトル">
+                            </div>
+                            <div class="form-group">
+                                <label for="image_description_${imageCount}">画像説明</label>
+                                <textarea id="image_description_${imageCount}" class="form-control" placeholder="画像の説明"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            imageContainer.insertAdjacentHTML('beforeend', newImageHTML);
+            // アイコンを再生成
+            lucide.createIcons();
+        }
+
+        function removeImageItem(index) {
+            if (imageCount <= 1) {
+                alert('画像は最低1つ必要です。');
+                return;
+            }
+            const item = document.querySelector(`[data-index="${index}"]`);
+            if (item && confirm('この画像項目を削除しますか？')) {
+                item.remove();
+                imageCount--;
+            }
+        }
+
+        // スタッフ項目の管理
+        function addStaffItem() {
+            staffCount++;
+            interviewDetailCounts[staffCount] = 1;
+            const staffContainer = document.getElementById('staff_interviews');
+            const newStaffHTML = `
+                <div class="dynamic-item" data-index="${staffCount}">
+                    <div style="display: flex; gap: 1rem; justify-content: end;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="staff_display[]" value="1" checked onchange="updateStaffDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="highlight-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm hoge" onclick="removeStaffItem(${staffCount})"><i data-lucide="trash"></i>削除</button>
+                    </div>
+                    <div class="hoge" style="gap: 1rem;">
+                        <div class="form-group">
+                            <label>アバター画像</label>
+                            <div class="file-upload-area" onclick="openGalleryModal('staff_avatar', 'staff_avatar_${staffCount}')">
+                                <i data-lucide="user-circle" class="upload-icon"></i>
+                                <div class="upload-text">ギャラリーからプロフィール写真を選択</div>
+                                <input type="hidden" id="staff_avatar_${staffCount}" name="staff_avatar[]">
+                                <button type="button" class="upload-btn">画像を選択</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="staff_position_${staffCount}">役職</label>
+                                        <input type="text" id="staff_position_${staffCount}" class="form-control" placeholder="代表取締役">
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="staff_name01_${staffCount}">姓</label>
+                                        <input type="text" id="staff_name01_${staffCount}" class="form-control" placeholder="田中">
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="staff_name02_${staffCount}">名</label>
+                                        <input type="text" id="staff_name02_${staffCount}" class="form-control" placeholder="太郎">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="staff_concept_title_${staffCount}">コンセプトタイトル</label>
+                                <input type="text" id="staff_concept_title_${staffCount}" class="form-control" placeholder="お客様の笑顔が私たちの原動力">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- インタビュー詳細 -->
+                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                        <h5 style="margin-bottom: 15px; color: #2c2c2c; font-size: 16px;">インタビュー詳細</h5>
+                        <div id="interview_details_${staffCount}">
+                            <div class="interview-detail-item" style="border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; margin-bottom: 15px; background-color: white;">
+                                <div class="form-group">
+                                    <label for="interview_title_${staffCount}_1">インタビュータイトル</label>
+                                    <input type="text" id="interview_title_${staffCount}_1" class="form-control" placeholder="お客様との向き合い方について">
+                                </div>
+                                <div class="form-group">
+                                    <label for="interview_description_${staffCount}_1">インタビュー内容</label>
+                                    <textarea id="interview_description_${staffCount}_1" class="form-control" placeholder="お客様一人ひとりのライフスタイルや価値観を大切にし、対話を重ねながら理想の住まいを形にしていきます。"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>インタビュー画像</label>
+                                    <div class="file-upload-area" onclick="openGalleryModal('staff_interview', 'interview_image_${staffCount}_1')">
+                                        <i data-lucide="camera" class="upload-icon"></i>
+                                        <div class="upload-text">ギャラリーからインタビュー写真を選択</div>
+                                        <input type="hidden" id="interview_image_${staffCount}_1" name="interview_image[]">
+                                        <button type="button" class="upload-btn">画像を選択</button>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: end;">
+                                    <button type="button" class="btn btn-danger btn-sm hoge" onclick="removeInterviewDetail(${staffCount}, 1)"><i data-lucide="trash"></i>削除</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: center;">
+                            <button type="button" class="btn btn-outline btn-sm" onclick="addInterviewDetail(${staffCount})">+ インタビュー詳細を追加</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            staffContainer.insertAdjacentHTML('beforeend', newStaffHTML);
+            // アイコンを再生成
+            lucide.createIcons();
+        }
+
+        function removeStaffItem(index) {
+            const item = document.querySelector(`[data-index="${index}"]`);
+            if (item && confirm('このスタッフ項目を削除しますか？')) {
+                item.remove();
+                delete interviewDetailCounts[index];
+                staffCount--;
+            }
+        }
+
+        // インタビュー詳細の管理
+        function addInterviewDetail(staffIndex) {
+            if (!interviewDetailCounts[staffIndex]) {
+                interviewDetailCounts[staffIndex] = 0;
+            }
+            interviewDetailCounts[staffIndex]++;
+            const detailCount = interviewDetailCounts[staffIndex];
+            
+            const detailContainer = document.getElementById(`interview_details_${staffIndex}`);
+            const newDetailHTML = `
+                <div class="interview-detail-item" style="border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; margin-bottom: 15px; background-color: white;" data-staff="${staffIndex}" data-detail="${detailCount}">
+                    <div style="display: flex; justify-content: end;">
+                        <button type="button" class="btn btn-danger btn-sm hoge" onclick="removeInterviewDetail(${staffIndex}, ${detailCount})"><i data-lucide="trash"></i>削除</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="interview_title_${staffIndex}_${detailCount}">インタビュータイトル</label>
+                        <input type="text" id="interview_title_${staffIndex}_${detailCount}" class="form-control" placeholder="お客様との向き合い方について">
+                    </div>
+                    <div class="form-group">
+                        <label for="interview_description_${staffIndex}_${detailCount}">インタビュー内容</label>
+                        <textarea id="interview_description_${staffIndex}_${detailCount}" class="form-control" placeholder="お客様一人ひとりのライフスタイルや価値観を大切にし、対話を重ねながら理想の住まいを形にしていきます。"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>インタビュー画像</label>
+                        <div class="file-upload-area" onclick="openGalleryModal('staff_interview', 'interview_image_${staffIndex}_${detailCount}')">
+                            <i data-lucide="camera" class="upload-icon"></i>
+                            <div class="upload-text">ギャラリーからインタビュー写真を選択</div>
+                            <input type="hidden" id="interview_image_${staffIndex}_${detailCount}" name="interview_image[]">
+                            <button type="button" class="upload-btn">画像を選択</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            detailContainer.insertAdjacentHTML('beforeend', newDetailHTML);
+            // アイコンを再生成
+            lucide.createIcons();
+        }
+
+        function removeInterviewDetail(staffIndex, detailIndex) {
+            const item = document.querySelector(`[data-staff="${staffIndex}"][data-detail="${detailIndex}"]`);
+            if (item && confirm('このインタビュー詳細を削除しますか？')) {
+                item.remove();
+            }
+        }
+
+        // 確認画面の更新
+        function updateConfirmation() {
+            // 基本情報
+            document.getElementById('confirm_title').textContent = document.getElementById('title').value || '-';
+            document.getElementById('confirm_description').textContent = document.getElementById('description').value || '-';
+            document.getElementById('confirm_establishment').textContent = document.getElementById('establishment').value || '-';
+
+            // 企業詳細
+            const minPrice = document.getElementById('min_reference_price').value;
+            const maxPrice = document.getElementById('max_reference_price').value;
+            document.getElementById('confirm_price_range').textContent = 
+                (minPrice || maxPrice) ? `${minPrice || 0}万円 ～ ${maxPrice || 0}万円` : '-';
+            
+            document.getElementById('confirm_capita').textContent = 
+                document.getElementById('capita').value ? Number(document.getElementById('capita').value).toLocaleString() + '円' : '-';
+            document.getElementById('confirm_employees').textContent = document.getElementById('employees').value || '-';
+            document.getElementById('confirm_service_area').textContent = document.getElementById('service_area').value || '-';
+            document.getElementById('confirm_project_portfolio').textContent = document.getElementById('project_portfolio').value || '-';
+
+            // 画像情報の更新
+            updateConfirmImages();
+            updateConfirmStaff();
+        }
+
+        function updateConfirmImages() {
+            const imageContainer = document.getElementById('confirm_images');
+            const imageItems = document.querySelectorAll('#company_images .dynamic-item');
+            let imageHTML = '';
+
+            imageItems.forEach((item, index) => {
+                const displayToggle = item.querySelector('input[type="checkbox"]');
+                const isDisplayed = displayToggle && displayToggle.checked;
+                
+                if (isDisplayed) {
+                    const title = item.querySelector('input[id^="image_title_"]').value || `画像${index + 1}`;
+                    const description = item.querySelector('textarea[id^="image_description_"]').value || '説明なし';
+                    imageHTML += `
+                        <div class="confirmation-row">
+                            <div class="confirmation-label">${title}</div>
+                            <div class="confirmation-value">${description}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            imageContainer.innerHTML = imageHTML || '<p style="color: #6c757d;">表示設定されている画像がありません</p>';
+        }
+
+        function updateConfirmStaff() {
+            const staffContainer = document.getElementById('confirm_staff');
+            const staffItems = document.querySelectorAll('#staff_interviews .dynamic-item');
+            let staffHTML = '';
+
+            staffItems.forEach((item, index) => {
+                const displayToggle = item.querySelector('input[type="checkbox"]');
+                const isDisplayed = displayToggle && displayToggle.checked;
+                
+                if (isDisplayed) {
+                    const position = item.querySelector('input[id^="staff_position_"]').value || '役職不明';
+                    const name01 = item.querySelector('input[id^="staff_name01_"]').value || '';
+                    const name02 = item.querySelector('input[id^="staff_name02_"]').value || '';
+                    const fullName = (name01 + ' ' + name02).trim() || '名前未入力';
+                    const conceptTitle = item.querySelector('input[id^="staff_concept_title_"]').value || 'タイトルなし';
+
+                    staffHTML += `
+                        <div class="confirmation-row">
+                            <div class="confirmation-label">${position} ${fullName}</div>
+                            <div class="confirmation-value">${conceptTitle}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            staffContainer.innerHTML = staffHTML || '<p style="color: #6c757d;">表示設定されているスタッフがいません</p>';
+        }
+
+        // プレビュー機能
+        function showPreviewModal() {
+            const previewHTML = generatePreviewContent();
+            document.getElementById('previewHTML').innerHTML = previewHTML;
+            document.getElementById('previewModal').style.display = 'block';
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').style.display = 'none';
+        }
+
+        function switchDevice(device) {
+            const iframe = document.getElementById('previewContent');
+            const buttons = document.querySelectorAll('.device-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            iframe.className = `preview-iframe ${device}`;
+        }
+
+        function generatePreviewContent() {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const establishment = document.getElementById('establishment').value;
+
+            return `
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <h1 style="font-size: 32px; margin-bottom: 20px; color: #2c2c2c;">${title}</h1>
+                    <div style="font-size: 16px; line-height: 1.6; color: #555; margin-bottom: 30px;">${description}</div>
+                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px; color: #007bff;">企業情報</h3>
+                        <p><strong>設立:</strong> ${establishment || '未入力'}</p>
+                        <p><strong>従業員数:</strong> ${document.getElementById('employees').value || '未入力'}</p>
+                        <p><strong>施工エリア:</strong> ${document.getElementById('service_area').value || '未入力'}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function submitForm() {
+            if (confirm('会社概要を公開しますか？')) {
+                alert('会社概要が公開されました。');
+                // 実際の送信処理をここに追加
+            }
+        }
+
+        // リアルタイムプレビュー
+        document.getElementById('description').addEventListener('input', function() {
+            const content = this.value || 'こちらに入力した内容がウェブサイトに表示されます';
+            document.getElementById('description_preview').textContent = content;
+        });
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+        // ギャラリー機能
+        const galleryImages = {
+            company: [
+                { id: 1, src: "https://picsum.photos/400/300?random=1", name: "会社外観1.jpg" },
+                { id: 2, src: "https://picsum.photos/400/300?random=2", name: "会社内観1.jpg" },
+                { id: 3, src: "https://picsum.photos/400/300?random=3", name: "オフィス1.jpg" },
+                { id: 4, src: "https://picsum.photos/400/300?random=4", name: "会議室1.jpg" },
+                { id: 5, src: "https://picsum.photos/400/300?random=5", name: "受付1.jpg" },
+                { id: 6, src: "https://picsum.photos/400/300?random=6", name: "会社外観2.jpg" }
+            ],
+            staff: [
+                { id: 7, src: "https://picsum.photos/400/300?random=7", name: "スタッフ1.jpg" },
+                { id: 8, src: "https://picsum.photos/400/300?random=8", name: "スタッフ2.jpg" },
+                { id: 9, src: "https://picsum.photos/400/300?random=9", name: "スタッフ3.jpg" },
+                { id: 10, src: "https://picsum.photos/400/300?random=10", name: "インタビュー1.jpg" },
+                { id: 11, src: "https://picsum.photos/400/300?random=11", name: "インタビュー2.jpg" },
+                { id: 12, src: "https://picsum.photos/400/300?random=12", name: "インタビュー3.jpg" }
+            ]
+        };
+
+        let currentGalleryType = '';
+        let currentTarget = null;
+        let selectedImages = [];
+
+        function openGalleryModal(type, target = null) {
+            currentGalleryType = type;
+            currentTarget = target;
+            selectedImages = [];
+            
+            document.getElementById('galleryModal').style.display = 'block';
+            renderGalleryImages();
+            updateSelectionCount();
+        }
+
+        function closeGalleryModal() {
+            document.getElementById('galleryModal').style.display = 'none';
+            selectedImages = [];
+        }
+
+        function renderGalleryImages() {
+            const galleryGrid = document.getElementById('galleryGrid');
+            const images = galleryImages[getCategoryNameFromKey(currentGalleryType)] || [];
+            
+            galleryGrid.innerHTML = images.map(image => `
+                <div class="gallery-item" data-image-id="${image.id}" onclick="toggleImageSelection(${image.id})">
+                    <img src="${image.src}" alt="${image.name}">
+                    <div class="gallery-checkbox">
+                        <i data-lucide="check"></i>
+                    </div>
+                    <div class="gallery-item-name">${image.name}</div>
+                </div>
+            `).join('');
+            
+            lucide.createIcons();
+        }
+
+        function getCategoryNameFromKey(key) {
+            if (key.includes('company') || key.includes('image')) return 'company';
+            if (key.includes('staff') || key.includes('avatar') || key.includes('interview')) return 'staff';
+            return 'company';
+        }
+
+        function toggleImageSelection(imageId) {
+            const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
+            
+            if (selectedImages.includes(imageId)) {
+                selectedImages = selectedImages.filter(id => id !== imageId);
+                imageElement.classList.remove('selected');
+            } else {
+                selectedImages.push(imageId);
+                imageElement.classList.add('selected');
+            }
+            
+            updateSelectionCount();
+        }
+
+        function updateSelectionCount() {
+            const countElement = document.getElementById('selectionCount');
+            countElement.textContent = `${selectedImages.length}個選択中`;
+        }
+
+        function applySelectedImages() {
+            if (selectedImages.length === 0) {
+                alert('画像を選択してください。');
+                return;
+            }
+
+            const selectedImageData = selectedImages.map(id => {
+                const category = getCategoryNameFromKey(currentGalleryType);
+                return galleryImages[category].find(img => img.id === id);
+            });
+
+            if (currentTarget) {
+                // 特定のアップロードエリアに適用
+                updateUploadArea(currentTarget, selectedImageData[0]);
+            } else {
+                // 複数画像の場合（現在は使用していないが将来的に拡張可能）
+                console.log('Selected images:', selectedImageData);
+            }
+
+            closeGalleryModal();
+        }
+
+        function updateUploadArea(targetId, imageData) {
+            const uploadArea = document.getElementById(targetId).closest('.file-upload-area');
+            const uploadText = uploadArea.querySelector('.upload-text');
+            
+            uploadText.innerHTML = `
+                <img src="${imageData.src}" alt="${imageData.name}" style="max-width: 100px; max-height: 80px; border-radius: 4px; margin-bottom: 8px;">
+                <br>${imageData.name}
+            `;
+        }
+
+        // トグル機能
+        function updateImageDisplay(toggle) {
+            const imageItem = toggle.closest('.dynamic-item');
+            const toggleSwitch = toggle.closest('.toggle-switch');
+            const hiddenInput = toggleSwitch.querySelector('input[type="hidden"]');
+            const toggleLabel = toggleSwitch.querySelector('.toggle-label');
+            
+            if (toggle.checked) {
+                imageItem.classList.remove('section-disabled');
+                toggleLabel.textContent = 'ON';
+                toggleLabel.style.color = '#28a745';
+                hiddenInput.value = '1';
+            } else {
+                imageItem.classList.add('section-disabled');
+                toggleLabel.textContent = 'OFF';
+                toggleLabel.style.color = '#dc3545';
+                hiddenInput.value = '0';
+            }
+            
+            // プレビューの更新をトリガー
+            updateConfirmImages();
+        }
+
+        function updateStaffDisplay(toggle) {
+            const staffItem = toggle.closest('.dynamic-item');
+            const toggleLabel = toggle.closest('div').querySelector('.highlight-display-label');
+            
+            if (toggle.checked) {
+                staffItem.classList.remove('section-disabled');
+                toggleLabel.textContent = 'ON';
+                toggleLabel.style.color = '#2e7d32';
+            } else {
+                staffItem.classList.add('section-disabled');
+                toggleLabel.textContent = 'OFF';
+                toggleLabel.style.color = '#dc3545';
+            }
+            
+            // プレビューの更新をトリガー
+            updateConfirmStaff();
+        }
+    </script>
+
+    <!-- ギャラリーモーダル -->
+    <div id="galleryModal" class="gallery-modal">
+        <div class="gallery-modal-content" style="width: 80%; margin: 0 auto;">
+            <div class="gallery-header">
+                <h3>画像を選択</h3>
+                <button class="gallery-close-btn" onclick="closeGalleryModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="gallery-body" style="height: 700px;">
+                <div class="gallery-grid" id="galleryGrid">
+                    <!-- 画像がここに動的に追加されます -->
+                </div>
+            </div>
+            <div class="gallery-footer">
+                <div class="selection-count" id="selectionCount">0個選択中</div>
+                <div class="gallery-btn-group">
+                    <button class="btn btn-secondary" onclick="closeGalleryModal()">キャンセル</button>
+                    <button class="btn btn-primary" onclick="applySelectedImages()">選択した画像を使用</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

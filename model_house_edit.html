@@ -322,6 +322,25 @@
             position: relative;
         }
 
+        .remove-visual {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
         .main-visual-header {
             display: flex;
             justify-content: space-between;
@@ -1037,23 +1056,306 @@
             }
         }
 
-        .remove-visual {
+        /* ギャラリーモーダル */
+        .gallery-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .gallery-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-container {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .gallery-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #2c2c2c;
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .gallery-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gallery-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .close-gallery {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .close-gallery:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .gallery-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f5f5f5;
+        }
+
+        .gallery-categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            color: #6a6a6a;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .category-btn.active {
+            background: #4a4a4a;
+            color: white;
+            border-color: #4a4a4a;
+        }
+
+        .category-btn:hover {
+            border-color: #4a4a4a;
+            color: #4a4a4a;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 3px solid transparent;
+            background: white;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .gallery-item.selected {
+            border-color: #4a4a4a;
+            box-shadow: 0 4px 15px rgba(74,74,74,0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-item-overlay {
             position: absolute;
-            top: -10px;
-            right: -10px;
-            background: #dc3545;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .gallery-item:hover .gallery-item-overlay {
+            opacity: 1;
+        }
+
+        .gallery-item.selected .gallery-item-overlay {
+            opacity: 1;
+        }
+
+        .gallery-item-title {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: auto;
+        }
+
+        .gallery-checkbox {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .gallery-item:hover .gallery-checkbox,
+        .gallery-item.selected .gallery-checkbox {
+            opacity: 1;
+        }
+
+        .gallery-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .selection-count {
+            color: #6a6a6a;
+            font-size: 14px;
+        }
+
+        .gallery-btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 選択された画像の表示エリア */
+        .selected-images-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .selected-image-item {
+            position: relative;
+            aspect-ratio: 1;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f9f9f9;
+        }
+
+        .selected-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .selected-image-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.7);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-size: 16px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 10;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-size: 12px;
+        }
+
+        .selected-image-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+            padding: 8px 5px 5px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* セクション無効化スタイル */
+        .section-disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .section-disabled::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(200, 200, 200, 0.1) 10px,
+                rgba(200, 200, 200, 0.1) 20px
+            );
+            border-radius: 8px;
+            z-index: 1;
+        }
+
+        .section-disabled .form-input,
+        .section-disabled .form-textarea,
+        .section-disabled .form-select,
+        .section-disabled .image-upload-area,
+        .section-disabled .btn {
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -1143,44 +1445,20 @@
 
                             <div class="form-group full-width">
                                 <label class="form-label required">モデルハウス名</label>
-                                <input type="text" class="form-input" id="houseName" name="house_name" placeholder="例：ファミリーモデルハウス" value="モデルハウス名">
+                                <input type="text" class="form-input" id="houseName" name="house_name" placeholder="例：ファミリーモデルハウス">
                             </div>
                             <div class="form-group full-width">
                                 <label class="form-label required">タイトル</label>
-                                <input type="text" class="form-input" id="houseName" name="house_name" placeholder="例：ファミリーモデルハウス" value="モデルハウスタイトル">
+                                <input type="text" class="form-input" id="houseName" name="house_name" placeholder="例：ファミリーモデルハウス">
                             </div>
 
                             <div class="form-group full-width">
-                                <label class="form-label">メインビジュアル（複数選択可）</label>
-                                <div class="image-upload-area" onclick="document.getElementById('mainVisuals').click()">
-                                    <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
-                                    <div class="upload-text">画像をアップロード<br>（複数選択可能）</div>
+                                <label class="form-label">メインビジュアル（複数選択可: 上限20枚）</label>
+                                <div class="image-upload-area" onclick="openGalleryModal('mainVisuals')">
+                                    <i data-lucide="image" style="width: 24px; height: 24px;"></i>
+                                    <div class="upload-text">ギャラリーから画像を選択<br>（複数選択可能: 上限20枚）</div>
                                 </div>
-                                <input type="file" id="mainVisuals" name="main_visuals[]" accept="image/*" multiple style="display: none;" onchange="previewMainVisualsWithInput(this)">
                                 <div id="mainVisualsContainer"></div>
-                            </div>
-                        </div>
-                        <div class="main-visual-section">
-                            <button type="button" class="remove-visual" onclick="removeMainVisualPreview(this)">
-                                ×
-                            </button>
-                            <div class="main-visual-header">
-                                <div class="highlight-number">メインビジュアル 1</div>
-                            </div>
-                            <div class="main-visual-grid">
-                                <div class="image-preview">
-                                    <img src="" alt="">
-                                </div>
-                                <div>
-                                    <div class="form-group" style="margin-bottom: 15px;">
-                                        <label class="form-label">タイトル</label>
-                                        <input type="text" class="form-input" name="main_visual_titles[]" placeholder="例：リビング全体" value="タイトル">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">詳細</label>
-                                        <textarea class="form-textarea" name="main_visual_descriptions[]" placeholder="この画像の詳細な説明を記入してください..." rows="3"  value="せつめいぶん"></textarea>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -1265,23 +1543,31 @@
                         <h3 class="step-title">見どころ・特長</h3>
                         <p class="step-description">
                             モデルハウスの見どころを画像付きで紹介してください。
-                            
                         </p>
 
                         <div id="highlightsContainer">
                             <div class="highlight-section">
                                 <div class="highlight-header">
-                                    <div class="highlight-number"></div>
-                                    <button type="button" class="btn btn-danger btn-sm" style="display: flex; align-items: center; gap: 0.5rem;" onclick="removeHighlight(this)"><i data-lucide="trash"></i>削除</button>
+                                    <div class="highlight-number">見どころ 1</div>
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                                <input type="checkbox" name="highlight_display[]" value="1" checked onchange="updateHighlightDisplay(this)">
+                                                <span class="slider"></span>
+                                            </label>
+                                            <span class="highlight-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                                        </div>
+                                        <button type="button" class="btn btn-danger btn-sm" style="display: flex; align-items: center; gap: 0.5rem;" onclick="removeHighlight(this)"><i data-lucide="trash"></i>削除</button>
+                                    </div>
                                 </div>
                                 <div class="highlight-grid">
                                     <div>
                                         <div class="form-group">
-                                            <div class="image-upload-area" onclick="this.nextElementSibling.click()">
-                                                <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
-                                                <div class="upload-text">画像をアップロード</div>
+                                            <div class="image-upload-area" onclick="openGalleryModal('highlight', this)">
+                                                <i data-lucide="image" style="width: 24px; height: 24px;"></i>
+                                                <div class="upload-text">ギャラリーから画像を選択</div>
                                             </div>
-                                            <input type="file" name="highlight_images[]" accept="image/*" style="display: none;" onchange="previewImage(this)">
                                             <div class="image-preview-grid"></div>
                                         </div>
                                     </div>
@@ -1319,18 +1605,27 @@
                             <div id="floorPlansContainer">
                                 <div class="floor-plan-section">
                                     <div class="floor-plan-header">
-                                        <div class="highlight-number"></div>
-                                        <button type="button" class="btn btn-danger btn-sm" style="display: flex; align-items: center; gap: 0.5rem;" onclick="removeFloorPlan(this)"><i data-lucide="trash"></i>削除</button>
+                                        <div class="highlight-number">間取り図 1</div>
+                                        <div style="display: flex; align-items: center; gap: 15px;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                                                <label class="toggle-switch" style="transform: scale(0.8);">
+                                                    <input type="checkbox" name="floor_plan_display[]" value="1" checked onchange="updateFloorPlanDisplay(this)">
+                                                    <span class="slider"></span>
+                                                </label>
+                                                <span class="floor-plan-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                                            </div>
+                                            <button type="button" class="btn btn-danger btn-sm" style="display: flex; align-items: center; gap: 0.5rem;" onclick="removeFloorPlan(this)"><i data-lucide="trash"></i>削除</button>
+                                        </div>
                                     </div>
                                                     <div class="floor-plan-grid">
                                         <div>
                                             <div class="form-group">
                                                 <label class="form-label">間取り図画像</label>
-                                                <div class="image-upload-area" onclick="this.nextElementSibling.click()">
-                                                    <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
-                                                    <div class="upload-text">間取り図をアップロード</div>
+                                                <div class="image-upload-area" onclick="openGalleryModal('floorplan', this)">
+                                                    <i data-lucide="image" style="width: 24px; height: 24px;"></i>
+                                                    <div class="upload-text">ギャラリーから間取り図を選択</div>
                                                 </div>
-                                                <input type="file" name="floor_images[]" accept="image/*" style="display: none;" onchange="previewImage(this)">
                                                 <div class="image-preview-grid"></div>
                                             </div>
                                         </div>
@@ -1510,22 +1805,23 @@
                     <div></div>
                     
                     <div style="display: flex; gap: 15px;">
-                         <!-- プレビューボタン -->
+                        <!-- プレビューボタン -->
                         <button type="button" class="btn btn-primary" onclick="showPreviewModal()" style="padding: 15px 40px; font-size: 16px;">
                             <i data-lucide="eye" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;"></i>
                             プレビューを表示
                         </button>
-
-                        <div id="previewContent">
-                            <!-- プレビュー内容がここに動的に表示されます -->
-                        </div>
                         <button type="button" class="btn btn-outline" id="prevBtn" onclick="previousStep()">前へ</button>
+                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">下書き保存</button>
                         <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStep()">次へ</button>
-                        <button type="submit" class="btn btn-primary" id="submitBtn" style="display: none;">更新</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn" style="display: none;">登録</button>
                     </div>
                 </div>
             </form>
         </main>
+    </div>
+
+    <div id="previewContent">
+        <!-- プレビュー内容がここに動的に表示されます -->
     </div>
 
     <!-- プレビューモーダル -->
@@ -1564,10 +1860,73 @@
         </div>
     </div>
 
+    <!-- ギャラリーモーダル -->
+    <div id="galleryModal" class="gallery-modal">
+        <div class="gallery-container">
+            <div class="gallery-header">
+                <div class="gallery-title">
+                    <i data-lucide="image" style="width: 24px; height: 24px;"></i>
+                    画像ギャラリー
+                </div>
+                <div class="gallery-actions">
+                    <button class="close-gallery" onclick="closeGalleryModal()">×</button>
+                </div>
+            </div>
+            <div class="gallery-body">
+                <div class="gallery-categories">
+                    <button class="category-btn active" onclick="filterGallery('all')">すべて</button>
+                    <button class="category-btn" onclick="filterGallery('exterior')">外観</button>
+                    <button class="category-btn" onclick="filterGallery('interior')">内観</button>
+                    <button class="category-btn" onclick="filterGallery('kitchen')">キッチン</button>
+                    <button class="category-btn" onclick="filterGallery('living')">リビング</button>
+                    <button class="category-btn" onclick="filterGallery('bedroom')">寝室</button>
+                    <button class="category-btn" onclick="filterGallery('bathroom')">バスルーム</button>
+                    <button class="category-btn" onclick="filterGallery('floorplan')">間取り図</button>
+                </div>
+                <div id="galleryGrid" class="gallery-grid">
+                    <!-- ギャラリー画像がここに動的に表示されます -->
+                </div>
+            </div>
+            <div class="gallery-footer">
+                <div class="selection-count">
+                    <span id="selectedCount">0</span>個の画像を選択中
+                </div>
+                <div class="gallery-btn-group">
+                    <button class="btn btn-secondary" onclick="clearGallerySelection()">選択解除</button>
+                    <button class="btn btn-primary" onclick="confirmGallerySelection()">選択完了</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentStepIndex = 1;
         let highlightCount = 1;
         let floorPlanCount = 1;
+        let currentGalleryTarget = null;
+        let currentGalleryType = null;
+        let selectedImages = [];
+        let allowMultiple = false;
+
+        // サンプル画像データ
+        const galleryImages = [
+            { id: 1, url: 'https://picsum.photos/400/400?random=1', title: '現代的な外観', category: 'exterior' },
+            { id: 2, url: 'https://picsum.photos/400/400?random=2', title: 'モダンリビング', category: 'interior' },
+            { id: 3, url: 'https://picsum.photos/400/400?random=3', title: 'スタイリッシュキッチン', category: 'kitchen' },
+            { id: 4, url: 'https://picsum.photos/400/400?random=4', title: '開放的なリビング', category: 'living' },
+            { id: 5, url: 'https://picsum.photos/400/400?random=5', title: 'シンプルな寝室', category: 'bedroom' },
+            { id: 6, url: 'https://picsum.photos/400/400?random=6', title: 'ラグジュアリーバスルーム', category: 'bathroom' },
+            { id: 7, url: 'https://picsum.photos/400/400?random=7', title: '1階間取り図', category: 'floorplan' },
+            { id: 8, url: 'https://picsum.photos/400/400?random=8', title: '2階間取り図', category: 'floorplan' },
+            { id: 9, url: 'https://picsum.photos/400/400?random=9', title: 'ガーデンビュー', category: 'exterior' },
+            { id: 10, url: 'https://picsum.photos/400/400?random=10', title: 'ダイニングエリア', category: 'interior' },
+            { id: 11, url: 'https://picsum.photos/400/400?random=11', title: 'アイランドキッチン', category: 'kitchen' },
+            { id: 12, url: 'https://picsum.photos/400/400?random=12', title: 'ファミリールーム', category: 'living' },
+            { id: 13, url: 'https://picsum.photos/400/400?random=13', title: 'マスターベッドルーム', category: 'bedroom' },
+            { id: 14, url: 'https://picsum.photos/400/400?random=14', title: 'スパバスルーム', category: 'bathroom' },
+            { id: 15, url: 'https://picsum.photos/400/400?random=15', title: '屋外デッキ', category: 'exterior' },
+            { id: 16, url: 'https://picsum.photos/400/400?random=16', title: '書斎', category: 'interior' }
+        ];
 
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
@@ -1695,46 +2054,281 @@
             return true; // バリデーションを無効化
         }
 
-        // メインビジュアルのプレビュー（タイトル・詳細付き）
-        function previewMainVisualsWithInput(input) {
-            const files = input.files;
+        // ギャラリーモーダルを開く
+        function openGalleryModal(type, target = null) {
+            currentGalleryType = type;
+            currentGalleryTarget = target;
+            selectedImages = [];
+            
+            // タイプによって複数選択可能かを決定
+            allowMultiple = (type === 'mainVisuals');
+            
+            const modal = document.getElementById('galleryModal');
+            modal.classList.add('active');
+            
+            // 適切なカテゴリを自動選択
+            let defaultCategory = 'all';
+            if (type === 'floorplan') {
+                defaultCategory = 'floorplan';
+            } else if (type === 'mainVisuals') {
+                defaultCategory = 'exterior';
+            }
+            
+            filterGallery(defaultCategory);
+            updateSelectionCount();
+            lucide.createIcons();
+        }
+
+        // ギャラリーモーダルを閉じる
+        function closeGalleryModal() {
+            const modal = document.getElementById('galleryModal');
+            modal.classList.remove('active');
+            currentGalleryTarget = null;
+            currentGalleryType = null;
+            selectedImages = [];
+        }
+
+        // ギャラリーフィルター
+        function filterGallery(category) {
+            // カテゴリボタンの状態更新
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === getCategoryNameFromKey(category)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // 画像をフィルタリング
+            const filteredImages = category === 'all' 
+                ? galleryImages 
+                : galleryImages.filter(img => img.category === category);
+            
+            renderGalleryGrid(filteredImages);
+        }
+
+        // カテゴリキーから名前を取得
+        function getCategoryNameFromKey(categoryKey) {
+            const categoryMap = {
+                'all': 'すべて',
+                'exterior': '外観',
+                'interior': '内観',
+                'kitchen': 'キッチン',
+                'living': 'リビング',
+                'bedroom': '寝室',
+                'bathroom': 'バスルーム',
+                'floorplan': '間取り図'
+            };
+            return categoryMap[categoryKey] || 'すべて';
+        }
+
+        // ギャラリーグリッドをレンダリング
+        function renderGalleryGrid(images) {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            
+            images.forEach(image => {
+                const isSelected = selectedImages.some(img => img.id === image.id);
+                const item = document.createElement('div');
+                item.className = `gallery-item ${isSelected ? 'selected' : ''}`;
+                item.onclick = () => toggleImageSelection(image);
+                
+                item.innerHTML = `
+                    <img src="${image.url}" alt="${image.title}">
+                    <div class="gallery-item-overlay">
+                        <div class="gallery-checkbox">
+                            ${isSelected ? '<i data-lucide="check" style="width: 16px; height: 16px; color: #4a4a4a;"></i>' : ''}
+                        </div>
+                        <div class="gallery-item-title">${image.title}</div>
+                    </div>
+                `;
+                
+                grid.appendChild(item);
+            });
+            
+            lucide.createIcons();
+        }
+
+        // 画像選択の切り替え
+        function toggleImageSelection(image) {
+            const index = selectedImages.findIndex(img => img.id === image.id);
+            
+            if (index > -1) {
+                // 既に選択されている場合は削除
+                selectedImages.splice(index, 1);
+            } else {
+                // 新しく選択する場合
+                if (!allowMultiple) {
+                    // 単一選択の場合は既存選択をクリア
+                    selectedImages = [image];
+                } else {
+                    // 複数選択の場合は上限チェック
+                    if (selectedImages.length >= 20) {
+                        alert('最大20枚まで選択できます。');
+                        return;
+                    }
+                    selectedImages.push(image);
+                }
+            }
+            
+            // 表示を更新
+            const currentCategory = document.querySelector('.category-btn.active').textContent;
+            const filteredImages = currentCategory === 'すべて' 
+                ? galleryImages 
+                : galleryImages.filter(img => img.category === getCategoryKey(currentCategory));
+            
+            renderGalleryGrid(filteredImages);
+            updateSelectionCount();
+        }
+
+        // カテゴリ名からキーを取得
+        function getCategoryKey(categoryName) {
+            const categoryMap = {
+                'すべて': 'all',
+                '外観': 'exterior',
+                '内観': 'interior',
+                'キッチン': 'kitchen',
+                'リビング': 'living',
+                '寝室': 'bedroom',
+                'バスルーム': 'bathroom',
+                '間取り図': 'floorplan'
+            };
+            return categoryMap[categoryName] || 'all';
+        }
+
+        // 選択数の更新
+        function updateSelectionCount() {
+            document.getElementById('selectedCount').textContent = selectedImages.length;
+        }
+
+        // ギャラリー選択をクリア
+        function clearGallerySelection() {
+            selectedImages = [];
+            const currentCategory = document.querySelector('.category-btn.active').textContent;
+            const filteredImages = currentCategory === 'すべて' 
+                ? galleryImages 
+                : galleryImages.filter(img => img.category === getCategoryKey(currentCategory));
+            renderGalleryGrid(filteredImages);
+            updateSelectionCount();
+        }
+
+        // ギャラリー選択を確定
+        function confirmGallerySelection() {
+            if (selectedImages.length === 0) {
+                alert('画像を選択してください。');
+                return;
+            }
+            
+            if (currentGalleryType === 'mainVisuals') {
+                displaySelectedMainVisuals();
+            } else if (currentGalleryType === 'highlight') {
+                displaySelectedHighlightImage();
+            } else if (currentGalleryType === 'floorplan') {
+                displaySelectedFloorPlanImage();
+            }
+            
+            closeGalleryModal();
+        }
+
+        // メインビジュアルの表示
+        function displaySelectedMainVisuals() {
             const container = document.getElementById('mainVisualsContainer');
             container.innerHTML = '';
 
-            Array.from(files).forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const visualSection = document.createElement('div');
-                    visualSection.className = 'main-visual-section';
-                    visualSection.innerHTML = `
-                    <button type="button" class="remove-visual"  onclick="removeMainVisual(this, ${index})">
-                            ×
-                        </button>
-                        <div class="main-visual-header">
-                            <div class="highlight-number">メインビジュアル ${index + 1}</div>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="removeMainVisual(this, ${index})">削除</button>
+            selectedImages.forEach((image, index) => {
+                const visualSection = document.createElement('div');
+                visualSection.className = 'main-visual-section';
+                visualSection.innerHTML = `
+                    <button type="button" class="remove-visual" onclick="removeMainVisual(this, ${index})">
+                        ×
+                    </button>
+                    <div class="main-visual-header">
+                        <div class="highlight-number">メインビジュアル ${index + 1}</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="main_visual_display[]" value="1" checked onchange="updateMainVisualDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="visual-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
                         </div>
-                        <div class="main-visual-grid">
-                            <div class="image-preview">
-                                <img src="${e.target.result}" alt="メインビジュアル ${index + 1}">
+                    </div>
+                    <div class="main-visual-grid">
+                        <div class="image-preview">
+                            <img src="${image.url}" alt="${image.title}">
+                        </div>
+                        <div>
+                            <div class="form-group" style="margin-bottom: 15px;">
+                                <label class="form-label">タイトル</label>
+                                <input type="text" class="form-input" name="main_visual_titles[]" value="${image.title}" placeholder="例：リビング全体">
                             </div>
-                            <div>
-                                <div class="form-group" style="margin-bottom: 15px;">
-                                    <label class="form-label">タイトル</label>
-                                    <input type="text" class="form-input" name="main_visual_titles[]" placeholder="例：リビング全体">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">詳細</label>
-                                    <textarea class="form-textarea" name="main_visual_descriptions[]" placeholder="この画像の詳細な説明を記入してください..." rows="3"></textarea>
-                                </div>
+                            <div class="form-group">
+                                <label class="form-label">詳細</label>
+                                <textarea class="form-textarea" name="main_visual_descriptions[]" placeholder="この画像の詳細な説明を記入してください..." rows="3"></textarea>
                             </div>
                         </div>
-                    `;
-                    container.appendChild(visualSection);
-                    lucide.createIcons();
-                };
-                reader.readAsDataURL(file);
+                    </div>
+                `;
+                container.appendChild(visualSection);
             });
+            lucide.createIcons();
+        }
+
+        // 見どころ画像の表示
+        function displaySelectedHighlightImage() {
+            if (selectedImages.length === 0) return;
+            
+            const image = selectedImages[0]; // 単一選択
+            const previewContainer = currentGalleryTarget.nextElementSibling;
+            previewContainer.innerHTML = '';
+            
+            // アップロードエリアを非表示にする
+            currentGalleryTarget.style.display = 'none';
+            
+            const preview = document.createElement('div');
+            preview.className = 'image-preview';
+            preview.innerHTML = `
+                <img src="${image.url}" alt="${image.title}">
+                <button class="remove-btn" onclick="removeGalleryImage(this, 'highlight')">
+                    <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                </button>
+            `;
+            previewContainer.appendChild(preview);
+            lucide.createIcons();
+        }
+
+        // 間取り図画像の表示
+        function displaySelectedFloorPlanImage() {
+            if (selectedImages.length === 0) return;
+            
+            const image = selectedImages[0]; // 単一選択
+            const previewContainer = currentGalleryTarget.nextElementSibling;
+            previewContainer.innerHTML = '';
+            
+            // アップロードエリアを非表示にする
+            currentGalleryTarget.style.display = 'none';
+            
+            const preview = document.createElement('div');
+            preview.className = 'image-preview';
+            preview.innerHTML = `
+                <img src="${image.url}" alt="${image.title}">
+                <button class="remove-btn" onclick="removeGalleryImage(this, 'floorplan')">
+                    <i data-lucide="x" style="width: 12px; height: 12px;"></i>
+                </button>
+            `;
+            previewContainer.appendChild(preview);
+            lucide.createIcons();
+        }
+
+        // ギャラリー画像の削除
+        function removeGalleryImage(button, type) {
+            const preview = button.closest('.image-preview');
+            const previewContainer = preview.parentElement;
+            
+            // アップロードエリアを再表示する
+            const uploadArea = previewContainer.previousElementSibling;
+            uploadArea.style.display = 'block';
+            
+            preview.remove();
         }
 
         // 画像プレビュー
@@ -1792,23 +2386,31 @@
             newHighlight.innerHTML = `
                 <div class="highlight-header">
                     <div class="highlight-number">見どころ ${highlightCount}</div>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="removeHighlight(this)">削除</button>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="highlight_display[]" value="1" checked onchange="updateHighlightDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="highlight-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm" style="display: flex; align-items: center; gap: 0.5rem;" onclick="removeHighlight(this)"><i data-lucide="trash"></i>削除</button>
+                    </div>
                 </div>
                 <div class="highlight-grid">
                     <div>
                         <div class="form-group">
-                            <label class="form-label">見どころ画像</label>
-                            <div class="image-upload-area" onclick="this.nextElementSibling.click()">
-                                <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
-                                <div class="upload-text">画像をアップロード</div>
+                            <div class="image-upload-area" onclick="openGalleryModal('highlight', this)">
+                                <i data-lucide="image" style="width: 24px; height: 24px;"></i>
+                                <div class="upload-text">ギャラリーから画像を選択</div>
                             </div>
-                            <input type="file" name="highlight_images[]" accept="image/*" style="display: none;" onchange="previewImage(this)">
                             <div class="image-preview-grid"></div>
                         </div>
                     </div>
                     <div>
                         <div class="form-group" style="margin-bottom: 15px;">
-                            <label class="form-label required">見どころタイトル</label>
+                            <label class="form-label">見どころタイトル</label>
                             <input type="text" class="form-input" name="highlight_titles[]" placeholder="例：開放感あふれる吹き抜けリビング">
                         </div>
                         <div class="form-group">
@@ -1841,24 +2443,33 @@
             newFloorPlan.innerHTML = `
                 <div class="floor-plan-header">
                     <div class="highlight-number">間取り図 ${floorPlanCount}</div>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="removeFloorPlan(this)">削除</button>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="floor_plan_display[]" value="1" checked onchange="updateFloorPlanDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="floor-plan-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm" style="display: flex; align-items: center; gap: 0.5rem;" onclick="removeFloorPlan(this)"><i data-lucide="trash"></i>削除</button>
+                    </div>
                 </div>
                 <div class="floor-plan-grid">
                     <div>
                         <div class="form-group">
-                            <label class="form-label required">間取り図画像</label>
-                            <div class="image-upload-area" onclick="this.nextElementSibling.click()">
-                                <i data-lucide="upload" style="width: 24px; height: 24px;"></i>
-                                <div class="upload-text">間取り図をアップロード</div>
+                            <label class="form-label">間取り図画像</label>
+                            <div class="image-upload-area" onclick="openGalleryModal('floorplan', this)">
+                                <i data-lucide="image" style="width: 24px; height: 24px;"></i>
+                                <div class="upload-text">ギャラリーから間取り図を選択</div>
                             </div>
-                            <input type="file" name="floor_images[]" accept="image/*" style="display: none;" onchange="previewImage(this)">
                             <div class="image-preview-grid"></div>
                         </div>
                     </div>
                     <div>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label required">階層</label>
+                                <label class="form-label">階層</label>
                                 <select class="form-input" name="floor_levels[]">
                                     <option value="">選択してください</option>
                                     <option value="1F">1F</option>
@@ -1868,7 +2479,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label required">タイトル</label>
+                                <label class="form-label">タイトル</label>
                                 <input type="text" class="form-input" name="floor_titles[]" placeholder="例：1階間取り図">
                             </div>
                         </div>
@@ -1938,6 +2549,54 @@
                 label.textContent = '公開（サイトに表示されます）';
             } else {
                 label.textContent = '非公開';
+            }
+        }
+
+        // メインビジュアル個別表示設定の更新
+        function updateMainVisualDisplay(toggle) {
+            const label = toggle.closest('.main-visual-header').querySelector('.visual-display-label');
+            const visualGrid = toggle.closest('.main-visual-section').querySelector('.main-visual-grid');
+            
+            if (toggle.checked) {
+                label.textContent = 'ON';
+                label.style.color = '#2e7d32';
+                visualGrid.classList.remove('section-disabled');
+            } else {
+                label.textContent = 'OFF';
+                label.style.color = '#d32f2f';
+                visualGrid.classList.add('section-disabled');
+            }
+        }
+
+        // 見どころ個別表示設定の更新
+        function updateHighlightDisplay(toggle) {
+            const label = toggle.closest('.highlight-header').querySelector('.highlight-display-label');
+            const highlightGrid = toggle.closest('.highlight-section').querySelector('.highlight-grid');
+            
+            if (toggle.checked) {
+                label.textContent = 'ON';
+                label.style.color = '#2e7d32';
+                highlightGrid.classList.remove('section-disabled');
+            } else {
+                label.textContent = 'OFF';
+                label.style.color = '#d32f2f';
+                highlightGrid.classList.add('section-disabled');
+            }
+        }
+
+        // 間取り図個別表示設定の更新
+        function updateFloorPlanDisplay(toggle) {
+            const label = toggle.closest('.floor-plan-header').querySelector('.floor-plan-display-label');
+            const floorPlanGrid = toggle.closest('.floor-plan-section').querySelector('.floor-plan-grid');
+            
+            if (toggle.checked) {
+                label.textContent = 'ON';
+                label.style.color = '#2e7d32';
+                floorPlanGrid.classList.remove('section-disabled');
+            } else {
+                label.textContent = 'OFF';
+                label.style.color = '#d32f2f';
+                floorPlanGrid.classList.add('section-disabled');
             }
         }
 
@@ -2062,6 +2721,7 @@
                     </div>
 
                     <!-- 見どころ -->
+                    ${generateHighlightsPreviews().length > 0 ? `
                     <div class="preview-content-section">
                         <h2 class="preview-section-title">
                             <i data-lucide="star" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;"></i>
@@ -2071,8 +2731,10 @@
                             ${generateHighlightsPreviews()}
                         </div>
                     </div>
+                    ` : ''}
 
                     <!-- 間取り -->
+                    ${generateFloorPlansPreviews().length > 0 ? `
                     <div class="preview-content-section">
                         <h2 class="preview-section-title">
                             <i data-lucide="layout" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;"></i>
@@ -2082,6 +2744,7 @@
                             ${generateFloorPlansPreviews()}
                         </div>
                     </div>
+                    ` : ''}
 
                     <!-- 特徴 -->
                     ${selectedFeatures.length > 0 ? `
@@ -2119,11 +2782,16 @@
         function generateHighlightsPreviews() {
             const titles = document.getElementsByName('highlight_titles[]');
             const descriptions = document.getElementsByName('highlight_descriptions[]');
+            const displayToggles = document.getElementsByName('highlight_display[]');
             const placeholderImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2UwZTBlMCIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE1MCIgeT0iMTAwIiBzdHlsZT0iZmlsbDojOWE5YTlhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjE4cHg7Zm9udC1mYW1pbHk6QXJpYWwsc2Fucy1zZXJpZjtmbGV0dGVyLXNwYWNpbmc6MHB4Ij5IaWdobGlnaHQgSW1hZ2U8L3RleHQ+PC9zdmc+';
             
             let highlightsHTML = '';
             for (let i = 0; i < titles.length; i++) {
-                if (titles[i].value || descriptions[i].value) {
+                // 表示フラグがONで、かつタイトルまたは説明が入力されている場合のみ表示
+                const isDisplayed = displayToggles[i] && displayToggles[i].checked;
+                const hasContent = titles[i] && (titles[i].value || descriptions[i].value);
+                
+                if (isDisplayed && hasContent) {
                     highlightsHTML += `
                         <div class="preview-highlight-item">
                             <div class="preview-highlight-image">
@@ -2138,7 +2806,7 @@
                 }
             }
             
-            return highlightsHTML || '<p style="text-align: center; color: #9a9a9a;">見どころ情報が登録されていません</p>';
+            return highlightsHTML;
         }
 
         // 間取りのプレビュー生成
@@ -2146,12 +2814,17 @@
             const levels = document.getElementsByName('floor_levels[]');
             const titles = document.getElementsByName('floor_titles[]');
             const descriptions = document.getElementsByName('floor_descriptions[]');
+            const displayToggles = document.getElementsByName('floor_plan_display[]');
             const placeholderImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjI1MCIgZmlsbD0iI2UwZTBlMCIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE1MCIgeT0iMTI1IiBzdHlsZT0iZmlsbDojOWE5YTlhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjE4cHg7Zm9udC1mYW1pbHk6QXJpYWwsc2Fucy1zZXJpZjtmbGV0dGVyLXNwYWNpbmc6MHB4Ij5GbG9vciBQbGFuPC90ZXh0Pjwvc3ZnPg==';
             
             let floorPlansHTML = '';
             for (let i = 0; i < levels.length; i++) {
-                const level = levels[i].options[levels[i].selectedIndex]?.text || '';
-                if (level || titles[i].value) {
+                // 表示フラグがONで、かつ階層または間取り図タイトルが設定されている場合のみ表示
+                const isDisplayed = displayToggles[i] && displayToggles[i].checked;
+                const level = levels[i] && levels[i].options[levels[i].selectedIndex]?.text || '';
+                const hasContent = level || (titles[i] && titles[i].value);
+                
+                if (isDisplayed && hasContent) {
                     floorPlansHTML += `
                         <div class="preview-floor-plan-item">
                             <div class="preview-floor-plan-image">
@@ -2166,13 +2839,14 @@
                 }
             }
             
-            return floorPlansHTML || '<p style="text-align: center; color: #9a9a9a;">間取り情報が登録されていません</p>';
+            return floorPlansHTML;
         }
 
         // ESCキーでモーダルを閉じる
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closePreviewModal();
+                closeGalleryModal();
             }
         });
 
@@ -2183,10 +2857,12 @@
             }
         });
 
-        // 既存のメインビジュアル削除関数
-        function removeMainVisualPreview(button) {
-            button.closest('.main-visual-section').remove();
-        }
+        // ギャラリーモーダル外クリックで閉じる
+        document.getElementById('galleryModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeGalleryModal();
+            }
+        });
     </script>
 </body>
 </html>

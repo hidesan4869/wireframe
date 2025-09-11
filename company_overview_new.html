@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会社概要 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        .header {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 15px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .user-info {
+            font-size: 14px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 280px;
+            height: calc(100vh - 60px);
+            background-color: #f9f9f9;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            z-index: 999;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar > ul > li > a {
+            display: block;
+            padding: 15px 20px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #eee;
+            font-weight: 500;
+        }
+
+        .sidebar > ul > li > a:hover {
+            background-color: #e9e9e9;
+        }
+
+        .main-content {
+            margin-top: 60px;
+            padding: 30px;
+            min-height: calc(100vh - 60px);
+            width: 80%;
+            margin: 60px auto;
+        }
+
+        .page-header {
+            background-color: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 4px solid #007bff;
+        }
+
+        .page-header h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .content-wrapper {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 30px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .form-section h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group.required label::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            margin-right: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #007bff;
+            color: #007bff;
+        }
+
+        .btn-outline:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .action-buttons {
+            padding: 30px;
+            background-color: #f8f9fa;
+            text-align: center;
+            gap: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            background-color: #fafafa;
+            transition: border-color 0.3s ease;
+        }
+
+        .file-upload-area:hover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+
+        .file-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-text {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .upload-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .image-item, .staff-interview-item {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .preview-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .preview-section h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .preview-content {
+            background-color: white;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            min-height: 100px;
+            color: #666;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>不動産ポータル管理画面</h1>
+        <div class="user-info">
+            管理者: 田中太郎 | <a href="#" style="color: #ccc;">ログアウト</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h2>会社概要管理</h2>
+            <p>ウェブサイトに表示される会社概要情報を編集・管理します（データベース設計対応版）</p>
+        </div>
+
+        <div class="content-wrapper">
+            <form>
+                <!-- 企業詳細情報（cbn_company_details） -->
+                <div class="form-section">
+                    <h3>企業詳細情報</h3>
+                    <div class="form-group required">
+                        <label for="title">企業キャッチコピー</label>
+                        <input type="text" id="title" class="form-control" placeholder="お客様の理想を叶える家づくりのプロ集団">
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="description">企業説明文</label>
+                        <textarea id="description" class="form-control" style="min-height: 150px;" placeholder="私たちは、お客様一人ひとりの夢やライフスタイルに寄り添った住まいづくりを心がけております。創業以来30年の経験と実績を活かし、自然素材にこだわった健康で快適な住環境をご提案いたします。"></textarea>
+                        <div class="preview-section">
+                            <h4>プレビュー</h4>
+                            <div class="preview-content" id="description_preview">
+                                こちらに入力した内容がウェブサイトに表示されます
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="min_reference_price">参考価格下限（万円）</label>
+                                <input type="number" id="min_reference_price" class="form-control" placeholder="1500" min="0">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="max_reference_price">参考価格上限（万円）</label>
+                                <input type="number" id="max_reference_price" class="form-control" placeholder="3000" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="establishment">設立</label>
+                        <input type="text" id="establishment" class="form-control" placeholder="平成5年4月1日">
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="form-group">
+                            <label for="capita">資本金（円）</label>
+                            <input type="number" id="capita" class="form-control" placeholder="10000000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="employees">従業員数</label>
+                            <input type="text" id="employees" class="form-control" placeholder="25名">
+                        </div>
+                        <div class="form-group">
+                            <label for="service_area">施工エリア</label>
+                            <input type="text" id="service_area" class="form-control" placeholder="東京都、神奈川県、埼玉県、千葉県">
+                        </div>
+                        <div class="form-group">
+                            <label for="project_portfolio">施工実績</label>
+                            <input type="text" id="project_portfolio" class="form-control" placeholder="年間50棟、累計1200棟">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="construction_method">対応可能工法</label>
+                        <textarea id="construction_method" class="form-control" placeholder="木造軸組工法、ツーバイフォー工法、鉄骨造、RC造"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="warranty">保証内容</label>
+                        <textarea id="warranty" class="form-control" style="min-height: 120px;" placeholder="構造躯体10年保証、防水10年保証、設備機器2年保証、定期点検サービス（1年・3年・5年・10年）、24時間緊急対応サービス"></textarea>
+                    </div>
+                </div>
+
+                <!-- 会社画像（cbh_company_images） -->
+                <div class="form-section">
+                    <h3>会社画像</h3>
+                    <p style="color: #666; margin-bottom: 30px;">会社のロゴ、外観写真、内観写真などをアップロードできます。</p>
+                    <div id="company_images">
+                        <div class="image-item" data-index="1">
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label>画像ファイル</label>
+                                        <div class="file-upload-area">
+                                            <div class="upload-text">画像をアップロード</div>
+                                            <div class="upload-text" style="font-size: 12px; color: #999;">推奨サイズ: 800×600px、形式: PNG, JPG</div>
+                                            <input type="file" id="image_upload_1" accept="image/*">
+                                            <button type="button" class="upload-btn" onclick="document.getElementById('image_upload_1').click()">ファイルを選択</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="image_title_1">画像タイトル</label>
+                                        <input type="text" id="image_title_1" class="form-control" placeholder="会社外観">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="image_description_1">画像説明</label>
+                                        <textarea id="image_description_1" class="form-control" placeholder="本社ビルの外観写真です"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: right; margin-top: 10px;">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeImageItem(1)">削除</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button type="button" class="btn btn-outline" onclick="addImageItem()">+ 画像を追加</button>
+                    </div>
+                </div>
+
+                <!-- スタッフインタビュー（cbh_company_staff_interviews） -->
+                <div class="form-section">
+                    <h3>スタッフインタビュー</h3>
+                    <p style="color: #666; margin-bottom: 30px;">会社で働くスタッフのインタビューや紹介文を掲載できます。</p>
+                    <div id="staff_interviews">
+                        <div class="staff-interview-item" data-index="1">
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="staff_position_1">役職</label>
+                                        <input type="text" id="staff_position_1" class="form-control" placeholder="代表取締役">
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="staff_name01_1">姓</label>
+                                        <input type="text" id="staff_name01_1" class="form-control" placeholder="田中">
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label for="staff_name02_1">名</label>
+                                        <input type="text" id="staff_name02_1" class="form-control" placeholder="太郎">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="staff_concept_title_1">コンセプトタイトル</label>
+                                <input type="text" id="staff_concept_title_1" class="form-control" placeholder="お客様の笑顔が私たちの原動力">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label>アバター画像</label>
+                                        <div class="file-upload-area">
+                                            <div class="upload-text">プロフィール写真をアップロード</div>
+                                            <input type="file" id="staff_avatar_1" accept="image/*">
+                                            <button type="button" class="upload-btn" onclick="document.getElementById('staff_avatar_1').click()">ファイルを選択</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label>インタビュー画像</label>
+                                        <div class="file-upload-area">
+                                            <div class="upload-text">インタビュー写真をアップロード</div>
+                                            <input type="file" id="staff_image_1" accept="image/*">
+                                            <button type="button" class="upload-btn" onclick="document.getElementById('staff_image_1').click()">ファイルを選択</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <label>
+                                        <input type="checkbox" id="staff_active_1" checked> 表示する
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div style="text-align: right; margin-top: 10px;">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeStaffItem(1)">削除</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button type="button" class="btn btn-outline" onclick="addStaffItem()">+ スタッフを追加</button>
+                    </div>
+                </div>
+
+                <!-- アクション部分 -->
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary">下書き保存</button>
+                    <button type="button" class="btn btn-primary" onclick="showPreview()">プレビュー</button>
+                    <button type="submit" class="btn btn-success">公開</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let imageCount = 1;
+        let staffCount = 1;
+
+        function toggleSubmenu(element) {
+            const submenu = element.nextElementSibling;
+            if (submenu) {
+                submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        // 画像項目の追加
+        function addImageItem() {
+            imageCount++;
+            const imageContainer = document.getElementById('company_images');
+            const newImageHTML = `
+                <div class="image-item" data-index="${imageCount}">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>画像ファイル</label>
+                                <div class="file-upload-area">
+                                    <div class="upload-text">画像をアップロード</div>
+                                    <div class="upload-text" style="font-size: 12px; color: #999;">推奨サイズ: 800×600px、形式: PNG, JPG</div>
+                                    <input type="file" id="image_upload_${imageCount}" accept="image/*">
+                                    <button type="button" class="upload-btn" onclick="document.getElementById('image_upload_${imageCount}').click()">ファイルを選択</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="image_title_${imageCount}">画像タイトル</label>
+                                <input type="text" id="image_title_${imageCount}" class="form-control" placeholder="画像タイトル">
+                            </div>
+                            <div class="form-group">
+                                <label for="image_description_${imageCount}">画像説明</label>
+                                <textarea id="image_description_${imageCount}" class="form-control" placeholder="画像の説明"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: right; margin-top: 10px;">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeImageItem(${imageCount})">削除</button>
+                    </div>
+                </div>
+            `;
+            imageContainer.insertAdjacentHTML('beforeend', newImageHTML);
+        }
+
+        // 画像項目の削除
+        function removeImageItem(index) {
+            if (imageCount <= 1) {
+                alert('画像は最低1つ必要です。');
+                return;
+            }
+            const item = document.querySelector(`[data-index="${index}"]`);
+            if (item && confirm('この画像項目を削除しますか？')) {
+                item.remove();
+                imageCount--;
+            }
+        }
+
+        // スタッフ項目の追加
+        function addStaffItem() {
+            staffCount++;
+            const staffContainer = document.getElementById('staff_interviews');
+            const newStaffHTML = `
+                <div class="staff-interview-item" data-index="${staffCount}">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="staff_position_${staffCount}">役職</label>
+                                <input type="text" id="staff_position_${staffCount}" class="form-control" placeholder="役職">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="staff_name01_${staffCount}">姓</label>
+                                <input type="text" id="staff_name01_${staffCount}" class="form-control" placeholder="姓">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="staff_name02_${staffCount}">名</label>
+                                <input type="text" id="staff_name02_${staffCount}" class="form-control" placeholder="名">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="staff_concept_title_${staffCount}">コンセプトタイトル</label>
+                        <input type="text" id="staff_concept_title_${staffCount}" class="form-control" placeholder="コンセプトタイトル">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>アバター画像</label>
+                                <div class="file-upload-area">
+                                    <div class="upload-text">プロフィール写真をアップロード</div>
+                                    <input type="file" id="staff_avatar_${staffCount}" accept="image/*">
+                                    <button type="button" class="upload-btn" onclick="document.getElementById('staff_avatar_${staffCount}').click()">ファイルを選択</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>インタビュー画像</label>
+                                <div class="file-upload-area">
+                                    <div class="upload-text">インタビュー写真をアップロード</div>
+                                    <input type="file" id="staff_image_${staffCount}" accept="image/*">
+                                    <button type="button" class="upload-btn" onclick="document.getElementById('staff_image_${staffCount}').click()">ファイルを選択</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label>
+                                <input type="checkbox" id="staff_active_${staffCount}" checked> 表示する
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="text-align: right; margin-top: 10px;">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeStaffItem(${staffCount})">削除</button>
+                    </div>
+                </div>
+            `;
+            staffContainer.insertAdjacentHTML('beforeend', newStaffHTML);
+        }
+
+        // スタッフ項目の削除
+        function removeStaffItem(index) {
+            const item = document.querySelector(`[data-index="${index}"]`);
+            if (item && confirm('このスタッフ項目を削除しますか？')) {
+                item.remove();
+                staffCount--;
+            }
+        }
+
+        // プレビュー機能
+        function showPreview() {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const establishment = document.getElementById('establishment').value;
+
+            if (!title || !description) {
+                alert('企業キャッチコピーと企業説明文は必須です。');
+                return;
+            }
+
+            alert('会社概要ページのプレビューを表示します。\n\nキャッチコピー: ' + title + '\n説明文: ' + description + '\n設立: ' + establishment);
+        }
+
+        // リアルタイムプレビュー
+        document.getElementById('description').addEventListener('input', function() {
+            const content = this.value || 'こちらに入力した内容がウェブサイトに表示されます';
+            document.getElementById('description_preview').textContent = content;
+        });
+    </script>
+</body>
+</html>

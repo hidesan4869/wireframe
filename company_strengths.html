@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>強みこだわり管理 - 不動産ポータル管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        .header {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 15px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .user-info {
+            font-size: 14px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 280px;
+            height: calc(100vh - 60px);
+            background-color: #f9f9f9;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            z-index: 999;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar > ul > li > a {
+            display: block;
+            padding: 15px 20px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #eee;
+            font-weight: 500;
+        }
+
+        .sidebar > ul > li > a:hover {
+            background-color: #e9e9e9;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            margin-top: 60px;
+            padding: 30px;
+            min-height: calc(100vh - 60px);
+        }
+
+        .page-header {
+            background-color: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 4px solid #28a745;
+        }
+
+        .page-header h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .content-wrapper {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .form-section {
+            padding: 30px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .form-section h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #28a745;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group.required label::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #28a745;
+            box-shadow: 0 0 0 2px rgba(40,167,69,0.25);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            margin-right: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid #28a745;
+            color: #28a745;
+        }
+
+        .btn-outline:hover {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .action-buttons {
+            padding: 30px;
+            background-color: #f8f9fa;
+            text-align: center;
+            gap: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .strength-item {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 25px;
+            background-color: #fafafa;
+            position: relative;
+        }
+
+        .strength-item:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .strength-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .strength-number {
+            background-color: #28a745;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .strength-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            background-color: #fafafa;
+            transition: border-color 0.3s ease;
+        }
+
+        .file-upload-area:hover {
+            border-color: #28a745;
+            background-color: #f0f8ff;
+        }
+
+        .file-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-text {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .upload-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .icon-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .icon-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-option:hover {
+            border-color: #28a745;
+            background-color: #f8fff8;
+        }
+
+        .icon-option.selected {
+            border-color: #28a745;
+            background-color: #e8f5e8;
+        }
+
+        .icon-option span {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .icon-option small {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .preview-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .preview-section h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .preview-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .preview-icon {
+            font-size: 48px;
+            color: #28a745;
+            flex-shrink: 0;
+        }
+
+        .preview-text {
+            flex: 1;
+        }
+
+        .preview-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .preview-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .icon-selector {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>不動産ポータル管理画面</h1>
+        <div class="user-info">
+            管理者: 田中太郎 | <a href="#" style="color: #ccc;">ログアウト</a>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <ul>
+            <li><a href="index.html">ダッシュボード</a></li>
+            <li><a href="#" onclick="toggleSubmenu(this)">物件管理 ▼</a>
+                <ul style="display: block; background-color: #f0f0f0;">
+                    <li><a href="model_house_list.html" style="padding-left: 40px;">モデルハウス</a></li>
+                    <li><a href="company_overview.html" style="padding-left: 40px;">会社概要</a></li>
+                    <li><a href="company_strengths.html" style="padding-left: 40px; background-color: #e8f5e8;">強みこだわり</a></li>
+                    <li><a href="event_setting.html" style="padding-left: 40px;">イベント</a></li>
+                </ul>
+            </li>
+            <li><a href="catalog_custom_home_list.html">カタログ管理</a></li>
+            <li><a href="tour_schedule_list.html">見学ツアー管理</a></li>
+            <li><a href="company_register.html">企業登録</a></li>
+            <li><a href="member_list.html">メンバー管理</a></li>
+            <li><a href="inquiry_management.html">お問い合わせ管理</a></li>
+            <li><a href="referral_list.html">送客管理</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h2>強みこだわり管理</h2>
+            <p>お客様に向けて会社の強みや特徴、こだわりのポイントを編集・管理します</p>
+        </div>
+
+        <div class="content-wrapper">
+            <form>
+                <!-- メインキャッチフレーズ -->
+                <div class="form-section">
+                    <h3>メインキャッチフレーズ</h3>
+                    <div class="form-group required">
+                        <label for="main_catchphrase">キャッチフレーズ</label>
+                        <input type="text" id="main_catchphrase" class="form-control" placeholder="お客様の理想を叶える家づくりのプロ集団">
+                    </div>
+                    <div class="form-group">
+                        <label for="main_description">説明文</label>
+                        <textarea id="main_description" class="form-control" placeholder="私たちは、創業30年の経験と実績を活かし、お客様一人ひとりの夢や理想を形にする家づくりをお約束いたします。"></textarea>
+                    </div>
+                </div>
+
+                <!-- 企業が選ばれる理由（cbh_company_recommends） -->
+                <div class="form-section">
+                    <h3>企業が選ばれる理由</h3>
+                    <p style="color: #666; margin-bottom: 30px;">お客様に選ばれる理由やポイントを設定できます。各項目にはタイトル、説明文、画像を設定してください。</p>
+
+                    <!-- 選ばれる理由項目1 -->
+                    <div class="strength-item" id="strength_1">
+                        <div class="strength-header">
+                            <div class="strength-number">1</div>
+                            <div class="strength-actions">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="moveStrengthUp(1)">↑</button>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="moveStrengthDown(1)">↓</button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeStrength(1)">削除</button>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group required">
+                                    <label for="strength_title_1">タイトル</label>
+                                    <input type="text" id="strength_title_1" class="form-control" placeholder="自然素材へのこだわり" onchange="updatePreview(1)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="strength_sort_order_1">表示順序</label>
+                                    <input type="number" id="strength_sort_order_1" class="form-control" value="1" min="1">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>メイン画像</label>
+                                    <div class="file-upload-area">
+                                        <div class="upload-text">選ばれる理由の画像をアップロード</div>
+                                        <div class="upload-text" style="font-size: 12px; color: #999;">推奨サイズ: 600×400px、形式: PNG, JPG</div>
+                                        <input type="file" id="strength_image_1" accept="image/*">
+                                        <button type="button" class="upload-btn" onclick="document.getElementById('strength_image_1').click()">ファイルを選択</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required">
+                            <label for="strength_description_1">説明文</label>
+                            <textarea id="strength_description_1" class="form-control" style="min-height: 120px;" placeholder="国産の無垢材や珪藻土など、厳選した自然素材を使用し、家族の健康と快適な住環境を実現します。" onchange="updatePreview(1)"></textarea>
+                        </div>
+
+                        <!-- 追加画像（cbh_company_recommend_images） -->
+                        <div class="form-group">
+                            <label>追加画像</label>
+                            <div id="additional_images_1">
+                                <div class="image-item" style="border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; margin-bottom: 15px;">
+                                    <div class="form-row">
+                                        <div class="form-col">
+                                            <div class="form-group">
+                                                <label>画像ファイル</label>
+                                                <div class="file-upload-area" style="padding: 20px;">
+                                                    <div class="upload-text">追加画像をアップロード</div>
+                                                    <input type="file" id="strength_add_image_1_1" accept="image/*">
+                                                    <button type="button" class="upload-btn" onclick="document.getElementById('strength_add_image_1_1').click()">ファイルを選択</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-col">
+                                            <div class="form-group">
+                                                <label for="strength_add_title_1_1">画像タイトル</label>
+                                                <input type="text" id="strength_add_title_1_1" class="form-control" placeholder="画像タイトル">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="strength_add_description_1_1">画像説明</label>
+                                                <textarea id="strength_add_description_1_1" class="form-control" placeholder="画像の説明"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeAdditionalImage(1, 1)">削除</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: center; margin-top: 10px;">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="addAdditionalImage(1)">+ 画像を追加</button>
+                            </div>
+                        </div>
+
+                        <div class="preview-section">
+                            <h4>プレビュー</h4>
+                            <div class="preview-content" id="preview_1">
+                                <div class="preview-text">
+                                    <div class="preview-title">タイトルを入力してください</div>
+                                    <div class="preview-description">説明文を入力してください</div>
+                                    <div style="color: #999; font-size: 12px; margin-top: 10px;">画像: メイン画像 + 追加画像がここに表示されます</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 強み項目2 -->
+                    <div class="strength-item" id="strength_2">
+                        <div class="strength-header">
+                            <div class="strength-number">2</div>
+                            <div class="strength-actions">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="moveStrengthUp(2)">↑</button>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="moveStrengthDown(2)">↓</button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeStrength(2)">削除</button>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group required">
+                                    <label for="strength_title_2">タイトル</label>
+                                    <input type="text" id="strength_title_2" class="form-control" placeholder="アフターサポート充実" onchange="updatePreview(2)">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>アイコン選択</label>
+                                    <div class="icon-selector">
+                                        <div class="icon-option" onclick="selectIcon(2, '🏠', '家')">
+                                            <span>🏠</span>
+                                            <small>家</small>
+                                        </div>
+                                        <div class="icon-option" onclick="selectIcon(2, '🌲', '自然')">
+                                            <span>🌲</span>
+                                            <small>自然</small>
+                                        </div>
+                                        <div class="icon-option" onclick="selectIcon(2, '💎', '品質')">
+                                            <span>💎</span>
+                                            <small>品質</small>
+                                        </div>
+                                        <div class="icon-option" onclick="selectIcon(2, '⚡', 'スピード')">
+                                            <span>⚡</span>
+                                            <small>スピード</small>
+                                        </div>
+                                        <div class="icon-option selected" onclick="selectIcon(2, '🛡️', '安心')">
+                                            <span>🛡️</span>
+                                            <small>安心</small>
+                                        </div>
+                                        <div class="icon-option" onclick="selectIcon(2, '👥', 'チーム')">
+                                            <span>👥</span>
+                                            <small>チーム</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required">
+                            <label for="strength_description_2">説明文</label>
+                            <textarea id="strength_description_2" class="form-control" placeholder="引き渡し後も安心していただけるよう、定期点検や24時間サポート体制を整えています。" onchange="updatePreview(2)"></textarea>
+                        </div>
+
+                        <div class="preview-section">
+                            <h4>プレビュー</h4>
+                            <div class="preview-content" id="preview_2">
+                                <div class="preview-icon">🛡️</div>
+                                <div class="preview-text">
+                                    <div class="preview-title">タイトルを入力してください</div>
+                                    <div class="preview-description">説明文を入力してください</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 強み項目3 -->
+                    <div class="strength-item" id="strength_3">
+                        <div class="strength-header">
+                            <div class="strength-number">3</div>
+                            <div class="strength-actions">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="moveStrengthUp(3)">↑</button>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="moveStrengthDown(3)">↓</button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeStrength(3)">削除</button>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group required">
+                                    <label for="strength_title_3">タイトル</label>
+                                    <input type="text" id="strength_title_3" class="form-control" placeholder="経験豊富な設計チーム" onchange="updatePreview(3)">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>アイコン選択</label>
+                                    <div class="icon-selector">
+                                        <div class="icon-option" onclick="selectIcon(3, '🏠', '家')">
+                                            <span>🏠</span>
+                                            <small>家</small>
+                                        </div>
+                                        <div class="icon-option" onclick="selectIcon(3, '🌲', '自然')">
+                                            <span>🌲</span>
+                                            <small>自然</small>
+                                        </div>
+                                        <div class="icon-option" onclick="selectIcon(3, '💎', '品質')">
+                                            <span>💎</span>
+                                            <small>品質</small>
+                                        </div>
+                                        <div class="icon-option" onclick="selectIcon(3, '⚡', 'スピード')">
+                                            <span>⚡</span>
+                                            <small>スピード</small>
+                                        </div>
+                                        <div class="icon-option" onclick="selectIcon(3, '🛡️', '安心')">
+                                            <span>🛡️</span>
+                                            <small>安心</small>
+                                        </div>
+                                        <div class="icon-option selected" onclick="selectIcon(3, '👥', 'チーム')">
+                                            <span>👥</span>
+                                            <small>チーム</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required">
+                            <label for="strength_description_3">説明文</label>
+                            <textarea id="strength_description_3" class="form-control" placeholder="一級建築士をはじめとする専門知識豊富なスタッフが、お客様のご要望を実現します。" onchange="updatePreview(3)"></textarea>
+                        </div>
+
+                        <div class="preview-section">
+                            <h4>プレビュー</h4>
+                            <div class="preview-content" id="preview_3">
+                                <div class="preview-icon">👥</div>
+                                <div class="preview-text">
+                                    <div class="preview-title">タイトルを入力してください</div>
+                                    <div class="preview-description">説明文を入力してください</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button type="button" class="btn btn-outline" onclick="addStrength()">+ 強み項目を追加</button>
+                    </div>
+                </div>
+
+                <!-- アクション部分 -->
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary">下書き保存</button>
+                    <button type="button" class="btn btn-primary" onclick="showPreview()">全体プレビュー</button>
+                    <button type="submit" class="btn btn-success">公開</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let strengthCount = 3;
+        let additionalImageCounts = {1: 1, 2: 1, 3: 1};
+
+        function toggleSubmenu(element) {
+            const submenu = element.nextElementSibling;
+            if (submenu) {
+                submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        function updatePreview(strengthIndex) {
+            const title = document.getElementById(`strength_title_${strengthIndex}`).value || 'タイトルを入力してください';
+            const description = document.getElementById(`strength_description_${strengthIndex}`).value || '説明文を入力してください';
+
+            const preview = document.getElementById(`preview_${strengthIndex}`);
+            preview.innerHTML = `
+                <div class="preview-text">
+                    <div class="preview-title">${title}</div>
+                    <div class="preview-description">${description}</div>
+                    <div style="color: #999; font-size: 12px; margin-top: 10px;">画像: メイン画像 + 追加画像がここに表示されます</div>
+                </div>
+            `;
+        }
+
+        // 追加画像の管理
+        function addAdditionalImage(strengthIndex) {
+            if (!additionalImageCounts[strengthIndex]) {
+                additionalImageCounts[strengthIndex] = 0;
+            }
+            additionalImageCounts[strengthIndex]++;
+            
+            const container = document.getElementById(`additional_images_${strengthIndex}`);
+            const newImageHTML = `
+                <div class="image-item" style="border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; margin-bottom: 15px;" data-strength="${strengthIndex}" data-image="${additionalImageCounts[strengthIndex]}">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>画像ファイル</label>
+                                <div class="file-upload-area" style="padding: 20px;">
+                                    <div class="upload-text">追加画像をアップロード</div>
+                                    <input type="file" id="strength_add_image_${strengthIndex}_${additionalImageCounts[strengthIndex]}" accept="image/*">
+                                    <button type="button" class="upload-btn" onclick="document.getElementById('strength_add_image_${strengthIndex}_${additionalImageCounts[strengthIndex]}').click()">ファイルを選択</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="strength_add_title_${strengthIndex}_${additionalImageCounts[strengthIndex]}">画像タイトル</label>
+                                <input type="text" id="strength_add_title_${strengthIndex}_${additionalImageCounts[strengthIndex]}" class="form-control" placeholder="画像タイトル">
+                            </div>
+                            <div class="form-group">
+                                <label for="strength_add_description_${strengthIndex}_${additionalImageCounts[strengthIndex]}">画像説明</label>
+                                <textarea id="strength_add_description_${strengthIndex}_${additionalImageCounts[strengthIndex]}" class="form-control" placeholder="画像の説明"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeAdditionalImage(${strengthIndex}, ${additionalImageCounts[strengthIndex]})">削除</button>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', newImageHTML);
+        }
+
+        function removeAdditionalImage(strengthIndex, imageIndex) {
+            const item = document.querySelector(`[data-strength="${strengthIndex}"][data-image="${imageIndex}"]`);
+            if (item && confirm('この画像を削除しますか？')) {
+                item.remove();
+            }
+        }
+
+        function addStrength() {
+            if (strengthCount >= 6) {
+                alert('強み項目は最大6個まで追加できます。');
+                return;
+            }
+
+            strengthCount++;
+            selectedIcons[strengthCount] = '💎';
+
+            const strengthSection = document.querySelector('.form-section:nth-child(3)');
+            const addButton = strengthSection.querySelector('div[style*="text-align: center"]');
+
+            const newStrengthHTML = `
+                <div class="strength-item" id="strength_${strengthCount}">
+                    <div class="strength-header">
+                        <div class="strength-number">${strengthCount}</div>
+                        <div class="strength-actions">
+                            <button type="button" class="btn btn-outline btn-sm" onclick="moveStrengthUp(${strengthCount})">↑</button>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="moveStrengthDown(${strengthCount})">↓</button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeStrength(${strengthCount})">削除</button>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group required">
+                                <label for="strength_title_${strengthCount}">タイトル</label>
+                                <input type="text" id="strength_title_${strengthCount}" class="form-control" placeholder="強みのタイトル" onchange="updatePreview(${strengthCount})">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>アイコン選択</label>
+                                <div class="icon-selector">
+                                    <div class="icon-option" onclick="selectIcon(${strengthCount}, '🏠', '家')">
+                                        <span>🏠</span>
+                                        <small>家</small>
+                                    </div>
+                                    <div class="icon-option" onclick="selectIcon(${strengthCount}, '🌲', '自然')">
+                                        <span>🌲</span>
+                                        <small>自然</small>
+                                    </div>
+                                    <div class="icon-option selected" onclick="selectIcon(${strengthCount}, '💎', '品質')">
+                                        <span>💎</span>
+                                        <small>品質</small>
+                                    </div>
+                                    <div class="icon-option" onclick="selectIcon(${strengthCount}, '⚡', 'スピード')">
+                                        <span>⚡</span>
+                                        <small>スピード</small>
+                                    </div>
+                                    <div class="icon-option" onclick="selectIcon(${strengthCount}, '🛡️', '安心')">
+                                        <span>🛡️</span>
+                                        <small>安心</small>
+                                    </div>
+                                    <div class="icon-option" onclick="selectIcon(${strengthCount}, '👥', 'チーム')">
+                                        <span>👥</span>
+                                        <small>チーム</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="strength_description_${strengthCount}">説明文</label>
+                        <textarea id="strength_description_${strengthCount}" class="form-control" placeholder="強みの詳細説明" onchange="updatePreview(${strengthCount})"></textarea>
+                    </div>
+
+                    <div class="preview-section">
+                        <h4>プレビュー</h4>
+                        <div class="preview-content" id="preview_${strengthCount}">
+                            <div class="preview-icon">💎</div>
+                            <div class="preview-text">
+                                <div class="preview-title">タイトルを入力してください</div>
+                                <div class="preview-description">説明文を入力してください</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            addButton.insertAdjacentHTML('beforebegin', newStrengthHTML);
+        }
+
+        function removeStrength(strengthIndex) {
+            if (strengthCount <= 1) {
+                alert('強み項目は最低1個必要です。');
+                return;
+            }
+
+            if (confirm('この強み項目を削除しますか？')) {
+                document.getElementById(`strength_${strengthIndex}`).remove();
+                delete selectedIcons[strengthIndex];
+                strengthCount--;
+            }
+        }
+
+        function moveStrengthUp(strengthIndex) {
+            const current = document.getElementById(`strength_${strengthIndex}`);
+            const previous = current.previousElementSibling;
+            if (previous && previous.classList.contains('strength-item')) {
+                current.parentNode.insertBefore(current, previous);
+            }
+        }
+
+        function moveStrengthDown(strengthIndex) {
+            const current = document.getElementById(`strength_${strengthIndex}`);
+            const next = current.nextElementSibling;
+            if (next && next.classList.contains('strength-item')) {
+                current.parentNode.insertBefore(next, current);
+            }
+        }
+
+        function showPreview() {
+            const catchphrase = document.getElementById('main_catchphrase').value;
+            const description = document.getElementById('main_description').value;
+
+            if (!catchphrase) {
+                alert('メインキャッチフレーズを入力してください。');
+                return;
+            }
+
+            let strengthsList = '';
+            for (let i = 1; i <= strengthCount; i++) {
+                const titleElement = document.getElementById(`strength_title_${i}`);
+                if (titleElement) {
+                    const title = titleElement.value;
+                    if (title) {
+                        strengthsList += `\n- ${title}`;
+                    }
+                }
+            }
+
+            alert('強みこだわりページのプレビューを表示します。\n\nキャッチフレーズ: ' + catchphrase + '\n説明文: ' + description + '\n\n強み項目:' + strengthsList);
+        }
+
+        // 初期プレビューの設定
+        document.addEventListener('DOMContentLoaded', function() {
+            for (let i = 1; i <= 3; i++) {
+                updatePreview(i);
+            }
+        });
+    </script>
+</body>
+</html>
