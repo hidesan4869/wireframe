@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>企業詳細 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         * {
             margin: 0;
@@ -415,13 +416,253 @@
             -ms-transform: translateX(26px);
             transform: translateX(26px);
         }
+
+        /* 物件管理セクション */
+        .property-section {
+            margin-top: 15px;
+        }
+
+        .property-category-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: #2c2c2c;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .property-category-header:hover {
+            background: #e9ecef;
+        }
+
+        .property-category-header.active {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .property-category-content {
+            padding: 15px;
+            background: #fafafa;
+            border-left: 1px solid #e9ecef;
+            border-right: 1px solid #e9ecef;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .property-item-group {
+            margin-bottom: 15px;
+        }
+
+        .property-item-header {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            color: #4a4a4a;
+            transition: all 0.3s ease;
+            border: 1px solid #dee2e6;
+            margin-bottom: 8px;
+        }
+
+        .property-item-header:hover {
+            background: #f5f5f5;
+            border-color: #4a4a4a;
+        }
+
+        .property-item-header.active {
+            background: #4a4a4a;
+            color: white;
+            border-color: #4a4a4a;
+        }
+
+        .property-item-links {
+            padding-left: 20px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+
+        .property-item {
+            margin-bottom: 8px;
+        }
+
+        .property-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .property-link:hover {
+            background: #f8f9fa;
+            color: #2c2c2c;
+            text-decoration: none;
+            padding-left: 20px;
+        }
+
+        .toggle-arrow {
+            margin-left: auto;
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-arrow.rotated {
+            transform: rotate(90deg);
+        }
+
+        /* ドロップダウンスタイル */
+        .property-management-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-arrow {
+            width: 16px;
+            height: 16px;
+            margin-left: 4px;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-arrow.rotated {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 220px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .dropdown-section {
+            margin-bottom: 4px;
+        }
+
+        .dropdown-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #4a4a4a;
+            transition: background-color 0.2s ease;
+            border-radius: 6px;
+            margin: 0 8px;
+        }
+
+        .dropdown-header:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-header i:first-child {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+        }
+
+        .section-arrow {
+            width: 14px;
+            height: 14px;
+            margin-left: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .section-arrow.rotated {
+            transform: rotate(90deg);
+        }
+
+        .dropdown-links {
+            padding-left: 32px;
+        }
+
+        .dropdown-link {
+            display: block;
+            padding: 8px 16px;
+            color: #6a6a6a;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            margin: 2px 8px;
+        }
+
+        .dropdown-link:hover {
+            background: #f0f0f0;
+            color: #2c2c2c;
+            text-decoration: none;
+        }
+
+        .dropdown-link-single {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #4a4a4a;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+            margin: 2px 8px;
+        }
+
+        .dropdown-link-single:hover {
+            background: #f8f9fa;
+            color: #2c2c2c;
+            text-decoration: none;
+        }
+
+        .dropdown-link-single i {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+        }
+
+        .triangle-icon {
+            width: 0;
+            height: 0;
+            border-left: 6px solid #6a6a6a;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            margin-right: 6px;
+            margin-left: 2px;
+            transition: transform 0.3s ease;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .triangle-icon.rotated {
+            transform: rotate(90deg);
+        }
+
+
     </style>
 </head>
 <body>
     <div class="container">
         <!-- ヘッダー -->
         <header class="header">
-            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">🏠 不動産ポータル管理システム</h1>
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home"></i>
+                不動産ポータル管理システム
+            </h1>
             <div class="user-info">
                 <span>田中 太郎さん</span>
                 <button class="btn btn-secondary">ログアウト</button>
@@ -435,17 +676,101 @@
             </div>
 
             <div class="page-header">
-                <h2 class="page-title">🏢 企業詳細</h2>
+                <h2 class="page-title">
+                    <i data-lucide="building" style="width: 24px; height: 24px; margin-right: 8px;"></i>
+                    企業詳細
+                </h2>
                 <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="openEditModal()">編集</button>
-                    <a href="company_member_management.html" class="btn btn-primary">メンバー管理</a>
-                    <a href="company_list.html" class="btn btn-secondary">一覧に戻る</a>
+                    <button class="btn btn-primary" onclick="openEditModal()">
+                        <i data-lucide="notebook-pen"></i>
+                        編集
+                    </button>
+                    <a href="company_member_management.html" class="btn btn-primary">
+                        <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 4px;"></i>
+                        メンバー管理
+                    </a>
+                    <div class="property-management-dropdown">
+                        <button class="btn btn-primary" onclick="togglePropertyDropdown()">
+                            <i data-lucide="building-2"></i>
+                            物件管理
+                            <i data-lucide="chevron-down" class="dropdown-arrow"></i>
+                        </button>
+                        <div class="dropdown-content" id="propertyDropdown" style="display: none;">
+                            <!-- モデルハウス -->
+                            <div class="dropdown-section">
+                                <div class="dropdown-header" onclick="toggleDropdownSection(this)">
+                                    <span class="triangle-icon"></span>
+                                    <i data-lucide="home"></i>
+                                    モデルハウス
+                                </div>
+                                <div class="dropdown-links" style="display: none;">
+                                    <a href="model_house_list.html" class="dropdown-link">一覧</a>
+                                    <a href="model_house_register_no_validation.html" class="dropdown-link">登録</a>
+                                    <a href="model_house_schedule_calendar.html" class="dropdown-link">予約日登録</a>
+                                </div>
+                            </div>
+
+                            <!-- 会社概要 -->
+                            <div class="dropdown-section">
+                                <a href="company_overview_step.html" class="dropdown-link-single">
+                                    <i data-lucide="building"></i>
+                                    会社概要
+                                </a>
+                            </div>
+
+                            <!-- 住宅商品 -->
+                            <div class="dropdown-section">
+                                <a href="catalog_custom_home_list.html" class="dropdown-link-single">
+                                    <i data-lucide="house"></i>
+                                    住宅商品
+                                </a>
+                            </div>
+
+                            <!-- 強みこだわり -->
+                            <div class="dropdown-section">
+                                <a href="#" class="dropdown-link-single">
+                                    <i data-lucide="star"></i>
+                                    強みこだわり
+                                </a>
+                            </div>
+
+                            <!-- イベント情報 -->
+                            <div class="dropdown-section">
+                                <div class="dropdown-header" onclick="toggleDropdownSection(this)">
+                                    <span class="triangle-icon"></span>
+                                    <i data-lucide="calendar"></i>
+                                    イベント情報
+                                </div>
+                                <div class="dropdown-links" style="display: none;">
+                                    <a href="all_events.html" class="dropdown-link">一覧</a>
+                                    <a href="event_setting.html" class="dropdown-link">登録</a>
+                                </div>
+                            </div>
+
+                            <!-- カタログ情報 -->
+                            <div class="dropdown-section">
+                                <div class="dropdown-header" onclick="toggleDropdownSection(this)">
+                                    <span class="triangle-icon"></span>
+                                    <i data-lucide="book-open"></i>
+                                    カタログ情報
+                                </div>
+                                <div class="dropdown-links" style="display: none;">
+                                    <a href="catalog_custom_home_list.html" class="dropdown-link">一覧</a>
+                                    <a href="catalog_custom_home_register.html" class="dropdown-link">登録</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="company_list.html" class="btn btn-secondary">
+                        <i data-lucide="arrow-left" style="width: 16px; height: 16px; margin-right: 4px;"></i>
+                        一覧に戻る
+                    </a>
                 </div>
             </div>
 
             <!-- 基本情報 -->
             <div class="card">
-                <h3 class="card-title">基本情報</h3>
+                <h3 class="card-title"><i data-lucide="building-2"></i>基本情報</h3>
                 <div class="info-grid">
                     <div class="info-item full-width">
                         <span class="info-label">企業ID</span>
@@ -793,82 +1118,7 @@
             }
         };
 
-        // ページ初期化
-        function initializePage() {
-            const companyId = getCompanyIdFromUrl();
-            const companyData = companiesData[companyId];
-            
-            if (!companyData) {
-                alert('企業データが見つかりません');
-                window.location.href = 'company_list.html';
-                return;
-            }
-
-            // 企業情報を表示
-            document.getElementById('company-id').textContent = companyId;
-            document.getElementById('company-name').textContent = companyData.companyName;
-            document.getElementById('company-name-kana').textContent = companyData.companyNameKana;
-            document.getElementById('service-category').textContent = companyData.serviceCategory;
-            document.getElementById('homepage-url').textContent = companyData.homepageUrl || '未設定';
-            document.getElementById('representative-last-name').textContent = companyData.representativeLastName;
-            document.getElementById('representative-first-name').textContent = companyData.representativeFirstName;
-            document.getElementById('representative-email').textContent = companyData.representativeEmail;
-            document.getElementById('representative-phone').textContent = companyData.representativePhone;
-            document.getElementById('postal-code').textContent = companyData.postalCode || '未設定';
-            document.getElementById('prefecture').textContent = companyData.prefecture || '未設定';
-            document.getElementById('city').textContent = companyData.city || '未設定';
-            document.getElementById('address1').textContent = companyData.address1 || '未設定';
-            document.getElementById('address2').textContent = companyData.address2 || '未設定';
-            document.getElementById('contract-start-date').textContent = companyData.contractStartDate;
-            document.getElementById('contract-end-date').textContent = companyData.contractEndDate;
-            document.getElementById('registration-date').textContent = companyData.registrationDate;
-            document.getElementById('last-update-date').textContent = companyData.lastUpdateDate;
-            
-            // ステータス表示
-            const contractStatusElement = document.getElementById('contract-status');
-            contractStatusElement.textContent = companyData.contractStatus ? '有効' : '無効';
-            contractStatusElement.className = companyData.contractStatus ? 'status-badge status-active' : 'status-badge status-inactive';
-            
-            const invoiceStatusElement = document.getElementById('invoice-status');
-            const invoiceStatusTexts = ['未登録', '登録済み', '登録予定', '登録不要'];
-            invoiceStatusElement.textContent = invoiceStatusTexts[companyData.invoiceStatusId] || '未登録';
-            
-            if (companyData.invoiceStatusId === 2) { // 登録予定
-                invoiceStatusElement.className = 'status-badge status-scheduled';
-            } else if (companyData.invoiceStatusId === 0 || companyData.invoiceStatusId === 3) { // 未登録または登録不要
-                invoiceStatusElement.className = 'status-badge status-inactive';
-            } else {
-                invoiceStatusElement.className = 'status-badge status-active';
-            }
-
-            // インボイス番号表示
-            const invoiceNumberElement = document.getElementById('invoice-number');
-            if (companyData.invoiceStatusId === 1 && companyData.invoiceNumber) {
-                invoiceNumberElement.textContent = companyData.invoiceNumber;
-            } else {
-                invoiceNumberElement.textContent = '-';
-            }
-
-            // インボイス登録年月表示
-            const invoiceScheduledElement = document.getElementById('invoice-scheduled-year');
-            if (companyData.invoiceStatusId === 2 && companyData.invoiceScheduledYear && companyData.invoiceScheduledMonth) {
-                invoiceScheduledElement.textContent = `${companyData.invoiceScheduledYear}年${companyData.invoiceScheduledMonth}月`;
-            } else {
-                invoiceScheduledElement.textContent = '-';
-            }
-
-            // 統計情報を表示
-            if (companyData.stats) {
-                document.getElementById('total-inquiries').textContent = companyData.stats.totalInquiries;
-                document.getElementById('monthly-inquiries').textContent = companyData.stats.monthlyInquiries;
-                document.getElementById('total-contracts').textContent = companyData.stats.totalContracts;
-                document.getElementById('monthly-contracts').textContent = companyData.stats.monthlyContracts;
-            }
-
-            // ページタイトルを更新
-            document.querySelector('.page-title').textContent = `🏢 ${companyData.companyName}の詳細`;
-        }
-
+        
         // 編集モーダルを開く
         function openEditModal() {
             const companyId = getCompanyIdFromUrl();
@@ -920,56 +1170,6 @@
             document.getElementById('editModal').classList.remove('show');
         }
 
-        // フォーム送信処理
-        document.addEventListener('DOMContentLoaded', function() {
-            // ページ初期化
-            initializePage();
-            
-            // 編集フォームの送信処理
-            document.getElementById('editForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const companyId = getCompanyIdFromUrl();
-                const formData = {
-                    companyName: document.getElementById('edit-company-name').value,
-                    companyNameKana: document.getElementById('edit-company-name-kana').value,
-                    serviceCategory: document.getElementById('edit-service-category').value,
-                    homepageUrl: document.getElementById('edit-homepage-url').value,
-                    representativeLastName: document.getElementById('edit-representative-last-name').value,
-                    representativeFirstName: document.getElementById('edit-representative-first-name').value,
-                    representativeEmail: document.getElementById('edit-representative-email').value,
-                    representativePhone: document.getElementById('edit-representative-phone').value,
-                    postalCode: document.getElementById('edit-postal-code').value,
-                    prefecture: document.getElementById('edit-prefecture').value,
-                    city: document.getElementById('edit-city').value,
-                    address1: document.getElementById('edit-address1').value,
-                    contractStatus: document.getElementById('edit-contract-status').checked,
-                    invoiceStatusId: parseInt(document.getElementById('edit-invoice-status').value),
-                    invoiceNumber: document.getElementById('edit-invoice-status').value === '1' 
-                        ? document.getElementById('edit-invoice-number').value : null,
-                    invoiceScheduledYear: document.getElementById('edit-invoice-status').value === '2' 
-                        ? parseInt(document.getElementById('edit-invoice-scheduled-year').value) : null,
-                    invoiceScheduledMonth: document.getElementById('edit-invoice-status').value === '2' 
-                        ? parseInt(document.getElementById('edit-invoice-scheduled-month').value) : null,
-                    contractStartDate: companiesData[companyId].contractStartDate,
-                    contractEndDate: companiesData[companyId].contractEndDate,
-                    registrationDate: companiesData[companyId].registrationDate,
-                    lastUpdateDate: new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '年').replace(/年(\d{2})年/, '年$1月') + '日',
-                    stats: companiesData[companyId].stats
-                };
-                
-                // データを更新
-                companiesData[companyId] = formData;
-                
-                // ページの表示を更新
-                initializePage();
-                
-                // モーダルを閉じる
-                closeEditModal();
-                
-                alert('企業情報を更新しました');
-            });
-        });
         
         // 契約ステータステキスト更新
         function updateContractStatusText() {
@@ -1015,6 +1215,59 @@
             }
         }
 
+        // 物件管理ドロップダウンの表示切替
+        function togglePropertyDropdown() {
+            const dropdown = document.getElementById('propertyDropdown');
+            const arrow = document.querySelector('.dropdown-arrow');
+            
+            if (dropdown.style.display === 'none') {
+                dropdown.style.display = 'block';
+                arrow.classList.add('rotated');
+            } else {
+                dropdown.style.display = 'none';
+                arrow.classList.remove('rotated');
+            }
+        }
+
+        // ドロップダウン内のセクション展開
+        function toggleDropdownSection(element) {
+            const links = element.nextElementSibling;
+            const triangleIcon = element.querySelector('.triangle-icon');
+            
+            if (links.style.display === 'none') {
+                links.style.display = 'block';
+                if (triangleIcon) triangleIcon.classList.add('rotated');
+            } else {
+                links.style.display = 'none';
+                if (triangleIcon) triangleIcon.classList.remove('rotated');
+            }
+        }
+
+        // 物件管理セクションのトグル機能
+        function togglePropertyCategory(element) {
+            const content = element.nextElementSibling;
+            const arrow = element.querySelector('.toggle-arrow');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                arrow.classList.add('rotated');
+            } else {
+                content.style.display = 'none';
+                arrow.classList.remove('rotated');
+            }
+        }
+
+        function togglePropertyItem(element) {
+            const links = element.nextElementSibling;
+            const arrow = element.querySelector('.toggle-arrow');
+            if (links.style.display === 'none') {
+                links.style.display = 'block';
+                arrow.classList.add('rotated');
+            } else {
+                links.style.display = 'none';
+                arrow.classList.remove('rotated');
+            }
+        }
+
         // モーダル外クリックで閉じる
         window.onclick = function(event) {
             const modals = document.querySelectorAll('.modal');
@@ -1023,7 +1276,26 @@
                     modal.classList.remove('show');
                 }
             });
+
+            // ドロップダウンの外をクリックしたら閉じる
+            const dropdown = document.getElementById('propertyDropdown');
+            const dropdownContainer = document.querySelector('.property-management-dropdown');
+            
+            if (dropdown && dropdown.style.display === 'block' && 
+                !dropdownContainer.contains(event.target)) {
+                dropdown.style.display = 'none';
+                document.querySelector('.dropdown-arrow').classList.remove('rotated');
+            }
         };
+
+        // ページ読み込み時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            // ページ初期化
+            initializePage();
+            
+            // Lucide icons 初期化
+            lucide.createIcons();
+        });
     </script>
 </body>
 </html>

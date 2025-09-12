@@ -518,7 +518,7 @@
             </div>
 
             <div class="page-header">
-                <h2 class="page-title">👥 見学予約者一覧</h2>
+                <h2 class="page-title"><i data-lucide="user"></i> 見学予約者一覧</h2>
                 <div class="action-buttons">
                     <button class="btn btn-secondary" onclick="exportReservations()">CSVエクスポート</button>
                 </div>
@@ -526,29 +526,6 @@
 
             <!-- フィルター -->
             <div class="filter-section">
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <label class="filter-label">物件タイプ</label>
-                        <select class="filter-select" id="propertyTypeFilter" onchange="filterTable()">
-                            <option value="">全タイプ</option>
-                            <option value="house">新築戸建て</option>
-                            <option value="house">中古戸建て</option>
-                            <option value="house">新築マンション</option>
-                            <option value="house">中古マンション</option>
-                            <option value="land">土地</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">予約期間</label>
-                        <select class="filter-select" id="periodFilter" onchange="filterTable()">
-                            <option value="">全期間</option>
-                            <option value="today">今日</option>
-                            <option value="week">今週</option>
-                            <option value="month">今月</option>
-                            <option value="3months">過去3ヶ月</option>
-                        </select>
-                    </div>
-                </div>
                 <div class="filter-row">
                     <div class="filter-group" style="grid-column: span 3;">
                         <label class="filter-label">キーワード検索</label>

@@ -124,7 +124,7 @@
         }
 
         .nav-subitems.open {
-            max-height: 500px;
+            max-height: 1000px;
         }
 
         .nav-subitem {
@@ -602,6 +602,10 @@
                             <i data-lucide="building" style="width: 16px; height: 16px; margin-right: 8px;"></i>会社概要
                         </div>
                         
+                        <div class="sub-subitem" onclick="window.location.href='company_overview_step.html'">
+                            <i data-lucide="shopping-cart" style="width: 16px; height: 16px; margin-right: 8px;"></i>住宅商品
+                        </div>
+                        
                         <div class="sub-subitem" onclick="window.location.href='company_strengths.html'">
                             <i data-lucide="star" style="width: 16px; height: 16px; margin-right: 8px;"></i>強みこだわり
                         </div>
@@ -614,6 +618,15 @@
                             <div class="sub-subitem" onclick="window.location.href='all_events.html'" style="padding: 8px 20px; font-size: 13px;">イベント一覧</div>
                             <div class="sub-subitem" onclick="window.location.href='event_setting.html'" style="padding: 8px 20px; font-size: 13px;">イベント登録</div>
                         </div>
+                        <div class="sub-subitem" onclick="toggleSubNav(this)">
+                            <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>カタログ登録管理
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="sub-subitems">
+                            <div class="sub-subitem" onclick="window.location.href='catalog_custom_home_list.html'">カタログ一覧</div>
+                            <div class="sub-subitem" onclick="window.location.href='catalog_custom_home_register.html'">カタログ登録</div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -628,14 +641,8 @@
                     <div class="nav-subitem" onclick="window.location.href='catalog_request.html'">
                         <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 8px;"></i>カタログ請求者情報
                     </div>
-                    
-                    <div class="nav-subitem" onclick="toggleSubNav(this)">
-                        <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>注文住宅
-                        <span class="arrow">▶</span>
-                    </div>
-                    <div class="sub-subitems">
-                        <div class="sub-subitem" onclick="window.location.href='catalog_custom_home_list.html'">カタログ一覧</div>
-                        <div class="sub-subitem" onclick="window.location.href='catalog_custom_home_register.html'">カタログ登録</div>
+                    <div class="nav-subitem" onclick="window.location.href='catalog_request_register.html'">
+                        <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 8px;"></i>カタログ請求者登録
                     </div>
 <!-- 
                     <div class="nav-subitem" onclick="toggleSubNav(this)">
