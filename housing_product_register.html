@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>住宅商品登録 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 20px;
+            overflow-y: auto;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #4a4a4a;
+        }
+
+        /* プログレスバー */
+        .progress-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .step-counter {
+            font-size: 14px;
+            color: #6a6a6a;
+            font-weight: 600;
+        }
+
+        .step-indicators {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .step-bar {
+            flex: 1;
+            height: 3px;
+            background-color: #e9ecef;
+            border-radius: 2px;
+            transition: background-color 0.3s ease;
+        }
+
+        .step-bar.completed {
+            background-color: #2c2c2c;
+        }
+
+        .step-bar.active {
+            background-color: #6c757d;
+        }
+
+        .step-indicator {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .step-indicator.completed {
+            background-color: #2c2c2c;
+            color: white;
+        }
+
+        .step-indicator.active {
+            background-color: #6c757d;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step-labels {
+            display: flex;
+            gap: 12px;
+        }
+
+        .step-label {
+            flex: 1;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 500;
+            padding: 0 4px;
+        }
+
+        .step-label.completed {
+            color: #2c2c2c;
+        }
+
+        .step-label.active {
+            color: #2c2c2c;
+            font-weight: 600;
+        }
+
+        /* ステップコンテンツ */
+        .step-content {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c2c2c;
+            margin-bottom: 8px;
+            border-bottom: 3px solid #6c757d;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-title i {
+            width: 28px;
+            height: 28px;
+        }
+
+        .step-description {
+            color: #6a6a6a;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* フォームスタイル */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group.required label::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            background-color: #fff;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #6c757d;
+            box-shadow: 0 0 0 0.2rem rgba(108,117,125,0.25);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        /* ファイルアップロード */
+        .file-upload-area {
+            border: 2px dashed #6c757d;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #2c2c2c;
+            background-color: #e9ecef;
+        }
+
+        .file-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-text {
+            color: #6c757d;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .upload-btn {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background-color: #000;
+        }
+
+        /* 動的項目 */
+        .dynamic-item {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            position: relative;
+        }
+
+        .dynamic-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .item-number {
+            background-color: #2c2c2c;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* ボタン */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.3s ease;
+            line-height: 1.5;
+        }
+
+        .btn-primary {
+            background-color: #2c2c2c;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #000;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-success {
+            background-color: #2c2c2c;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #000;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid #6c757d;
+            color: #6c757d;
+        }
+
+        .btn-outline:hover {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        /* ナビゲーションボタン */
+        .step-navigation {
+            display: flex;
+            justify-content: end;
+            gap: 1rem;
+            align-items: center;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* 確認画面 */
+        .confirmation-section {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+
+        .confirmation-section h4 {
+            color: #2c2c2c;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .confirmation-row {
+            display: flex;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 12px 0;
+        }
+
+        .confirmation-row:last-child {
+            border-bottom: none;
+        }
+
+        .confirmation-label {
+            font-weight: 600;
+            color: #495057;
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .confirmation-value {
+            color: #212529;
+            flex: 1;
+        }
+
+        /* トグルスイッチ */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2e7d32;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* セクション無効化スタイル */
+        .section-disabled {
+            opacity: 0.5;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .section-disabled::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(200, 200, 200, 0.1) 10px,
+                rgba(200, 200, 200, 0.1) 20px
+            );
+            border-radius: 8px;
+        }
+
+        /* プレビューモーダル */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .preview-modal-content {
+            background-color: #fff;
+            margin: 2% auto;
+            padding: 0;
+            width: 95%;
+            height: 90%;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-modal-header {
+            background-color: #2c2c2c;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-preview {
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-preview:hover {
+            color: white;
+        }
+
+        .preview-iframe-container {
+            width: 100%;
+            height: calc(100% - 60px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .preview-iframe {
+            background-color: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ギャラリーモーダル */
+        .gallery-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 3000;
+            overflow: hidden;
+        }
+
+        .gallery-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-modal-content {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .gallery-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #2c2c2c;
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .gallery-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .gallery-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f5f5f5;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 3px solid transparent;
+            background: white;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .gallery-item.selected {
+            border-color: #4a4a4a;
+            box-shadow: 0 4px 15px rgba(74,74,74,0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-checkbox {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .gallery-item:hover .gallery-checkbox,
+        .gallery-item.selected .gallery-checkbox {
+            opacity: 1;
+        }
+
+        .gallery-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .selection-count {
+            color: #6a6a6a;
+            font-size: 14px;
+        }
+
+        .gallery-btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+
+            .step-indicators {
+                justify-content: center;
+            }
+
+            .step-indicator {
+                width: 32px;
+                height: 32px;
+            }
+
+            .step-navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>不動産ポータル管理画面</h1>
+        <div class="user-info">
+            <span>管理者: 田中太郎</span>
+            <a href="#" style="color: #ccc; text-decoration: none;">ログアウト</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- パンくずリスト -->
+        <div class="breadcrumb">
+            <a href="index.html">ダッシュボード</a> > 
+            <a href="#">住宅商品管理</a> > 
+            <span>住宅商品登録</span>
+        </div>
+
+        <!-- プログレスバー -->
+        <div class="progress-container">
+            <div class="progress-header">
+                <h2 style="color: #2c2c2c; font-size: 20px; font-weight: 700;">住宅商品登録</h2>
+                <div class="step-counter">ステップ <span id="currentStep">1</span> / 6</div>
+            </div>
+            
+            <div class="step-indicators">
+                <div class="step-indicator active" id="step1-indicator">1</div>
+                <div class="step-bar" id="bar1"></div>
+                <div class="step-indicator" id="step2-indicator">2</div>
+                <div class="step-bar" id="bar2"></div>
+                <div class="step-indicator" id="step3-indicator">3</div>
+                <div class="step-bar" id="bar3"></div>
+                <div class="step-indicator" id="step4-indicator">4</div>
+                <div class="step-bar" id="bar4"></div>
+                <div class="step-indicator" id="step5-indicator">5</div>
+                <div class="step-bar" id="bar5"></div>
+                <div class="step-indicator" id="step6-indicator">6</div>
+            </div>
+            
+            <div class="step-labels">
+                <div class="step-label active">基本情報</div>
+                <div class="step-label">住宅商品詳細</div>
+                <div class="step-label">商品データ</div>
+                <div class="step-label">カタログ</div>
+                <div class="step-label">画像管理</div>
+                <div class="step-label">確認</div>
+            </div>
+        </div>
+
+        <!-- ステップ1: 基本情報 -->
+        <div class="step-content active" id="step1">
+            <div class="step-title">
+                <i data-lucide="home"></i>
+                基本情報
+            </div>
+            <div class="step-description">住宅商品の基本的な情報を入力してください。</div>
+            
+            <div class="form-group required">
+                <label for="housing_product_name">住宅商品名</label>
+                <input type="text" id="housing_product_name" class="form-control" placeholder="例：ナチュラルハウス">
+            </div>
+
+            <div class="form-group required">
+                <label for="housing_product_title">住宅商品タイトル</label>
+                <input type="text" id="housing_product_title" class="form-control" placeholder="例：自然と共に暮らす理想の住まい">
+            </div>
+        </div>
+
+        <!-- ステップ2: 商品詳細 -->
+        <div class="step-content" id="step2">
+            <div class="step-title">
+                <i data-lucide="list"></i>
+                商品詳細
+            </div>
+            <div class="step-description">住宅商品の詳細な情報を入力してください。</div>
+
+            <div id="housing_product_details">
+                <div class="dynamic-item" data-index="1">
+                    <div style="display: flex; gap: 1rem; justify-content: end;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">公開</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="detail_is_active[]" value="1" checked onchange="updateDetailDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="detail-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeDetailItem(1)" style="display: flex; align-items: center; gap: 5px;"><i data-lucide="trash"></i>削除</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="detail_title_1">詳細タイトル</label>
+                        <select id="detail_title_1" class="form-control">
+                            <option value="">タイトルを選択してください</option>
+                            <option value="構造・工法">構造・工法</option>
+                            <option value="断熱性能">断熱性能</option>
+                            <option value="設備仕様">設備仕様</option>
+                            <option value="デザイン特徴">デザイン特徴</option>
+                            <option value="保証内容">保証内容</option>
+                            <option value="価格帯">価格帯</option>
+                            <option value="施工期間">施工期間</option>
+                            <option value="対応エリア">対応エリア</option>
+                            <option value="その他">その他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="detail_description_1">詳細説明</label>
+                        <textarea type="text" id="detail_description_1" class="form-control" placeholder="例：木造軸組工法を採用し、耐震性と自由な間取り設計を両立"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button type="button" class="btn btn-outline" onclick="addDetailItem()">+ 詳細を追加</button>
+            </div>
+        </div>
+
+        <!-- ステップ3: 商品データ -->
+        <div class="step-content" id="step3">
+            <div class="step-title">
+                <i data-lucide="database"></i>
+                商品データ
+            </div>
+            <div class="step-description">住宅商品に関する詳細なデータ情報を設定してください。</div>
+
+            <div id="product_data_items">
+                <div class="dynamic-item" data-index="1">
+                    <div class="dynamic-item-header">
+                        <div class="item-number">1</div>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeProductDataItem(1)"><i data-lucide="trash"></i>削除</button>
+                    </div>
+                    <div class="">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="product_data_type_1">商品データタイプ</label>
+                                <select id="product_data_type_1" class="form-control">
+                                    <option value="">タイプを選択してください</option>
+                                    <option value="1">構造・工法</option>
+                                    <option value="2">断熱性能</option>
+                                    <option value="3">設備仕様</option>
+                                    <option value="4">保証内容</option>
+                                    <option value="5">デザイン特徴</option>
+                                    <option value="6">価格帯</option>
+                                    <option value="7">施工期間</option>
+                                    <option value="8">対応エリア</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="product_data_description_1">商品データ詳細</label>
+                                <input id="product_data_description_1" class="form-control" placeholder="選択したタイプに関する詳細な説明を入力してください">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button type="button" class="btn btn-outline" onclick="addProductDataItem()">+ 商品データを追加</button>
+            </div>
+        </div>
+
+        <!-- ステップ4: カタログ -->
+        <div class="step-content" id="step4">
+            <div class="step-title">
+                <i data-lucide="book"></i>
+                カタログ紐付け
+            </div>
+            <div class="step-description">この住宅商品に関連するカタログを選択してください。</div>
+
+            <div id="catalog_items">
+                <div class="dynamic-item" data-index="1">
+                    <div style="display: flex; gap: 1rem; justify-content: space-between;">
+                        <div class="form-group">
+                            <label for="catalog_select_1">カタログ選択</label>
+                            <select id="catalog_select_1" class="form-control">
+                                <option value="">カタログを選択してください</option>
+                                <option value="1">注文住宅カタログ 2024年版</option>
+                                <option value="2">自然素材住宅カタログ</option>
+                                <option value="3">省エネ住宅カタログ</option>
+                                <option value="4">デザイン住宅カタログ</option>
+                                <option value="5">平屋住宅カタログ</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">公開</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="catalog_is_active[]" value="1" checked onchange="updateCatalogDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="catalog-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeCatalogItem(1)" style="display: flex; align-items: center; gap: 5px;"><i data-lucide="trash"></i>削除</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button type="button" class="btn btn-outline" onclick="addCatalogItem()">+ カタログを追加</button>
+            </div>
+        </div>
+
+        <!-- ステップ5: 画像管理 -->
+        <div class="step-content" id="step5">
+            <div class="step-title">
+                <i data-lucide="image"></i>
+                画像管理
+            </div>
+            <div class="step-description">住宅商品に関する画像を登録してください。</div>
+
+            <div id="housing_product_images">
+                <div class="dynamic-item" data-index="1">
+                    <div style="display: flex; gap: 1rem; justify-content: end;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="image_display[]" value="1" checked onchange="updateImageDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="image-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeImageItem(1)" style="display: flex; align-items: center; gap: 5px;"><i data-lucide="trash"></i>削除</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>画像ファイル</label>
+                                <div class="file-upload-area" onclick="openGalleryModal('housing_product_image', 'image_upload_1')">
+                                    <i data-lucide="image" class="upload-icon"></i>
+                                    <div class="upload-text">ギャラリーから画像を選択</div>
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">クリックして画像を選択してください</div>
+                                    <input type="hidden" id="image_upload_1" name="image_path[]">
+                                    <button type="button" class="upload-btn">画像を選択</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="image_title_1">画像タイトル</label>
+                                <input type="text" id="image_title_1" class="form-control" placeholder="外観パース">
+                            </div>
+                            <div class="form-group">
+                                <label for="image_description_1">画像説明</label>
+                                <textarea id="image_description_1" class="form-control" placeholder="住宅商品の外観イメージパースです"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button type="button" class="btn btn-outline" onclick="addImageItem()">+ 画像を追加</button>
+            </div>
+        </div>
+
+        <!-- ステップ6: 確認 -->
+        <div class="step-content" id="step6">
+            <div class="form-group" style="display: flex; justify-content: space-between;">
+                <div>
+                    <h4>🌐 住宅商品公開設定</h4>
+                </div>
+                <div>
+                    <label class="toggle-switch" style="margin-left: 10px;">
+                        <input type="checkbox" id="housingProductPublishToggle" name="housing_product_is_active" value="1" onchange="updateHousingProductPublishStatus()">
+                        <span class="slider"></span>
+                    </label>
+                    <p class="toggle-description" id="housingProductPublishLabel">非公開</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ナビゲーション -->
+        <div class="step-navigation">
+            <button type="button" class="btn btn-primary" onclick="showPreviewModal()" style="display: flex; align-items: center; gap: 5px;"><i data-lucide="eye"></i>プレビュー表示</button>
+            <button type="button" class="btn btn-secondary" onclick="saveDraft()">下書き保存</button>
+            <div class="nav-buttons">
+                <button type="button" class="btn btn-secondary" id="prevBtn" onclick="previousStep()" style="display: none;">前へ</button>
+            </div>
+            <div class="nav-buttons">
+                <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStep()">次へ</button>
+                <button type="button" class="btn btn-success" id="submitBtn" onclick="submitForm()" style="display: none;">登録</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- プレビューモーダル -->
+    <div id="previewModal" class="preview-modal">
+        <div class="preview-modal-content">
+            <div class="preview-modal-header">
+                <h3>住宅商品プレビュー</h3>
+                <button class="close-preview" onclick="closePreviewModal()">&times;</button>
+            </div>
+            <div class="preview-iframe-container">
+                <div class="preview-iframe" id="previewContent">
+                    <div style="padding: 40px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                        <div id="previewHTML"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ギャラリーモーダル -->
+    <div id="galleryModal" class="gallery-modal">
+        <div class="gallery-modal-content" style="width: 80%; margin: 0 auto;">
+            <div class="gallery-header">
+                <h3>画像を選択</h3>
+                <button class="close-preview" onclick="closeGalleryModal()">&times;</button>
+            </div>
+            <div class="gallery-body" style="height: 700px;">
+                <div class="gallery-grid" id="galleryGrid">
+                    <!-- 画像がここに動的に追加されます -->
+                </div>
+            </div>
+            <div class="gallery-footer">
+                <div class="selection-count" id="selectionCount">0個選択中</div>
+                <div class="gallery-btn-group">
+                    <button class="btn btn-secondary" onclick="closeGalleryModal()">キャンセル</button>
+                    <button class="btn btn-primary" onclick="applySelectedImages()">選択した画像を使用</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStepIndex = 1;
+        let detailCount = 1;
+        let productDataCount = 1;
+        let catalogCount = 1;
+        let imageCount = 1;
+
+        // ステップ切り替え機能
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStepIndex < 6) {
+                    currentStepIndex++;
+                    updateStepDisplay();
+                    if (currentStepIndex === 6) {
+                        updateConfirmation();
+                    }
+                }
+            }
+        }
+
+        function previousStep() {
+            if (currentStepIndex > 1) {
+                currentStepIndex--;
+                updateStepDisplay();
+            }
+        }
+
+        function updateStepDisplay() {
+            // 全てのステップコンテンツを非表示
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // 現在のステップを表示
+            document.getElementById('step' + currentStepIndex).classList.add('active');
+
+            // ステップカウンターを更新
+            document.getElementById('currentStep').textContent = currentStepIndex;
+
+            // インジケーターを更新
+            document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+                if (index + 1 < currentStepIndex) {
+                    indicator.className = 'step-indicator completed';
+                } else if (index + 1 === currentStepIndex) {
+                    indicator.className = 'step-indicator active';
+                } else {
+                    indicator.className = 'step-indicator';
+                }
+            });
+
+            // ステップバーを更新
+            document.querySelectorAll('.step-bar').forEach((bar, index) => {
+                if (index + 1 < currentStepIndex) {
+                    bar.className = 'step-bar completed';
+                } else if (index + 1 === currentStepIndex) {
+                    bar.className = 'step-bar active';
+                } else {
+                    bar.className = 'step-bar';
+                }
+            });
+
+            // ラベルを更新
+            document.querySelectorAll('.step-label').forEach((label, index) => {
+                if (index + 1 < currentStepIndex) {
+                    label.className = 'step-label completed';
+                } else if (index + 1 === currentStepIndex) {
+                    label.className = 'step-label active';
+                } else {
+                    label.className = 'step-label';
+                }
+            });
+
+            // ボタンの表示を更新
+            document.getElementById('prevBtn').style.display = currentStepIndex === 1 ? 'none' : 'block';
+            document.getElementById('nextBtn').style.display = currentStepIndex === 6 ? 'none' : 'block';
+            document.getElementById('submitBtn').style.display = currentStepIndex === 6 ? 'block' : 'none';
+        }
+
+        function validateCurrentStep() {
+            return true;
+        }
+
+        // 住宅商品詳細項目の管理
+        function addDetailItem() {
+            detailCount++;
+            const detailContainer = document.getElementById('housing_product_details');
+            const newDetailHTML = `
+                <div class="dynamic-item" data-index="${detailCount}">
+                    <div style="display: flex; gap: 1rem; justify-content: end;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">公開</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="detail_is_active[]" value="1" checked onchange="updateDetailDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="detail-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeDetailItem(${detailCount})" style="display: flex; align-items: center; gap: 5px;"><i data-lucide="trash"></i>削除</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="detail_title_${detailCount}">詳細タイトル</label>
+                        <select id="detail_title_${detailCount}" class="form-control">
+                            <option value="">タイトルを選択してください</option>
+                            <option value="構造・工法">構造・工法</option>
+                            <option value="断熱性能">断熱性能</option>
+                            <option value="設備仕様">設備仕様</option>
+                            <option value="デザイン特徴">デザイン特徴</option>
+                            <option value="保証内容">保証内容</option>
+                            <option value="価格帯">価格帯</option>
+                            <option value="施工期間">施工期間</option>
+                            <option value="対応エリア">対応エリア</option>
+                            <option value="その他">その他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="detail_description_${detailCount}">詳細説明</label>
+                        <textarea type="text" id="detail_description_${detailCount}" class="form-control" placeholder="例：木造軸組工法を採用し、耐震性と自由な間取り設計を両立"></textarea>
+                    </div>
+                </div>
+            `;
+            detailContainer.insertAdjacentHTML('beforeend', newDetailHTML);
+            lucide.createIcons();
+        }
+
+        function removeDetailItem(index) {
+            const item = document.querySelector(`#housing_product_details [data-index="${index}"]`);
+            if (item && confirm('この詳細項目を削除しますか？')) {
+                item.remove();
+            }
+        }
+
+        // 商品データ項目の管理
+        function addProductDataItem() {
+            productDataCount++;
+            const productDataContainer = document.getElementById('product_data_items');
+            const newProductDataHTML = `
+                <div class="dynamic-item" data-index="${productDataCount}">
+                    <div class="dynamic-item-header">
+                        <div class="item-number">${productDataCount}</div>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeProductDataItem(${productDataCount})"><i data-lucide="trash"></i>削除</button>
+                    </div>
+                    <div class="">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="product_data_type_${productDataCount}">商品データタイプ</label>
+                                <select id="product_data_type_${productDataCount}" class="form-control">
+                                    <option value="">タイプを選択してください</option>
+                                    <option value="1">構造・工法</option>
+                                    <option value="2">断熱性能</option>
+                                    <option value="3">設備仕様</option>
+                                    <option value="4">保証内容</option>
+                                    <option value="5">デザイン特徴</option>
+                                    <option value="6">価格帯</option>
+                                    <option value="7">施工期間</option>
+                                    <option value="8">対応エリア</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="product_data_description_${productDataCount}">商品データ詳細</label>
+                                <input id="product_data_description_${productDataCount}" class="form-control" placeholder="選択したタイプに関する詳細な説明を入力してください">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            productDataContainer.insertAdjacentHTML('beforeend', newProductDataHTML);
+            lucide.createIcons();
+        }
+
+        function removeProductDataItem(index) {
+            const item = document.querySelector(`#product_data_items [data-index="${index}"]`);
+            if (item && confirm('この商品データを削除しますか？')) {
+                item.remove();
+            }
+        }
+
+        // カタログ項目の管理
+        function addCatalogItem() {
+            catalogCount++;
+            const catalogContainer = document.getElementById('catalog_items');
+            const newCatalogHTML = `
+                <div class="dynamic-item" data-index="${catalogCount}">
+                    <div style="display: flex; gap: 1rem; justify-content: space-between;">
+                        <div class="form-group">
+                            <label for="catalog_select_${catalogCount}">カタログ選択</label>
+                            <select id="catalog_select_${catalogCount}" class="form-control">
+                                <option value="">カタログを選択してください</option>
+                                <option value="1">注文住宅カタログ 2024年版</option>
+                                <option value="2">自然素材住宅カタログ</option>
+                                <option value="3">省エネ住宅カタログ</option>
+                                <option value="4">デザイン住宅カタログ</option>
+                                <option value="5">平屋住宅カタログ</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">公開</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="catalog_is_active[]" value="1" checked onchange="updateCatalogDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="catalog-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeCatalogItem(${catalogCount})" style="display: flex; align-items: center; gap: 5px;"><i data-lucide="trash"></i>削除</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            catalogContainer.insertAdjacentHTML('beforeend', newCatalogHTML);
+            lucide.createIcons();
+        }
+
+        function removeCatalogItem(index) {
+            const item = document.querySelector(`#catalog_items [data-index="${index}"]`);
+            if (item && confirm('このカタログを削除しますか？')) {
+                item.remove();
+            }
+        }
+
+        // 画像項目の管理
+        function addImageItem() {
+            imageCount++;
+            const imageContainer = document.getElementById('housing_product_images');
+            const newImageHTML = `
+                <div class="dynamic-item" data-index="${imageCount}">
+                    <div style="display: flex; gap: 1rem; justify-content: end;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="image_display[]" value="1" checked onchange="updateImageDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="image-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeImageItem(${imageCount})" style="display: flex; align-items: center; gap: 5px;"><i data-lucide="trash"></i>削除</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>画像ファイル</label>
+                                <div class="file-upload-area" onclick="openGalleryModal('housing_product_image', 'image_upload_${imageCount}')">
+                                    <i data-lucide="image" class="upload-icon"></i>
+                                    <div class="upload-text">ギャラリーから画像を選択</div>
+                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">クリックして画像を選択してください</div>
+                                    <input type="hidden" id="image_upload_${imageCount}" name="image_path[]">
+                                    <button type="button" class="upload-btn">画像を選択</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="image_title_${imageCount}">画像タイトル</label>
+                                <input type="text" id="image_title_${imageCount}" class="form-control" placeholder="画像タイトル">
+                            </div>
+                            <div class="form-group">
+                                <label for="image_description_${imageCount}">画像説明</label>
+                                <textarea id="image_description_${imageCount}" class="form-control" placeholder="画像の説明"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            imageContainer.insertAdjacentHTML('beforeend', newImageHTML);
+            lucide.createIcons();
+        }
+
+        function removeImageItem(index) {
+            const item = document.querySelector(`#housing_product_images [data-index="${index}"]`);
+            if (item && confirm('この画像項目を削除しますか？')) {
+                item.remove();
+            }
+        }
+
+        // 確認画面の更新
+        function updateConfirmation() {
+            // 基本情報
+            document.getElementById('confirm_housing_product_name').textContent = document.getElementById('housing_product_name').value || '-';
+            document.getElementById('confirm_housing_product_title').textContent = document.getElementById('housing_product_title').value || '-';
+            
+            const companySelect = document.getElementById('company_select');
+            document.getElementById('confirm_company').textContent = companySelect.options[companySelect.selectedIndex].text || '-';
+
+            // 住宅商品詳細の更新
+            updateConfirmProductDetails();
+            updateConfirmProductData();
+            updateConfirmCatalogs();
+            updateConfirmImages();
+        }
+
+        function updateConfirmProductDetails() {
+            const detailContainer = document.getElementById('confirm_product_details');
+            const detailItems = document.querySelectorAll('#housing_product_details .dynamic-item');
+            let detailHTML = '';
+
+            detailItems.forEach((item, index) => {
+                const titleSelect = item.querySelector('select[id^="detail_title_"]');
+                const title = titleSelect.options[titleSelect.selectedIndex].text || '未選択';
+                const description = item.querySelector('input[id^="detail_description_"]').value || '説明なし';
+                const isActiveToggle = item.querySelector('input[name="detail_is_active[]"]');
+                const isActive = isActiveToggle && isActiveToggle.checked;
+                
+                if (titleSelect.value && isActive) {
+                    detailHTML += `
+                        <div class="confirmation-row">
+                            <div class="confirmation-label">${title} <span style="color: #2e7d32; font-size: 12px;">(公開)</span></div>
+                            <div class="confirmation-value">${description}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            detailContainer.innerHTML = detailHTML || '<p style="color: #6c757d;">公開設定されている詳細情報がありません</p>';
+        }
+
+        function updateConfirmProductData() {
+            const dataContainer = document.getElementById('confirm_product_data');
+            const dataItems = document.querySelectorAll('#product_data_items .dynamic-item');
+            let dataHTML = '';
+
+            dataItems.forEach((item, index) => {
+                const typeSelect = item.querySelector('select[id^="product_data_type_"]');
+                const typeText = typeSelect.options[typeSelect.selectedIndex].text || '未選択';
+                const description = item.querySelector('textarea[id^="product_data_description_"]').value || '説明なし';
+                
+                if (typeSelect.value) {
+                    dataHTML += `
+                        <div class="confirmation-row">
+                            <div class="confirmation-label">${typeText}</div>
+                            <div class="confirmation-value">${description}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            dataContainer.innerHTML = dataHTML || '<p style="color: #6c757d;">商品データがありません</p>';
+        }
+
+        function updateConfirmCatalogs() {
+            const catalogContainer = document.getElementById('confirm_catalogs');
+            const catalogItems = document.querySelectorAll('#catalog_items .dynamic-item');
+            let catalogHTML = '';
+
+            catalogItems.forEach((item, index) => {
+                const catalogSelect = item.querySelector('select[id^="catalog_select_"]');
+                const catalogText = catalogSelect.options[catalogSelect.selectedIndex].text || '未選択';
+                const isActiveToggle = item.querySelector('input[name="catalog_is_active[]"]');
+                const isActive = isActiveToggle && isActiveToggle.checked;
+                
+                if (catalogSelect.value && isActive) {
+                    catalogHTML += `
+                        <div class="confirmation-row">
+                            <div class="confirmation-label">カタログ${index + 1} <span style="color: #2e7d32; font-size: 12px;">(公開)</span></div>
+                            <div class="confirmation-value">${catalogText}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            catalogContainer.innerHTML = catalogHTML || '<p style="color: #6c757d;">公開設定されているカタログがありません</p>';
+        }
+
+        function updateConfirmImages() {
+            const imageContainer = document.getElementById('confirm_images');
+            const imageItems = document.querySelectorAll('#housing_product_images .dynamic-item');
+            let imageHTML = '';
+
+            imageItems.forEach((item, index) => {
+                const displayToggle = item.querySelector('input[type="checkbox"]');
+                const isDisplayed = displayToggle && displayToggle.checked;
+                
+                if (isDisplayed) {
+                    const title = item.querySelector('input[id^="image_title_"]').value || `画像${index + 1}`;
+                    const description = item.querySelector('textarea[id^="image_description_"]').value || '説明なし';
+                    imageHTML += `
+                        <div class="confirmation-row">
+                            <div class="confirmation-label">${title}</div>
+                            <div class="confirmation-value">${description}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            imageContainer.innerHTML = imageHTML || '<p style="color: #6c757d;">表示設定されている画像がありません</p>';
+        }
+
+        // プレビュー機能
+        function showPreviewModal() {
+            const previewHTML = generatePreviewContent();
+            document.getElementById('previewHTML').innerHTML = previewHTML;
+            document.getElementById('previewModal').style.display = 'block';
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').style.display = 'none';
+        }
+
+        function generatePreviewContent() {
+            const productName = document.getElementById('housing_product_name').value;
+            const productTitle = document.getElementById('housing_product_title').value;
+            const companySelect = document.getElementById('company_select');
+            const companyName = companySelect.options[companySelect.selectedIndex].text;
+
+            return `
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <h1 style="font-size: 32px; margin-bottom: 20px; color: #2c2c2c;">${productName}</h1>
+                    <div style="font-size: 18px; color: #6c757d; margin-bottom: 10px;">${productTitle}</div>
+                    <div style="font-size: 14px; color: #9a9a9a; margin-bottom: 30px;">提供: ${companyName}</div>
+                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px; color: #007bff;">住宅商品詳細</h3>
+                        <p>登録された詳細情報と商品データがここに表示されます。</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ギャラリー機能
+        const galleryImages = {
+            housing: [
+                { id: 1, src: "https://picsum.photos/400/300?random=1", name: "外観パース1.jpg" },
+                { id: 2, src: "https://picsum.photos/400/300?random=2", name: "内観パース1.jpg" },
+                { id: 3, src: "https://picsum.photos/400/300?random=3", name: "リビング1.jpg" },
+                { id: 4, src: "https://picsum.photos/400/300?random=4", name: "キッチン1.jpg" },
+                { id: 5, src: "https://picsum.photos/400/300?random=5", name: "寝室1.jpg" },
+                { id: 6, src: "https://picsum.photos/400/300?random=6", name: "外観パース2.jpg" }
+            ]
+        };
+
+        let currentGalleryType = '';
+        let currentTarget = null;
+        let selectedImages = [];
+
+        function openGalleryModal(type, target = null) {
+            currentGalleryType = type;
+            currentTarget = target;
+            selectedImages = [];
+            
+            document.getElementById('galleryModal').style.display = 'block';
+            renderGalleryImages();
+            updateSelectionCount();
+        }
+
+        function closeGalleryModal() {
+            document.getElementById('galleryModal').style.display = 'none';
+            selectedImages = [];
+        }
+
+        function renderGalleryImages() {
+            const galleryGrid = document.getElementById('galleryGrid');
+            const images = galleryImages.housing || [];
+            
+            galleryGrid.innerHTML = images.map(image => `
+                <div class="gallery-item" data-image-id="${image.id}" onclick="toggleImageSelection(${image.id})">
+                    <img src="${image.src}" alt="${image.name}">
+                    <div class="gallery-checkbox">
+                        <i data-lucide="check"></i>
+                    </div>
+                    <div style="padding: 10px; font-size: 12px; color: #555;">${image.name}</div>
+                </div>
+            `).join('');
+            
+            lucide.createIcons();
+        }
+
+        function toggleImageSelection(imageId) {
+            const imageElement = document.querySelector(`[data-image-id="${imageId}"]`);
+            
+            if (selectedImages.includes(imageId)) {
+                selectedImages = selectedImages.filter(id => id !== imageId);
+                imageElement.classList.remove('selected');
+            } else {
+                selectedImages.push(imageId);
+                imageElement.classList.add('selected');
+            }
+            
+            updateSelectionCount();
+        }
+
+        function updateSelectionCount() {
+            const countElement = document.getElementById('selectionCount');
+            countElement.textContent = `${selectedImages.length}個選択中`;
+        }
+
+        function applySelectedImages() {
+            if (selectedImages.length === 0) {
+                alert('画像を選択してください。');
+                return;
+            }
+
+            const selectedImageData = selectedImages.map(id => {
+                return galleryImages.housing.find(img => img.id === id);
+            });
+
+            if (currentTarget) {
+                updateUploadArea(currentTarget, selectedImageData[0]);
+            }
+
+            closeGalleryModal();
+        }
+
+        function updateUploadArea(targetId, imageData) {
+            const uploadArea = document.getElementById(targetId).closest('.file-upload-area');
+            const uploadText = uploadArea.querySelector('.upload-text');
+            
+            uploadText.innerHTML = `
+                <img src="${imageData.src}" alt="${imageData.name}" style="max-width: 100px; max-height: 80px; border-radius: 4px; margin-bottom: 8px;">
+                <br>${imageData.name}
+            `;
+        }
+
+        // トグル機能
+        function updateImageDisplay(toggle) {
+            const imageItem = toggle.closest('.dynamic-item');
+            const toggleLabel = toggle.closest('div').querySelector('.image-display-label');
+            
+            if (toggle.checked) {
+                imageItem.classList.remove('section-disabled');
+                toggleLabel.textContent = 'ON';
+                toggleLabel.style.color = '#2e7d32';
+            } else {
+                imageItem.classList.add('section-disabled');
+                toggleLabel.textContent = 'OFF';
+                toggleLabel.style.color = '#dc3545';
+            }
+            
+            updateConfirmImages();
+        }
+
+        function updateHousingProductPublishStatus() {
+            const toggle = document.getElementById('housingProductPublishToggle');
+            const label = document.getElementById('housingProductPublishLabel');
+            
+            if (toggle.checked) {
+                label.textContent = '公開';
+                label.style.color = '#2e7d32';
+            } else {
+                label.textContent = '非公開';
+                label.style.color = '#dc3545';
+            }
+        }
+
+        // 詳細項目のis_activeトグル
+        function updateDetailDisplay(toggle) {
+            const detailItem = toggle.closest('.dynamic-item');
+            const toggleLabel = toggle.closest('div').querySelector('.detail-display-label');
+            
+            if (toggle.checked) {
+                detailItem.classList.remove('section-disabled');
+                toggleLabel.textContent = 'ON';
+                toggleLabel.style.color = '#2e7d32';
+            } else {
+                detailItem.classList.add('section-disabled');
+                toggleLabel.textContent = 'OFF';
+                toggleLabel.style.color = '#dc3545';
+            }
+        }
+
+        // カタログ項目のis_activeトグル
+        function updateCatalogDisplay(toggle) {
+            const catalogItem = toggle.closest('.dynamic-item');
+            const toggleLabel = toggle.closest('div').querySelector('.catalog-display-label');
+            
+            if (toggle.checked) {
+                catalogItem.classList.remove('section-disabled');
+                toggleLabel.textContent = 'ON';
+                toggleLabel.style.color = '#2e7d32';
+            } else {
+                catalogItem.classList.add('section-disabled');
+                toggleLabel.textContent = 'OFF';
+                toggleLabel.style.color = '#dc3545';
+            }
+        }
+
+        function submitForm() {
+            if (confirm('住宅商品を登録しますか？')) {
+                alert('住宅商品が登録されました。');
+                // 実際の送信処理をここに追加
+            }
+        }
+
+        function saveDraft() {
+            alert('下書きを保存しました。');
+            // 実際の下書き保存処理をここに追加
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

@@ -342,3 +342,20 @@ product_data_types
 4. 標準工期
 5. 部材・素材
 6. 販売エリア
+
+
+house_building_hope_type {
+    id bigint
+    name string(255)
+    sort_no int
+}
+
+1. 現住所と同じ
+2. 予定地・希望地の入力
+3. 決まっていない
+
+## cbh_catalog_requests
+
+is_house_building_hope → is_house_building_hope_type // 名前変更
+
+cbh_catalog_requests.is_house_building_hope_type > house_building_hope_type.id // FK

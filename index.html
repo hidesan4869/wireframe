@@ -602,8 +602,13 @@
                             <i data-lucide="building" style="width: 16px; height: 16px; margin-right: 8px;"></i>会社概要
                         </div>
                         
-                        <div class="sub-subitem" onclick="window.location.href='company_overview_step.html'">
-                            <i data-lucide="shopping-cart" style="width: 16px; height: 16px; margin-right: 8px;"></i>住宅商品
+                        <div class="sub-subitem" onclick="toggleSubNav(this)">
+                            <i data-lucide="building-2" style="width: 16px; height: 16px; margin-right: 8px;"></i>住宅商品
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="sub-sub-subitems" style="margin-left: 20px; background: #ffffff;">
+                            <div class="sub-subitem" onclick="window.location.href='housing_product_list.html'" style="padding: 8px 20px; font-size: 13px;">一覧</div>
+                            <div class="sub-subitem" onclick="window.location.href='housing_product_register.html'" style="padding: 8px 20px; font-size: 13px;">登録</div>
                         </div>
                         
                         <div class="sub-subitem" onclick="window.location.href='company_strengths.html'">
