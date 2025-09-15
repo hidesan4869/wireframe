@@ -808,7 +808,7 @@
                 <div class="step-label active">基本情報</div>
                 <div class="step-label">住宅商品詳細</div>
                 <div class="step-label">商品データ</div>
-                <div class="step-label">カタログ</div>
+                <div class="step-label">カタログ設定</div>
                 <div class="step-label">画像管理</div>
                 <div class="step-label">確認</div>
             </div>
@@ -856,18 +856,7 @@
                     </div>
                     <div class="form-group">
                         <label for="detail_title_1">詳細タイトル</label>
-                        <select id="detail_title_1" class="form-control">
-                            <option value="">タイトルを選択してください</option>
-                            <option value="構造・工法">構造・工法</option>
-                            <option value="断熱性能">断熱性能</option>
-                            <option value="設備仕様">設備仕様</option>
-                            <option value="デザイン特徴">デザイン特徴</option>
-                            <option value="保証内容">保証内容</option>
-                            <option value="価格帯">価格帯</option>
-                            <option value="施工期間">施工期間</option>
-                            <option value="対応エリア">対応エリア</option>
-                            <option value="その他">その他</option>
-                        </select>
+                        <input type="text" id="detail_title_1" class="form-control" placeholder="例：構造・工法、断熱性能、設備仕様など">
                     </div>
                     <div class="form-group">
                         <label for="detail_description_1">詳細説明</label>
@@ -892,6 +881,14 @@
                 <div class="dynamic-item" data-index="1">
                     <div class="dynamic-item-header">
                         <div class="item-number">1</div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="product_data_is_active[]" value="1" checked onchange="updateProductDataDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="product-data-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
                         <button type="button" class="btn btn-danger btn-sm" onclick="removeProductDataItem(1)"><i data-lucide="trash"></i>削除</button>
                     </div>
                     <div class="">
@@ -938,14 +935,14 @@
                     <div style="display: flex; gap: 1rem; justify-content: space-between;">
                         <div class="form-group">
                             <label for="catalog_select_1">カタログ選択</label>
-                            <select id="catalog_select_1" class="form-control">
-                                <option value="">カタログを選択してください</option>
-                                <option value="1">注文住宅カタログ 2024年版</option>
-                                <option value="2">自然素材住宅カタログ</option>
-                                <option value="3">省エネ住宅カタログ</option>
-                                <option value="4">デザイン住宅カタログ</option>
-                                <option value="5">平屋住宅カタログ</option>
-                            </select>
+                            <div class="catalog-selection-area" onclick="openCatalogGallery('catalog_select_1')" style="border: 2px dashed #c0c0c0; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; background: #fafafa;">
+                                <i data-lucide="book" style="width: 32px; height: 32px; color: #6a6a6a; margin-bottom: 10px;"></i>
+                                <div style="color: #6a6a6a; margin-bottom: 10px;">登録済みのカタログから選択</div>
+                                <div style="font-size: 12px; color: #6c757d; margin-bottom: 15px;">クリックしてカタログを選択してください</div>
+                                <input type="hidden" id="catalog_select_1" name="catalog_ids[]">
+                                <div id="catalogPreview_1" class="catalog-preview-container"></div>
+                                <button type="button" class="btn btn-outline" style="margin-top: 10px;">カタログを選択</button>
+                            </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <span style="font-size: 12px; color: #6a6a6a;">公開</span>
@@ -1186,18 +1183,7 @@
                     </div>
                     <div class="form-group">
                         <label for="detail_title_${detailCount}">詳細タイトル</label>
-                        <select id="detail_title_${detailCount}" class="form-control">
-                            <option value="">タイトルを選択してください</option>
-                            <option value="構造・工法">構造・工法</option>
-                            <option value="断熱性能">断熱性能</option>
-                            <option value="設備仕様">設備仕様</option>
-                            <option value="デザイン特徴">デザイン特徴</option>
-                            <option value="保証内容">保証内容</option>
-                            <option value="価格帯">価格帯</option>
-                            <option value="施工期間">施工期間</option>
-                            <option value="対応エリア">対応エリア</option>
-                            <option value="その他">その他</option>
-                        </select>
+                        <input type="text" id="detail_title_${detailCount}" class="form-control" placeholder="例：構造・工法、断熱性能、設備仕様など">
                     </div>
                     <div class="form-group">
                         <label for="detail_description_${detailCount}">詳細説明</label>
@@ -1224,6 +1210,14 @@
                 <div class="dynamic-item" data-index="${productDataCount}">
                     <div class="dynamic-item-header">
                         <div class="item-number">${productDataCount}</div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" name="product_data_is_active[]" value="1" checked onchange="updateProductDataDisplay(this)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="product-data-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                        </div>
                         <button type="button" class="btn btn-danger btn-sm" onclick="removeProductDataItem(${productDataCount})"><i data-lucide="trash"></i>削除</button>
                     </div>
                     <div class="">
@@ -1272,14 +1266,14 @@
                     <div style="display: flex; gap: 1rem; justify-content: space-between;">
                         <div class="form-group">
                             <label for="catalog_select_${catalogCount}">カタログ選択</label>
-                            <select id="catalog_select_${catalogCount}" class="form-control">
-                                <option value="">カタログを選択してください</option>
-                                <option value="1">注文住宅カタログ 2024年版</option>
-                                <option value="2">自然素材住宅カタログ</option>
-                                <option value="3">省エネ住宅カタログ</option>
-                                <option value="4">デザイン住宅カタログ</option>
-                                <option value="5">平屋住宅カタログ</option>
-                            </select>
+                            <div class="catalog-selection-area" onclick="openCatalogGallery('catalog_select_${catalogCount}')" style="border: 2px dashed #c0c0c0; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; background: #fafafa;">
+                                <i data-lucide="book" style="width: 32px; height: 32px; color: #6a6a6a; margin-bottom: 10px;"></i>
+                                <div style="color: #6a6a6a; margin-bottom: 10px;">登録済みのカタログから選択</div>
+                                <div style="font-size: 12px; color: #6c757d; margin-bottom: 15px;">クリックしてカタログを選択してください</div>
+                                <input type="hidden" id="catalog_select_${catalogCount}" name="catalog_ids[]">
+                                <div id="catalogPreview_${catalogCount}" class="catalog-preview-container"></div>
+                                <button type="button" class="btn btn-outline" style="margin-top: 10px;">カタログを選択</button>
+                            </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <span style="font-size: 12px; color: #6a6a6a;">公開</span>
@@ -1641,7 +1635,22 @@
             }
         }
 
-        // カタログ項目のis_activeトグル
+        // 商品データのis_activeトグル
+        function updateProductDataDisplay(toggle) {
+            const productDataItem = toggle.closest('.dynamic-item');
+            const toggleLabel = toggle.closest('div').querySelector('.product-data-display-label');
+            
+            if (toggle.checked) {
+                productDataItem.classList.remove('section-disabled');
+                toggleLabel.textContent = 'ON';
+                toggleLabel.style.color = '#2e7d32';
+            } else {
+                productDataItem.classList.add('section-disabled');
+                toggleLabel.textContent = 'OFF';
+                toggleLabel.style.color = '#d32f2f';
+            }
+        }
+
         function updateCatalogDisplay(toggle) {
             const catalogItem = toggle.closest('.dynamic-item');
             const toggleLabel = toggle.closest('div').querySelector('.catalog-display-label');
@@ -1669,10 +1678,251 @@
             // 実際の下書き保存処理をここに追加
         }
 
+        // カタログギャラリー関数
+        function openCatalogGallery(targetId) {
+            const modal = document.getElementById('catalogGalleryModal');
+            modal.style.display = 'block';
+            modal.setAttribute('data-target', targetId);
+            
+            // モーダル外クリックで閉じる
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    closeCatalogGallery();
+                }
+            };
+            
+            // カタログ一覧を動的に生成（実際はAPIから取得）
+            const catalogList = document.getElementById('catalogList');
+            catalogList.innerHTML = '';
+            
+            const mockCatalogs = [
+                { id: 'CAT001', title: '木造住宅カタログ', image: 'catalog1.jpg', description: '自然素材を活かした木造住宅の総合カタログ' },
+                { id: 'CAT002', title: '省エネ住宅カタログ', image: 'catalog2.jpg', description: 'ZEH対応省エネルギー住宅のカタログ' },
+                { id: 'CAT003', title: 'デザイナーズハウス', image: 'catalog3.jpg', description: '建築家とコラボしたデザイナーズハウス' },
+                { id: 'CAT004', title: 'ファミリー向け住宅', image: 'catalog4.jpg', description: '家族構成に合わせた住宅プラン' },
+                { id: 'CAT005', title: '二世帯住宅', image: 'catalog5.jpg', description: '二世帯が快適に暮らせる住宅設計' },
+                { id: 'CAT006', title: '平屋住宅', image: 'catalog6.jpg', description: 'バリアフリー対応平屋住宅' }
+            ];
+            
+            mockCatalogs.forEach(catalog => {
+                const catalogItem = document.createElement('div');
+                catalogItem.className = 'catalog-item';
+                catalogItem.innerHTML = `
+                    <div class="catalog-image">
+                        <span>カタログ画像</span>
+                    </div>
+                    <div class="catalog-info">
+                        <h4>${catalog.title}</h4>
+                        <p>${catalog.description}</p>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="selectCatalog('${catalog.id}', '${catalog.title}')">選択</button>
+                    </div>
+                `;
+                catalogList.appendChild(catalogItem);
+            });
+        }
+
+        function closeCatalogGallery() {
+            const modal = document.getElementById('catalogGalleryModal');
+            modal.style.display = 'none';
+            modal.removeAttribute('data-target');
+        }
+
+        function selectCatalog(catalogId, catalogTitle) {
+            const modal = document.getElementById('catalogGalleryModal');
+            const targetId = modal.getAttribute('data-target');
+            const selectedCatalogSpan = document.getElementById(targetId + '_selected');
+            const hiddenInput = document.getElementById(targetId);
+            
+            if (selectedCatalogSpan && hiddenInput) {
+                selectedCatalogSpan.textContent = catalogTitle;
+                hiddenInput.value = catalogId;
+            }
+            
+            closeCatalogGallery();
+        }
+
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
         });
     </script>
+
+    <!-- カタログギャラリーモーダル -->
+    <div id="catalogGalleryModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <button type="button" class="modal-close-btn" onclick="closeCatalogGallery()">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="modal-header">
+                <h2><i data-lucide="folder-open" style="width: 20px; height: 20px; margin-right: 8px;"></i>カタログ選択</h2>
+            </div>
+            <div class="modal-body">
+                <div id="catalogList" class="catalog-gallery">
+                    <!-- カタログアイテムが動的に生成される -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* カタログギャラリーモーダルの基本スタイル */
+        #catalogGalleryModal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        #catalogGalleryModal .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.3s ease;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f8f9fa;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 1;
+        }
+
+        .modal-close-btn:hover {
+            background: #e9ecef;
+            transform: scale(1.1);
+        }
+
+        .modal-close-btn i {
+            width: 18px;
+            height: 18px;
+            color: #6c757d;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* カタログギャラリーのスタイル */
+        .catalog-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .catalog-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .catalog-item:hover {
+            border-color: #2c7be5;
+            box-shadow: 0 2px 8px rgba(44, 123, 229, 0.1);
+        }
+
+        .catalog-image {
+            height: 120px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .catalog-info h4 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .catalog-info p {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        .catalog-selector {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #f8f9fa;
+        }
+
+        .catalog-selector:hover {
+            border-color: #2c7be5;
+            background: #f0f7ff;
+        }
+
+        .catalog-selector.has-selection {
+            border-color: #2e7d32;
+            background: #f1f8e9;
+        }
+
+        .catalog-selector-icon {
+            width: 32px;
+            height: 32px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+
+        .catalog-selector.has-selection .catalog-selector-icon {
+            color: #2e7d32;
+        }
+
+        .catalog-selector-text {
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .catalog-selector.has-selection .catalog-selector-text {
+            color: #2e7d32;
+        }
+
+        .selected-catalog-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-top: 5px;
+        }
+    </style>
 </body>
 </html>
