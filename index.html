@@ -576,6 +576,12 @@
                     <i data-lucide="bar-chart" style="width: 16px; height: 16px; margin-right: 8px;"></i>ダッシュボード
                 </div>
             </div>
+            <div class="nav-item admin-only">
+                <div class="nav-header" onclick="window.location.href='media_management.html';">
+                    <i data-lucide="image" style="width: 16px; height: 16px; margin-right: 8px;"></i>メディア管理
+                    <span class="arrow"></span>
+                </div>
+            </div>
             <!-- 物件管理 -->
             <div class="nav-item admin-only">
                 <div class="nav-header" onclick="toggleNav(this)">
@@ -624,14 +630,21 @@
                             <div class="sub-subitem" onclick="window.location.href='event_setting.html'" style="padding: 8px 20px; font-size: 13px;">イベント登録</div>
                         </div>
                         <div class="sub-subitem" onclick="toggleSubNav(this)">
-                            <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>カタログ登録管理
+                            <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>カタログ管理
                             <span class="arrow">▶</span>
                         </div>
                         <div class="sub-subitems">
                             <div class="sub-subitem" onclick="window.location.href='catalog_custom_home_list.html'">カタログ一覧</div>
                             <div class="sub-subitem" onclick="window.location.href='catalog_custom_home_register.html'">カタログ登録</div>
                         </div>
-
+                        <div class="sub-subitem" onclick="toggleSubNav(this)">
+                            <i data-lucide="home" style="width: 16px; height: 16px; margin-right: 8px;"></i>営業所管理
+                            <span class="arrow">▶</span>
+                        </div>
+                        <div class="sub-subitems">
+                            <div class="sub-subitem" onclick="window.location.href='catalog_custom_home_list.html'">営業所一覧</div>
+                            <div class="sub-subitem" onclick="window.location.href='catalog_custom_home_register.html'">営業所 登録</div>
+                        </div>
                     </div>
                 </div>
             </div>

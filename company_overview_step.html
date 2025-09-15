@@ -1187,54 +1187,113 @@
             </div>
         </div>
 
-        <!-- ステップ3: 画像管理 -->
+        <!-- ステップ3: 選ばれる理由 -->
         <div class="step-content" id="step3">
             <div class="step-title">
-                <i data-lucide="image"></i>
+                <i data-lucide="award"></i>
                 選ばれる理由
             </div>
+            <div class="step-description">お客様に選ばれる理由やポイントを入力してください。</div>
 
-            <div id="company_images">
+            <div id="recommends_container">
                 <div class="dynamic-item" data-index="1">
-                    <div style="display: flex; gap: 1rem; justify-content: end;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="font-size: 12px; color: #6a6a6a;">表示</span>
-                            <label class="toggle-switch" style="transform: scale(0.8);">
-                                <input type="checkbox" name="highlight_display[]" value="1" checked onchange="updateImageDisplay(this)">
-                                <span class="slider"></span>
-                            </label>
-                            <span class="highlight-display-label" style="font-size: 12px; color: #2e7d32; font-weight: 600;">ON</span>
+                    <div class="dynamic-item-header">
+                        <div class="header-left">
+                            <h4 style="margin: 0; color: #2c2c2c;">選ばれる理由</h4>
                         </div>
-                        <button type="button" class="btn btn-danger btn-sm hoge" onclick="removeImageItem(1)"><i data-lucide="trash"></i>削除</button>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                                <label class="toggle-container">
+                                    <input type="checkbox" name="recommend_display[]" value="1" checked onchange="updateRecommendDisplay(this)">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="toggle-label" style="color: #28a745;">ON</span>
+                            </div>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeRecommendItem(1)">
+                                <i data-lucide="trash"></i>削除
+                            </button>
+                        </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label>画像ファイル</label>
-                                <div class="file-upload-area" onclick="openGalleryModal('company_image', 'image_upload_1')">
-                                    <i data-lucide="image" class="upload-icon"></i>
-                                    <div class="upload-text">ギャラリーから画像を選択</div>
-                                    <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">クリックして画像を選択してください</div>
-                                    <input type="hidden" id="image_upload_1" name="image_path[]">
-                                    <button type="button" class="upload-btn">画像を選択</button>
+
+                    <div style="padding: 20px;">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group required">
+                                    <label for="recommend_title_1">理由タイトル</label>
+                                    <input type="text" id="recommend_title_1" class="form-control" placeholder="創業30年の豊富な実績と信頼">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="recommend_sort_1">表示順序</label>
+                                    <input type="number" id="recommend_sort_1" class="form-control" value="1" min="1">
                                 </div>
                             </div>
                         </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="image_title_1">画像タイトル</label>
-                                <input type="text" id="image_title_1" class="form-control" placeholder="会社外観">
+
+                        <div class="form-group required">
+                            <label for="recommend_description_1">理由詳細</label>
+                            <textarea id="recommend_description_1" class="form-control" style="min-height: 120px;" placeholder="創業以来30年間で1,200棟以上の住宅を手がけてきた実績があります。お客様一人ひとりのライフスタイルに合わせた家づくりで、多くのお客様にご満足いただいています。"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>メイン画像</label>
+                            <div class="file-upload-area" onclick="openGalleryModal('recommend_main', 'recommend_image_1')">
+                                <i data-lucide="image" class="upload-icon"></i>
+                                <div class="upload-text">ギャラリーからメイン画像を選択</div>
+                                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">選ばれる理由のメイン画像</div>
+                                <input type="hidden" id="recommend_image_1" name="recommend_image_path[]">
+                                <button type="button" class="upload-btn">画像を選択</button>
                             </div>
-                            <div class="form-group">
-                                <label for="image_description_1">画像説明</label>
-                                <textarea id="image_description_1" class="form-control" placeholder="本社ビルの外観写真です"></textarea>
+                        </div>
+
+                        <!-- 推薦理由画像セクション -->
+                        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                            <h5 style="margin-bottom: 15px; color: #2c2c2c; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                                <i data-lucide="image"></i>追加画像
+                            </h5>
+                            <div id="recommend_images_1">
+                                <div class="recommend-image-item" style="border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; margin-bottom: 15px; background-color: white;" data-recommend="1" data-image="1">
+                                    <div style="display: flex; justify-content: end; margin-bottom: 15px;">
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeRecommendImage(1, 1)">
+                                            <i data-lucide="trash"></i>削除
+                                        </button>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-col">
+                                            <div class="form-group">
+                                                <label>画像ファイル</label>
+                                                <div class="file-upload-area" onclick="openGalleryModal('recommend_sub', 'recommend_sub_image_1_1')">
+                                                    <i data-lucide="image" class="upload-icon"></i>
+                                                    <div class="upload-text">ギャラリーから画像を選択</div>
+                                                    <input type="hidden" id="recommend_sub_image_1_1" name="recommend_sub_image_path[]">
+                                                    <button type="button" class="upload-btn">画像を選択</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-col">
+                                            <div class="form-group">
+                                                <label for="recommend_sub_title_1_1">画像タイトル</label>
+                                                <input type="text" id="recommend_sub_title_1_1" class="form-control" placeholder="施工例1">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="recommend_sub_description_1_1">画像説明</label>
+                                                <textarea id="recommend_sub_description_1_1" class="form-control" placeholder="実際に施工したお客様のお住まい"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="addRecommendImage(1)">+ 画像を追加</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div style="text-align: center; margin-top: 20px;">
-                <button type="button" class="btn btn-outline" onclick="addImageItem()">+ 画像を追加</button>
+                <button type="button" class="btn btn-outline" onclick="addRecommendItem()">+ 選ばれる理由を追加</button>
             </div>
         </div>
 
@@ -1398,6 +1457,8 @@
         let imageCount = 1;
         let staffCount = 1;
         let interviewDetailCounts = {1: 1};
+        let recommendCount = 1;
+        let recommendImageCounts = {1: 1};
 
         // ステップ切り替え機能
         function nextStep() {
@@ -1968,6 +2029,191 @@
             
             // プレビューの更新をトリガー
             updateConfirmStaff();
+        }
+
+        // 選ばれる理由の管理
+        function addRecommendItem() {
+            recommendCount++;
+            recommendImageCounts[recommendCount] = 1;
+            const recommendContainer = document.getElementById('recommends_container');
+            const newRecommendHTML = `
+                <div class="dynamic-item" data-index="${recommendCount}">
+                    <div class="dynamic-item-header">
+                        <div class="header-left">
+                            <h4 style="margin: 0; color: #2c2c2c;">選ばれる理由</h4>
+                        </div>
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 12px; color: #6a6a6a;">表示</span>
+                                <label class="toggle-container">
+                                    <input type="checkbox" name="recommend_display[]" value="1" checked onchange="updateRecommendDisplay(this)">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="toggle-label" style="color: #28a745;">ON</span>
+                            </div>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeRecommendItem(${recommendCount})">
+                                <i data-lucide="trash"></i>削除
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="padding: 20px;">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group required">
+                                    <label for="recommend_title_${recommendCount}">タイトル</label>
+                                    <input type="text" id="recommend_title_${recommendCount}" class="form-control" placeholder="選ばれる理由のタイトル">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="recommend_sort_${recommendCount}">表示順序</label>
+                                    <input type="number" id="recommend_sort_${recommendCount}" class="form-control" value="${recommendCount}" min="1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required">
+                            <label for="recommend_description_${recommendCount}">詳細</label>
+                            <textarea id="recommend_description_${recommendCount}" class="form-control" style="min-height: 120px;" placeholder="選ばれる理由の詳細説明"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>メイン画像</label>
+                            <div class="file-upload-area" onclick="openGalleryModal('recommend_main', 'recommend_image_${recommendCount}')">
+                                <i data-lucide="image" class="upload-icon"></i>
+                                <div class="upload-text">ギャラリーからメイン画像を選択</div>
+                                <div style="font-size: 12px; color: #6c757d; margin-bottom: 10px;">選ばれる理由のメイン画像</div>
+                                <input type="hidden" id="recommend_image_${recommendCount}" name="recommend_image_path[]">
+                                <button type="button" class="upload-btn">画像を選択</button>
+                            </div>
+                        </div>
+
+                        <!-- 推薦理由画像セクション -->
+                        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                            <h5 style="margin-bottom: 15px; color: #2c2c2c; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                                <i data-lucide="image"></i>追加画像
+                            </h5>
+                            <div id="recommend_images_${recommendCount}">
+                                <div class="recommend-image-item" style="border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; margin-bottom: 15px; background-color: white;" data-recommend="${recommendCount}" data-image="1">
+                                    <div style="display: flex; justify-content: end; margin-bottom: 15px;">
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeRecommendImage(${recommendCount}, 1)">
+                                            <i data-lucide="trash"></i>削除
+                                        </button>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-col">
+                                            <div class="form-group">
+                                                <label>画像ファイル</label>
+                                                <div class="file-upload-area" onclick="openGalleryModal('recommend_sub', 'recommend_sub_image_${recommendCount}_1')">
+                                                    <i data-lucide="image" class="upload-icon"></i>
+                                                    <div class="upload-text">ギャラリーから画像を選択</div>
+                                                    <input type="hidden" id="recommend_sub_image_${recommendCount}_1" name="recommend_sub_image_path[]">
+                                                    <button type="button" class="upload-btn">画像を選択</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-col">
+                                            <div class="form-group">
+                                                <label for="recommend_sub_title_${recommendCount}_1">画像タイトル</label>
+                                                <input type="text" id="recommend_sub_title_${recommendCount}_1" class="form-control" placeholder="画像タイトル">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="recommend_sub_description_${recommendCount}_1">画像説明</label>
+                                                <textarea id="recommend_sub_description_${recommendCount}_1" class="form-control" placeholder="画像の説明"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="recommend_sub_sort_${recommendCount}_1">表示順序</label>
+                                                <input type="number" id="recommend_sub_sort_${recommendCount}_1" class="form-control" value="1" min="1">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="addRecommendImage(${recommendCount})">+ 画像を追加</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            recommendContainer.insertAdjacentHTML('beforeend', newRecommendHTML);
+            lucide.createIcons();
+        }
+
+        function removeRecommendItem(index) {
+            const item = document.querySelector(`#recommends_container [data-index="${index}"]`);
+            if (item && confirm('この選ばれる理由を削除しますか？')) {
+                item.remove();
+                delete recommendImageCounts[index];
+                recommendCount--;
+            }
+        }
+
+        function addRecommendImage(recommendIndex) {
+            if (!recommendImageCounts[recommendIndex]) {
+                recommendImageCounts[recommendIndex] = 0;
+            }
+            recommendImageCounts[recommendIndex]++;
+            const imageCount = recommendImageCounts[recommendIndex];
+            
+            const imageContainer = document.getElementById(`recommend_images_${recommendIndex}`);
+            const newImageHTML = `
+                <div class="recommend-image-item" style="border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; margin-bottom: 15px; background-color: white;" data-recommend="${recommendIndex}" data-image="${imageCount}">
+                    <div style="display: flex; justify-content: end; margin-bottom: 15px;">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeRecommendImage(${recommendIndex}, ${imageCount})">
+                            <i data-lucide="trash"></i>削除
+                        </button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>画像ファイル</label>
+                                <div class="file-upload-area" onclick="openGalleryModal('recommend_sub', 'recommend_sub_image_${recommendIndex}_${imageCount}')">
+                                    <i data-lucide="image" class="upload-icon"></i>
+                                    <div class="upload-text">ギャラリーから画像を選択</div>
+                                    <input type="hidden" id="recommend_sub_image_${recommendIndex}_${imageCount}" name="recommend_sub_image_path[]">
+                                    <button type="button" class="upload-btn">画像を選択</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="recommend_sub_title_${recommendIndex}_${imageCount}">画像タイトル</label>
+                                <input type="text" id="recommend_sub_title_${recommendIndex}_${imageCount}" class="form-control" placeholder="画像タイトル">
+                            </div>
+                            <div class="form-group">
+                                <label for="recommend_sub_description_${recommendIndex}_${imageCount}">画像説明</label>
+                                <textarea id="recommend_sub_description_${recommendIndex}_${imageCount}" class="form-control" placeholder="画像の説明"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            imageContainer.insertAdjacentHTML('beforeend', newImageHTML);
+            lucide.createIcons();
+        }
+
+        function removeRecommendImage(recommendIndex, imageIndex) {
+            const item = document.querySelector(`[data-recommend="${recommendIndex}"][data-image="${imageIndex}"]`);
+            if (item && confirm('この画像を削除しますか？')) {
+                item.remove();
+            }
+        }
+
+        function updateRecommendDisplay(toggle) {
+            const recommendItem = toggle.closest('.dynamic-item');
+            const toggleLabel = toggle.closest('div').querySelector('.toggle-label');
+            
+            if (toggle.checked) {
+                recommendItem.classList.remove('section-disabled');
+                toggleLabel.textContent = 'ON';
+                toggleLabel.style.color = '#28a745';
+            } else {
+                recommendItem.classList.add('section-disabled');
+                toggleLabel.textContent = 'OFF';
+                toggleLabel.style.color = '#dc3545';
+            }
         }
     </script>
 
