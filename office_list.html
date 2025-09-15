@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>営業所一覧 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #4a4a4a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7a7a7a;
+        }
+
+        /* 統計カード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7a7a7a;
+            font-size: 14px;
+        }
+
+        /* フィルター */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        /* 企業検索オートコンプリート */
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #c0c0c0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .suggestions-dropdown.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .suggestion-item:hover {
+            background: #f5f5f5;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item[data-value=""] {
+            font-weight: 600;
+            color: #666;
+            background: #f8f8f8;
+        }
+
+        /* データテーブル */
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 14px;
+        }
+
+        tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        /* アクションメニュー */
+        .action-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-popover {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .action-popover.show {
+            display: block;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #2c2c2c;
+            transition: background 0.2s ease;
+        }
+
+        .action-item:hover {
+            background: #f5f5f5;
+        }
+
+        .action-item-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .action-item.detail:hover {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .action-item.edit:hover {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .action-item.delete:hover {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        /* 営業所情報 */
+        .office-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .office-name {
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 2px;
+        }
+
+        .office-title {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        .address-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .address-main {
+            color: #2c2c2c;
+            margin-bottom: 2px;
+        }
+
+        .address-detail {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        .business-hours {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hours-text {
+            color: #2c2c2c;
+            margin-bottom: 2px;
+        }
+
+        .holidays-text {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                不動産ポータル管理システム
+            </h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="#">物件管理</a> > 営業所一覧
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">
+                    <i data-lucide="building-2" style="width: 24px; height: 24px; margin-right: 8px;"></i>
+                    営業所一覧
+                </h2>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" style="display: flex; align-items: center;" onclick="window.location.href='office_register.html'"><i data-lucide="building-2"></i>新規営業所登録</button>
+                </div>
+            </div>
+
+            <!-- フィルター -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">企業名検索</label>
+                        <div style="position: relative;">
+                            <input type="text" class="filter-input" id="companySearch" 
+                                   placeholder="企業名で検索..." 
+                                   oninput="handleCompanySearch()" 
+                                   onfocus="showCompanySuggestions()" 
+                                   onblur="hideCompanySuggestions()"
+                                   onkeypress="handleEnterKey(event)"
+                                   style="width: 100%;">
+                            <div id="companySuggestions" class="suggestions-dropdown">
+                                <div class="suggestion-item" onmousedown="selectCompany('株式会社山田建設')">株式会社山田建設</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('田中不動産株式会社')">田中不動産株式会社</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('佐藤ハウジング')">佐藤ハウジング</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('中部建設株式会社')">中部建設株式会社</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('愛知住宅販売')">愛知住宅販売</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('すべての企業')" data-value="">すべての企業</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">公開状態</label>
+                        <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                            <option value="">すべて</option>
+                            <option value="active">公開中</option>
+                            <option value="inactive">非公開</option>
+                        </select>
+                    </div>
+                    <div class="search-controls">
+                        <button class="btn btn-secondary" style="display: flex; align-items: center;" onclick="clearFilters()"><i data-lucide="funnel"></i>フィルタークリア</button>
+                        <button class="btn btn-primary" style="display: flex; align-items: center;" onclick="applyFilters()"><i data-lucide="search"></i>検索</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- データテーブル -->
+            <div class="data-table">
+                <div class="table-header">
+                    <h3 class="table-title">営業所一覧</h3>
+                </div>
+                
+                <table id="officeTable">
+                    <thead>
+                        <tr>
+                            <th>営業所ID</th>
+                            <th>営業所情報</th>
+                            <th>所在地</th>
+                            <th>アクセス</th>
+                            <th>営業情報</th>
+                            <th>公開状態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>OF001</td>
+                            <td>
+                                <div class="office-info">
+                                    <div class="office-name">東京本社営業所</div>
+                                    <div class="office-title">東京都内のお客様をサポート</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="address-info">
+                                    <div class="address-main">東京都港区六本木</div>
+                                    <div class="address-detail">〒106-0032 3-2-1 六本木ヒルズ</div>
+                                </div>
+                            </td>
+                            <td>日比谷線六本木駅から徒歩3分</td>
+                            <td>
+                                <div class="business-hours">
+                                    <div class="hours-text">平日10:00～18:00</div>
+                                    <div class="holidays-text">六本木展示場</div>
+                                </div>
+                            </td>
+                            <td><span class="status-badge status-active">公開中</span></td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, 'OF001')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="window.location.href='office_register.html?id=OF001'">
+                                            <i data-lucide="square-pen"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item detail" onclick="showOfficePreview(this.closest('tr').cells[0].textContent)">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>プレビュー</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>OF002</td>
+                            <td>
+                                <div class="office-info">
+                                    <div class="office-name">横浜営業所</div>
+                                    <div class="office-title">神奈川エリアの住まい提案</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="address-info">
+                                    <div class="address-main">神奈川県横浜市西区</div>
+                                    <div class="address-detail">〒220-0004 北幸1-1-8</div>
+                                </div>
+                            </td>
+                            <td>横浜駅西口から徒歩5分</td>
+                            <td>
+                                <div class="business-hours">
+                                    <div class="hours-text">平日9:30～17:30</div>
+                                    <div class="holidays-text">みなとみらい展示場</div>
+                                </div>
+                            </td>
+                            <td><span class="status-badge status-active">公開中</span></td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, 'OF002')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="window.location.href='office_register.html?id=OF002'">
+                                            <i data-lucide="square-pen"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item detail" onclick="showOfficePreview(this.closest('tr').cells[0].textContent)">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>プレビュー</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>OF003</td>
+                            <td>
+                                <div class="office-info">
+                                    <div class="office-name">名古屋営業所</div>
+                                    <div class="office-title">東海エリア最大の展示場</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="address-info">
+                                    <div class="address-main">愛知県名古屋市中区</div>
+                                    <div class="address-detail">〒460-0008 栄3-6-1</div>
+                                </div>
+                            </td>
+                            <td>地下鉄栄駅から徒歩2分</td>
+                            <td>
+                                <div class="business-hours">
+                                    <div class="hours-text">平日10:00～19:00</div>
+                                    <div class="holidays-text">栄住宅展示場</div>
+                                </div>
+                            </td>
+                            <td><span class="status-badge status-inactive">非公開</span></td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, 'OF003')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="window.location.href='office_register.html?id=OF003'">
+                                            <i data-lucide="square-pen"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item detail" onclick="showOfficePreview(this.closest('tr').cells[0].textContent)">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>プレビュー</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>OF004</td>
+                            <td>
+                                <div class="office-info">
+                                    <div class="office-name">大阪営業所</div>
+                                    <div class="office-title">関西エリアの住まい相談</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="address-info">
+                                    <div class="address-main">大阪府大阪市北区</div>
+                                    <div class="address-detail">〒530-0001 梅田1-9-20</div>
+                                </div>
+                            </td>
+                            <td>JR大阪駅から徒歩8分</td>
+                            <td>
+                                <div class="business-hours">
+                                    <div class="hours-text">平日9:00～18:00</div>
+                                    <div class="holidays-text">梅田スカイビル展示場</div>
+                                </div>
+                            </td>
+                            <td><span class="status-badge status-active">公開中</span></td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, 'OF004')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="window.location.href='office_register.html?id=OF004'">
+                                            <i data-lucide="square-pen"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item detail" onclick="showOfficePreview(this.closest('tr').cells[0].textContent)">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>プレビュー</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>OF005</td>
+                            <td>
+                                <div class="office-info">
+                                    <div class="office-name">福岡営業所</div>
+                                    <div class="office-title">九州エリアの住まい提案センター</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="address-info">
+                                    <div class="address-main">福岡県福岡市中央区</div>
+                                    <div class="address-detail">〒810-0001 天神1-7-11</div>
+                                </div>
+                            </td>
+                            <td>天神駅から徒歩3分</td>
+                            <td>
+                                <div class="business-hours">
+                                    <div class="hours-text">平日10:30～18:30</div>
+                                    <div class="holidays-text">天神住宅展示場</div>
+                                </div>
+                            </td>
+                            <td><span class="status-badge status-active">公開中</span></td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, 'OF005')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="window.location.href='office_register.html?id=OF005'">
+                                            <i data-lucide="square-pen"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item detail" onclick="showOfficePreview(this.closest('tr').cells[0].textContent)">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>プレビュー</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 企業検索のオートコンプリート機能
+        function showCompanySuggestions() {
+            const suggestions = document.getElementById('companySuggestions');
+            showAllSuggestions();
+            suggestions.classList.add('show');
+        }
+
+        function hideCompanySuggestions() {
+            setTimeout(() => {
+                document.getElementById('companySuggestions').classList.remove('show');
+            }, 200);
+        }
+
+        function handleCompanySearch() {
+            const searchTerm = document.getElementById('companySearch').value.toLowerCase();
+            const suggestions = document.querySelectorAll('#companySuggestions .suggestion-item');
+            
+            suggestions.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm) || item.getAttribute('data-value') === '') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function showAllSuggestions() {
+            const suggestions = document.querySelectorAll('#companySuggestions .suggestion-item');
+            suggestions.forEach(item => {
+                item.style.display = 'block';
+            });
+        }
+
+        function selectCompany(companyName) {
+            const input = document.getElementById('companySearch');
+            if (companyName === 'すべての企業') {
+                input.value = '';
+            } else {
+                input.value = companyName;
+            }
+            document.getElementById('companySuggestions').classList.remove('show');
+        }
+
+        // Enterキーでの検索実行
+        function handleEnterKey(event) {
+            if (event.key === 'Enter') {
+                applyFilters();
+            }
+        }
+
+        // アクションメニューの表示/非表示切り替え
+        function toggleActionMenu(button, officeId) {
+            const popover = button.nextElementSibling;
+            
+            // 他のポップオーバーを全て閉じる
+            document.querySelectorAll('.action-popover').forEach(p => {
+                if (p !== popover) {
+                    p.classList.remove('show');
+                }
+            });
+            
+            // 現在のポップオーバーの表示を切り替え
+            popover.classList.toggle('show');
+        }
+
+        // フィルター適用
+        function applyFilters() {
+            const companyTerm = document.getElementById('companySearch').value.toLowerCase();
+            const prefectureFilter = document.getElementById('prefectureFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const rows = document.querySelectorAll('#officeTable tbody tr');
+            
+            rows.forEach(row => {
+                let showRow = true;
+                
+                // 企業名フィルタリング
+                if (companyTerm) {
+                    const officeCell = row.cells[1].textContent.toLowerCase();
+                    if (!officeCell.includes(companyTerm)) {
+                        showRow = false;
+                    }
+                }
+                
+                // 都道府県フィルタリング
+                if (prefectureFilter) {
+                    const addressCell = row.cells[2].textContent;
+                    const prefectureMap = {
+                        '13': '東京都',
+                        '14': '神奈川県',
+                        '23': '愛知県',
+                        '27': '大阪府',
+                        '40': '福岡県'
+                    };
+                    if (!addressCell.includes(prefectureMap[prefectureFilter])) {
+                        showRow = false;
+                    }
+                }
+                
+                // 公開状態フィルタリング
+                if (statusFilter) {
+                    const statusCell = row.cells[5];
+                    const isActive = statusCell.querySelector('.status-active') !== null;
+                    if ((statusFilter === 'active' && !isActive) || 
+                        (statusFilter === 'inactive' && isActive)) {
+                        showRow = false;
+                    }
+                }
+                
+                // キーワード検索
+                if (searchTerm && showRow) {
+                    const rowText = row.textContent.toLowerCase();
+                    if (!rowText.includes(searchTerm)) {
+                        showRow = false;
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        // フィルタークリア
+        function clearFilters() {
+            document.getElementById('companySearch').value = '';
+            document.getElementById('prefectureFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('searchBox').value = '';
+            
+            // すべての行を表示
+            const rows = document.querySelectorAll('#officeTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+
+        // ページのどこかをクリックしたときにポップオーバーを閉じる
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.action-menu')) {
+                document.querySelectorAll('.action-popover').forEach(popover => {
+                    popover.classList.remove('show');
+                });
+            }
+        });
+
+        // 営業所プレビュー表示
+        function showOfficePreview(officeId) {
+            const modal = document.getElementById('officePreviewModal');
+            modal.classList.add('active');
+            generateOfficePreview(officeId);
+            lucide.createIcons();
+        }
+
+        // プレビューモーダル閉じる
+        function closeOfficePreview() {
+            const modal = document.getElementById('officePreviewModal');
+            modal.classList.remove('active');
+        }
+
+        // デバイス切り替え
+        function setPreviewDevice(device) {
+            const frame = document.getElementById('officePreviewFrame');
+            const buttons = document.querySelectorAll('#officePreviewModal .device-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            frame.className = `preview-frame ${device}`;
+        }
+
+        // 営業所プレビュー内容生成
+        function generateOfficePreview(officeId) {
+            const frame = document.getElementById('officePreviewFrame');
+            
+            // モック営業所データ
+            const mockOfficeData = {
+                'OF001': {
+                    name: '東京本社営業所',
+                    title: '東京都内のお客様をサポート',
+                    address: '東京都港区六本木3-2-1 六本木ヒルズ',
+                    access: '日比谷線六本木駅から徒歩3分',
+                    exhibition_name: '六本木展示場',
+                    postal_code: '〒106-0032',
+                    business_hours: '平日10:00～18:00',
+                    holidays: '水曜定休',
+                    description: '東京本社営業所は、都心部でのマイホーム購入をお考えのお客様に、最適な住まいづくりをサポートいたします。経験豊富なスタッフが、土地探しから設計、施工まで、お客様のご要望に合わせてトータルにご提案いたします。'
+                },
+                'OF002': {
+                    name: '横浜営業所',
+                    title: '神奈川エリアの住まい提案',
+                    address: '神奈川県横浜市西区北幸1-1-8',
+                    access: '横浜駅西口から徒歩5分',
+                    exhibition_name: 'みなとみらい展示場',
+                    postal_code: '〒220-0004',
+                    business_hours: '平日9:30～17:30',
+                    holidays: '火曜・水曜定休',
+                    description: '横浜営業所では、神奈川エリアでの住まいづくりをトータルサポートします。横浜駅から徒歩圏内の好立地で、アクセスも良好です。'
+                },
+                'OF003': {
+                    name: '名古屋営業所',
+                    title: '東海エリア最大の展示場',
+                    address: '愛知県名古屋市中区栄3-6-1',
+                    access: '地下鉄栄駅から徒歩2分',
+                    exhibition_name: '栄住宅展示場',
+                    postal_code: '〒460-0008',
+                    business_hours: '平日10:00～19:00',
+                    holidays: '月曜定休',
+                    description: '名古屋営業所は東海エリア最大級の展示場を併設し、豊富な住宅プランをご提案いたします。'
+                },
+                'OF004': {
+                    name: '大阪営業所',
+                    title: '関西エリアの住まい相談',
+                    address: '大阪府大阪市北区梅田1-9-20',
+                    access: 'JR大阪駅から徒歩8分',
+                    exhibition_name: '梅田スカイビル展示場',
+                    postal_code: '〒530-0001',
+                    business_hours: '平日9:00～18:00',
+                    holidays: '水曜・木曜定休',
+                    description: '大阪営業所では関西エリアでの住まいづくりを専門スタッフがサポートします。'
+                },
+                'OF005': {
+                    name: '福岡営業所',
+                    title: '九州エリアの住まい提案センター',
+                    address: '福岡県福岡市中央区天神1-7-11',
+                    access: '天神駅から徒歩3分',
+                    exhibition_name: '天神住宅展示場',
+                    postal_code: '〒810-0001',
+                    business_hours: '平日10:30～18:30',
+                    holidays: '不定休',
+                    description: '福岡営業所は九州エリアの住まい提案センターとして、お客様のニーズに合わせた住宅をご提案します。'
+                }
+            };
+
+            const office = mockOfficeData[officeId] || mockOfficeData['OF001'];
+
+            let previewHTML = `
+                <div class="preview-page">
+                    <!-- ページヘッダー -->
+                    <div class="preview-page-header">
+                        <div class="office-badge">営業所</div>
+                        <div class="preview-page-title">${office.name}</div>
+                        <div class="preview-page-subtitle">${office.title}</div>
+                    </div>
+
+                    <!-- メインビジュアル -->
+                    <div class="preview-main-visual">
+                        <div class="placeholder-image">営業所外観画像</div>
+                    </div>
+
+                    <!-- 基本情報 -->
+                    <div class="preview-content-section">
+                        <h2 class="preview-section-title">
+                            <i data-lucide="info" style="width: 20px; height: 20px;"></i>
+                            基本情報
+                        </h2>
+                        <div class="preview-info-grid">
+                            <div class="preview-info-item">
+                                <div class="preview-info-label">所在地</div>
+                                <div class="preview-info-value">${office.address}</div>
+                            </div>
+                            <div class="preview-info-item">
+                                <div class="preview-info-label">アクセス</div>
+                                <div class="preview-info-value">${office.access}</div>
+                            </div>
+                            <div class="preview-info-item">
+                                <div class="preview-info-label">展示場名</div>
+                                <div class="preview-info-value">${office.exhibition_name}</div>
+                            </div>
+                            <div class="preview-info-item">
+                                <div class="preview-info-label">郵便番号</div>
+                                <div class="preview-info-value">${office.postal_code}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 営業時間 -->
+                    <div class="preview-content-section">
+                        <h2 class="preview-section-title">
+                            <i data-lucide="clock" style="width: 20px; height: 20px;"></i>
+                            営業時間
+                        </h2>
+                        <div class="business-hours-grid">
+                            <div class="business-hours-item">
+                                <div class="hours-icon">
+                                    <i data-lucide="clock"></i>
+                                </div>
+                                <div class="hours-title">営業時間</div>
+                                <div class="hours-time">${office.business_hours}</div>
+                            </div>
+                            <div class="business-hours-item">
+                                <div class="hours-icon">
+                                    <i data-lucide="calendar-x"></i>
+                                </div>
+                                <div class="hours-title">定休日</div>
+                                <div class="hours-time">${office.holidays}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 営業所の説明 -->
+                    <div class="preview-content-section">
+                        <h2 class="preview-section-title">
+                            <i data-lucide="file-text" style="width: 20px; height: 20px;"></i>
+                            営業所について
+                        </h2>
+                        <div class="preview-description">
+                            ${office.description}
+                        </div>
+                    </div>
+
+                    <!-- お問い合わせ -->
+                    <div class="preview-content-section" style="text-align: center; padding: 60px 30px; background: #f8f9fa;">
+                        <h2 style="font-size: 24px; margin-bottom: 20px; color: #2c2c2c;">お気軽にお問い合わせください</h2>
+                        <p style="color: #6a6a6a; margin-bottom: 30px;">住まいづくりのご相談はお気軽にお声かけください。</p>
+                        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                            <button style="background: #2c7be5; color: white; border: none; padding: 15px 30px; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                                <i data-lucide="phone" style="width: 18px; height: 18px; margin-right: 5px;"></i>
+                                お電話でお問い合わせ
+                            </button>
+                            <button style="background: #28a745; color: white; border: none; padding: 15px 30px; border-radius: 6px; font-size: 16px; cursor: pointer;">
+                                <i data-lucide="mail" style="width: 18px; height: 18px; margin-right: 5px;"></i>
+                                メールでお問い合わせ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            frame.innerHTML = previewHTML;
+        }
+
+        // モーダル外クリックで閉じる
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('officePreviewModal');
+            if (e.target === modal) {
+                closeOfficePreview();
+            }
+        });
+
+        // Lucideアイコンを初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
+
+    <!-- 営業所プレビューモーダル -->
+    <div id="officePreviewModal" class="preview-modal">
+        <div class="preview-container">
+            <div class="preview-header">
+                <div class="preview-title">
+                    <i data-lucide="eye" style="width: 24px; height: 24px;"></i>
+                    営業所プレビュー
+                </div>
+                <div class="preview-actions">
+                    <div class="device-selector">
+                        <button class="device-btn active" onclick="setPreviewDevice('desktop')">
+                            <i data-lucide="monitor" style="width: 16px; height: 16px;"></i>
+                            デスクトップ
+                        </button>
+                        <button class="device-btn" onclick="setPreviewDevice('tablet')">
+                            <i data-lucide="tablet" style="width: 16px; height: 16px;"></i>
+                            タブレット
+                        </button>
+                        <button class="device-btn" onclick="setPreviewDevice('mobile')">
+                            <i data-lucide="smartphone" style="width: 16px; height: 16px;"></i>
+                            スマートフォン
+                        </button>
+                    </div>
+                    <button class="close-preview" onclick="closeOfficePreview()">×</button>
+                </div>
+            </div>
+            <div class="preview-body">
+                <div class="preview-frame-wrapper">
+                    <div id="officePreviewFrame" class="preview-frame desktop">
+                        <!-- プレビューコンテンツ -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* プレビューモーダルスタイル */
+        .preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-modal.active {
+            display: flex;
+        }
+
+        .preview-container {
+            background: white;
+            width: 95%;
+            max-width: 1200px;
+            height: 90%;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .device-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .device-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .device-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .device-btn.active {
+            background: white;
+            color: #2c2c2c;
+        }
+
+        .close-preview {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .close-preview:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .preview-body {
+            flex: 1;
+            padding: 20px;
+            background: #f5f5f5;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .preview-frame-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .preview-frame {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+
+        .preview-frame.desktop {
+            width: 100%;
+            max-width: 900px;
+            height: 70vh;
+        }
+
+        .preview-frame.tablet {
+            width: 768px;
+            height: 70vh;
+        }
+
+        .preview-frame.mobile {
+            width: 375px;
+            height: 70vh;
+        }
+
+        /* プレビューページ内のスタイル */
+        .preview-page {
+            height: 100%;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+
+        .preview-page-header {
+            background: linear-gradient(135deg, #4a4a4a 0%, #2c2c2c 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .office-badge {
+            display: inline-block;
+            background: #2e7d32;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .preview-page-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .preview-page-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .preview-main-visual {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .placeholder-image {
+            color: #9a9a9a;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .preview-content-section {
+            padding: 30px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .preview-section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .preview-info-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .preview-info-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .preview-info-value {
+            font-size: 16px;
+            color: #2c2c2c;
+            font-weight: 500;
+        }
+
+        .business-hours-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .business-hours-item {
+            text-align: center;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .hours-icon {
+            font-size: 24px;
+            color: #2c7be5;
+            margin-bottom: 15px;
+        }
+
+        .hours-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 8px;
+        }
+
+        .hours-time {
+            font-size: 18px;
+            color: #4a4a4a;
+            font-weight: 500;
+        }
+
+        .preview-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #4a4a4a;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2c7be5;
+        }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .preview-container {
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+            }
+
+            .preview-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .device-selector {
+                justify-content: center;
+            }
+
+            .preview-frame {
+                width: 100% !important;
+                height: 60vh !important;
+            }
+
+            .preview-page-header {
+                padding: 30px 20px;
+            }
+
+            .preview-content-section {
+                padding: 20px;
+            }
+
+            .preview-info-grid,
+            .business-hours-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

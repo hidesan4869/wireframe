@@ -5,7 +5,7 @@
 | `page` | integer | No | 1 | ページ番号（1以上） |
 | `per_page` | integer | No | 50 | 1ページ当たりの件数（1-100） |
 | `keyword` | string | No | "" | フリーワード検索（スペース区切りでAND検索） |
-| `company_id` | integer | No | "" | 企業ID（空なら全件、IDがあれば該当企業のみ） |
+| `company_id` | integer | No | null | 企業ID（空なら全件、IDがあれば該当企業のみ） |
 | `order_by` | string | No | DESC | ソート順（ASC: 昇順、DESC: 降順） |
 
 ### HTTPメソッド
