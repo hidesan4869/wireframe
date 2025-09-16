@@ -689,6 +689,10 @@
                         <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 4px;"></i>
                         メンバー管理
                     </a>
+                    <a href="media_management.html" class="btn btn-primary">
+                        <i data-lucide="users" style="width: 16px; height: 16px; margin-right: 4px;"></i>
+                        メディア管理
+                    </a>
                     <div class="property-management-dropdown">
                         <button class="btn btn-primary" onclick="togglePropertyDropdown()">
                             <i data-lucide="building-2"></i>
@@ -718,14 +722,6 @@
                                 </a>
                             </div>
 
-                            <!-- 住宅商品 -->
-                            <div class="dropdown-section">
-                                <a href="catalog_custom_home_list.html" class="dropdown-link-single">
-                                    <i data-lucide="house"></i>
-                                    住宅商品
-                                </a>
-                            </div>
-
                             <div class="dropdown-section">
                                 <div class="dropdown-header" onclick="toggleDropdownSection(this)">
                                     <span class="triangle-icon"></span>
@@ -738,20 +734,12 @@
                                 </div>
                             </div>
 
-                            <!-- 強みこだわり -->
-                            <div class="dropdown-section">
-                                <a href="#" class="dropdown-link-single">
-                                    <i data-lucide="star"></i>
-                                    強みこだわり
-                                </a>
-                            </div>
-
                             <!-- イベント情報 -->
                             <div class="dropdown-section">
                                 <div class="dropdown-header" onclick="toggleDropdownSection(this)">
                                     <span class="triangle-icon"></span>
                                     <i data-lucide="calendar"></i>
-                                    イベント情報
+                                    イベント管理
                                 </div>
                                 <div class="dropdown-links" style="display: none;">
                                     <a href="all_events.html" class="dropdown-link">一覧</a>
@@ -764,7 +752,31 @@
                                 <div class="dropdown-header" onclick="toggleDropdownSection(this)">
                                     <span class="triangle-icon"></span>
                                     <i data-lucide="book-open"></i>
-                                    カタログ情報
+                                    カタログ管理
+                                </div>
+                                <div class="dropdown-links" style="display: none;">
+                                    <a href="catalog_custom_home_list.html" class="dropdown-link">一覧</a>
+                                    <a href="catalog_custom_home_register.html" class="dropdown-link">登録</a>
+                                </div>
+                            </div>
+                            <!-- 営業所管理 -->
+                            <div class="dropdown-section">
+                                <div class="dropdown-header" onclick="toggleDropdownSection(this)">
+                                    <span class="triangle-icon"></span>
+                                    <i data-lucide="book-open"></i>
+                                    営業所管理
+                                </div>
+                                <div class="dropdown-links" style="display: none;">
+                                    <a href="office_list.html" class="dropdown-link">一覧</a>
+                                    <a href="office_register.html" class="dropdown-link">登録</a>
+                                </div>
+                            </div>
+                            <!-- 建築事例管理 -->
+                            <div class="dropdown-section">
+                                <div class="dropdown-header" onclick="toggleDropdownSection(this)">
+                                    <span class="triangle-icon"></span>
+                                    <i data-lucide="book-open"></i>
+                                    建築事例管理
                                 </div>
                                 <div class="dropdown-links" style="display: none;">
                                     <a href="catalog_custom_home_list.html" class="dropdown-link">一覧</a>

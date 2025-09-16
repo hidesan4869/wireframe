@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント予約者登録 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;   
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #4a4a4a;
+            border: 1px solid #c0c0c0;
+        }
+
+        .btn-outline:hover {
+            background: #f5f5f5;
+        }
+
+        /* フォームセクション */
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 8px;
+        }
+
+        .required {
+            color: #d32f2f;
+            margin-left: 4px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            padding: 10px 14px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4a4a4a;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #7a7a7a;
+            margin-top: 5px;
+        }
+
+        /* 企業検索オートコンプリート */
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #c0c0c0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .suggestion-item:hover {
+            background: #f5f5f5;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        /* イベント選択セクション */
+        .event-selection-wrapper {
+            position: relative;
+        }
+
+        .selected-event-display {
+            padding: 15px;
+            background: #f5f5f5;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            min-height: 60px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .selected-event-info {
+            flex: 1;
+        }
+
+        .event-placeholder {
+            color: #7a7a7a;
+        }
+
+        .event-name {
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .event-details {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-top: 5px;
+        }
+
+        .event-list-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-top: 5px;
+            display: none;
+        }
+
+        .event-list-dropdown.show {
+            display: block;
+        }
+
+        .event-item {
+            padding: 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #e8e8e8;
+            transition: background 0.2s ease;
+        }
+
+        .event-item:hover {
+            background: #f5f5f5;
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-item-name {
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 5px;
+        }
+
+        .event-item-details {
+            font-size: 12px;
+            color: #6a6a6a;
+        }
+
+        .event-type-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .type-viewing {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .type-seminar {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .type-fair {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        /* チェックボックスグループ */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* アクションボタン */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        /* メモセクション */
+        .memo-section {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .memo-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 10px;
+        }
+
+        /* バリデーションメッセージ */
+        .error-message {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-input.error,
+        .form-select.error,
+        .form-textarea.error {
+            border-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                不動産ポータル管理システム
+            </h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 
+                <a href="event_requests.html" style="color: #6a6a6a; text-decoration: none;">イベント予約管理</a> > 
+                イベント予約者登録
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">
+                    <i data-lucide="user-plus" style="width: 24px; height: 24px; margin-right: 8px;"></i>
+                    イベント予約者登録
+                </h2>
+            </div>
+
+            <form id="reservationForm" onsubmit="handleSubmit(event)">
+                <!-- 企業・イベント選択 -->
+                <div class="form-section">
+                    <h3 class="section-title">企業・イベント選択</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                企業選択
+                                <span class="required">*</span>
+                            </label>
+                            <div style="position: relative;">
+                                <input type="text" class="form-input" id="companySearch" 
+                                       placeholder="企業名で検索..." 
+                                       oninput="handleCompanySearch()" 
+                                       onfocus="showCompanySuggestions()" 
+                                       onblur="hideCompanySuggestions()"
+                                       onkeypress="handleEnterKey(event)"
+                                       required>
+                                <div id="companySuggestions" class="suggestions-dropdown">
+                                    <div class="suggestion-item" onmousedown="selectCompany('株式会社山田建設')">株式会社山田建設</div>
+                                    <div class="suggestion-item" onmousedown="selectCompany('田中不動産株式会社')">田中不動産株式会社</div>
+                                    <div class="suggestion-item" onmousedown="selectCompany('佐藤ハウジング')">佐藤ハウジング</div>
+                                    <div class="suggestion-item" onmousedown="selectCompany('中部建設株式会社')">中部建設株式会社</div>
+                                    <div class="suggestion-item" onmousedown="selectCompany('愛知住宅販売')">愛知住宅販売</div>
+                                </div>
+                            </div>
+                            <span class="error-message" id="companyError">企業を選択してください</span>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                予約イベント
+                                <span class="required">*</span>
+                            </label>
+                            <div class="event-selection-wrapper">
+                                <div class="selected-event-display" id="eventSelectionDisplay" onclick="toggleEventList()">
+                                    <div class="selected-event-info" id="selectedEventInfo">
+                                        <div class="event-placeholder">まず企業を選択してください</div>
+                                    </div>
+                                    <i data-lucide="chevron-down" style="width: 20px; height: 20px;"></i>
+                                </div>
+                                <div class="event-list-dropdown" id="eventListDropdown">
+                                    <div class="event-placeholder" style="padding: 15px; color: #7a7a7a;">
+                                        企業を選択するとイベントが表示されます
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="selectedEventId" name="event_id" required>
+                            <span class="error-message" id="eventError">イベントを選択してください</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 顧客基本情報 -->
+                <div class="form-section">
+                    <h3 class="section-title">予約者情報</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                姓
+                                <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" name="name01" required placeholder="山田">
+                            <span class="error-message">姓を入力してください</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                名
+                                <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" name="name02" required placeholder="太郎">
+                            <span class="error-message">名を入力してください</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                姓（カナ）
+                                <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" name="kana01" required placeholder="ヤマダ">
+                            <span class="error-message">姓（カナ）を入力してください</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                名（カナ）
+                                <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" name="kana02" required placeholder="タロウ">
+                            <span class="error-message">名（カナ）を入力してください</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                メールアドレス
+                                <span class="required">*</span>
+                            </label>
+                            <input type="email" class="form-input" name="email" required placeholder="yamada@example.com">
+                            <span class="error-message">有効なメールアドレスを入力してください</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                電話番号
+                                <span class="required">*</span>
+                            </label>
+                            <input type="tel" class="form-input" name="phone_number" required placeholder="090-1234-5678">
+                            <span class="error-message">電話番号を入力してください</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 予約詳細 -->
+                <div class="form-section">
+                    <h3 class="section-title">予約詳細</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">希望参加日</label>
+                            <input type="date" class="form-input" name="desired_date">
+                            <span class="form-hint">イベント期間内で希望日がある場合</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">希望参加時間</label>
+                            <input type="time" class="form-input" name="desired_time">
+                            <span class="form-hint">イベントに複数の時間帯がある場合</span>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">希望連絡時間</label>
+                            <input type="text" class="form-input" name="preferred_contact_time" placeholder="例：平日18時以降、土日終日可">
+                            <span class="form-hint">電話連絡が必要な場合の希望時間帯</span>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">ニュースレター購読</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="newsletter" name="is_newsletter_subscribed" value="1">
+                                    <label for="newsletter">イベント情報やお得な情報をメールで受け取る</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- アクションボタン -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="window.location.href='event_requests.html'">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">登録する</button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        // イベント選択関連
+        let selectedEvent = null;
+        let selectedCompany = null;
+        
+        // 企業ごとのイベントデータ
+        const eventsByCompany = {
+            '株式会社山田建設': [
+                { id: 'EVT001', name: 'まちなかジーヴォ緑区桃山見学会', type: 'viewing', datetime: '2025-08-30 10:00-18:00' },
+                { id: 'EVT007', name: '完成見学会 in 天白区', type: 'viewing', datetime: '2025-09-12 10:00-17:00' },
+                { id: 'EVT008', name: '住宅資金相談会', type: 'seminar', datetime: '2025-09-18 13:00-16:00' }
+            ],
+            '田中不動産株式会社': [
+                { id: 'EVT002', name: '住宅ローンセミナー', type: 'seminar', datetime: '2025-09-05 14:00-16:00' },
+                { id: 'EVT009', name: '不動産投資セミナー', type: 'seminar', datetime: '2025-09-20 14:00-16:00' },
+                { id: 'EVT010', name: '中古住宅見学ツアー', type: 'viewing', datetime: '2025-09-25 10:00-15:00' }
+            ],
+            '佐藤ハウジング': [
+                { id: 'EVT003', name: '資金計画相談会', type: 'seminar', datetime: '2025-08-28 10:00-17:00' },
+                { id: 'EVT011', name: 'モデルハウス見学会', type: 'viewing', datetime: '2025-09-08 10:00-18:00' }
+            ],
+            '中部建設株式会社': [
+                { id: 'EVT004', name: 'xevoΣ展示場見学会', type: 'viewing', datetime: '2025-09-10 11:00-16:00' },
+                { id: 'EVT012', name: '耐震住宅セミナー', type: 'seminar', datetime: '2025-09-15 14:00-16:00' }
+            ],
+            '愛知住宅販売': [
+                { id: 'EVT005', name: '土地探しセミナー', type: 'seminar', datetime: '2025-09-15 13:00-15:00' },
+                { id: 'EVT013', name: '分譲地見学会', type: 'viewing', datetime: '2025-09-22 10:00-17:00' },
+                { id: 'EVT014', name: '秋の住宅フェア', type: 'fair', datetime: '2025-09-28 10:00-18:00' }
+            ]
+        };
+
+        // 企業検索関連
+        function showCompanySuggestions() {
+            const suggestions = document.getElementById('companySuggestions');
+            suggestions.style.display = 'block';
+        }
+
+        function hideCompanySuggestions() {
+            setTimeout(() => {
+                const suggestions = document.getElementById('companySuggestions');
+                suggestions.style.display = 'none';
+            }, 200);
+        }
+
+        function handleCompanySearch() {
+            const searchTerm = document.getElementById('companySearch').value.toLowerCase();
+            const suggestions = document.querySelectorAll('#companySuggestions .suggestion-item');
+            
+            suggestions.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function selectCompany(companyName) {
+            selectedCompany = companyName;
+            document.getElementById('companySearch').value = companyName;
+            document.getElementById('companySuggestions').style.display = 'none';
+            document.getElementById('companyError').style.display = 'none';
+            
+            // イベントリストを更新
+            updateEventList(companyName);
+            
+            // イベント選択をリセット
+            selectedEvent = null;
+            document.getElementById('selectedEventId').value = '';
+            document.getElementById('selectedEventInfo').innerHTML = '<div class="event-placeholder">イベントを選択してください</div>';
+            
+            // イベント選択を有効化
+            document.getElementById('eventSelectionDisplay').style.cursor = 'pointer';
+            document.getElementById('eventSelectionDisplay').style.opacity = '1';
+        }
+
+        function updateEventList(companyName) {
+            const eventDropdown = document.getElementById('eventListDropdown');
+            const events = eventsByCompany[companyName] || [];
+            
+            if (events.length === 0) {
+                eventDropdown.innerHTML = '<div style="padding: 15px; color: #7a7a7a;">この企業のイベントはありません</div>';
+                return;
+            }
+            
+            let html = '';
+            events.forEach(event => {
+                const typeClass = event.type === 'viewing' ? 'type-viewing' : event.type === 'fair' ? 'type-fair' : 'type-seminar';
+                const typeLabel = event.type === 'viewing' ? '見学会' : event.type === 'fair' ? 'フェア' : 'セミナー';
+                
+                html += `
+                    <div class="event-item" onclick="selectEvent('${event.id}', '${event.name}', '${event.type}', '${event.datetime}', '${companyName}')">
+                        <div class="event-item-name">
+                            <span class="event-type-badge ${typeClass}">${typeLabel}</span>
+                            ${event.name}
+                        </div>
+                        <div class="event-item-details">
+                            ${event.datetime}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            eventDropdown.innerHTML = html;
+        }
+
+        function toggleEventList() {
+            if (!selectedCompany) {
+                alert('まず企業を選択してください');
+                return;
+            }
+            const dropdown = document.getElementById('eventListDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function selectEvent(id, name, type, datetime, company) {
+            selectedEvent = { id, name, type, datetime, company };
+            
+            const displayArea = document.getElementById('selectedEventInfo');
+            const typeClass = type === 'viewing' ? 'type-viewing' : type === 'fair' ? 'type-fair' : 'type-seminar';
+            const typeLabel = type === 'viewing' ? '見学会' : type === 'fair' ? 'フェア' : 'セミナー';
+            
+            displayArea.innerHTML = `
+                <div class="event-name">
+                    <span class="event-type-badge ${typeClass}">${typeLabel}</span>
+                    ${name}
+                </div>
+                <div class="event-details">${datetime}</div>
+            `;
+            
+            document.getElementById('selectedEventId').value = id;
+            document.getElementById('eventListDropdown').classList.remove('show');
+            
+            // エラーメッセージを非表示
+            document.getElementById('eventError').style.display = 'none';
+        }
+
+        function handleEnterKey(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        }
+
+        // フォーム送信処理
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            // 企業選択の検証
+            if (!selectedCompany) {
+                document.getElementById('companyError').style.display = 'block';
+                document.getElementById('companySearch').classList.add('error');
+                return false;
+            }
+            
+            // イベント選択の検証
+            if (!selectedEvent) {
+                document.getElementById('eventError').style.display = 'block';
+                return false;
+            }
+            
+            // バリデーション処理
+            const form = event.target;
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (field.id === 'companySearch' || field.id === 'selectedEventId') {
+                    return; // 既に検証済み
+                }
+                
+                const errorMessage = field.parentElement.querySelector('.error-message');
+                if (!field.value) {
+                    field.classList.add('error');
+                    if (errorMessage) {
+                        errorMessage.style.display = 'block';
+                    }
+                    isValid = false;
+                } else {
+                    field.classList.remove('error');
+                    if (errorMessage) {
+                        errorMessage.style.display = 'none';
+                    }
+                }
+            });
+            
+            if (isValid) {
+                alert('イベント予約者を登録しました。');
+                window.location.href = 'event_requests.html';
+            }
+        }
+
+        // ドキュメント外クリックでドロップダウンを閉じる
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.event-selection-wrapper')) {
+                document.getElementById('eventListDropdown').classList.remove('show');
+            }
+            if (!event.target.closest('#companySearch') && !event.target.closest('#companySuggestions')) {
+                document.getElementById('companySuggestions').style.display = 'none';
+            }
+        });
+
+        // 入力フィールドのリアルタイムバリデーション
+        document.querySelectorAll('.form-input[required], .form-select[required]').forEach(field => {
+            if (field.id === 'companySearch') return; // 企業選択は別処理
+            
+            field.addEventListener('blur', function() {
+                const errorMessage = this.parentElement.querySelector('.error-message');
+                if (!this.value) {
+                    this.classList.add('error');
+                    if (errorMessage) {
+                        errorMessage.style.display = 'block';
+                    }
+                } else {
+                    this.classList.remove('error');
+                    if (errorMessage) {
+                        errorMessage.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        // 初期状態でイベント選択を無効化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            document.getElementById('eventSelectionDisplay').style.cursor = 'not-allowed';
+            document.getElementById('eventSelectionDisplay').style.opacity = '0.6';
+            document.getElementById('companySuggestions').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
