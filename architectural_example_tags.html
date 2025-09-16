@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>建築事例タグ管理 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* タブナビゲーション */
+        .tab-nav {
+            background: white;
+            padding: 0;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            display: flex;
+            overflow-x: auto;
+        }
+
+        .tab-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            color: #6a6a6a;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .tab-item:hover {
+            color: #4a4a4a;
+            background: #f5f5f5;
+        }
+
+        .tab-item.active {
+            color: #2c2c2c;
+            border-bottom-color: #4a4a4a;
+            font-weight: 600;
+            background: #f9f9f9;
+        }
+
+        /* カテゴリセクション */
+        .category-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .category-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c2c2c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-icon {
+            width: 24px;
+            height: 24px;
+            background: #4a4a4a;
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-description {
+            font-size: 14px;
+            color: #6a6a6a;
+            margin-top: 5px;
+            font-weight: 400;
+        }
+
+        .btn-add-tag {
+            padding: 8px 16px;
+            font-size: 13px;
+            background: #f5f5f5;
+            color: #4a4a4a;
+            border: 1px solid #d0d0d0;
+        }
+
+        .btn-add-tag:hover {
+            background: #e0e0e0;
+        }
+
+        /* タググリッド */
+        .tags-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .tag-item {
+            background: #f9f9f9;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .tag-item:hover {
+            background: #f0f0f0;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .tag-item.common {
+            background: #e8f5e8;
+            border-color: #c3e6c3;
+        }
+
+        .tag-item.common:hover {
+            background: #d4edd4;
+        }
+
+        .tag-info {
+            flex: 1;
+        }
+
+        .tag-name {
+            font-weight: 600;
+            color: #2c2c2c;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .common-badge {
+            background: #4caf50;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .tag-count {
+            font-size: 11px;
+            color: #7a7a7a;
+            margin-top: 4px;
+        }
+
+        .tag-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tag-action-btn {
+            background: none;
+            border: none;
+            color: #7a7a7a;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .tag-action-btn:hover {
+            background: #e0e0e0;
+            color: #4a4a4a;
+        }
+
+        /* 統計カード */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6a6a6a;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c2c2c;
+        }
+
+        .stat-detail {
+            font-size: 12px;
+            color: #7a7a7a;
+            margin-top: 5px;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: #2c2c2c;
+            color: white;
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a4a4a;
+            margin-bottom: 8px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* 空状態 */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7a7a7a;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #c0c0c0;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                不動産ポータル管理システム
+            </h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html" style="color: #6a6a6a; text-decoration: none;">ホーム</a> > 
+                建築事例管理 > タグ管理
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">
+                    <i data-lucide="tag" style="width: 24px; height: 24px; margin-right: 8px;"></i>
+                    建築事例タグ管理
+                </h2>
+                <div>
+                    <button class="btn btn-secondary" onclick="openCategoryModal()">カテゴリ管理</button>
+                    <button class="btn btn-primary" onclick="openTagModal()">新規タグ追加</button>
+                </div>
+            </div>
+
+            <!-- 統計情報 -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-label">総カテゴリ数</div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-detail">アクティブ: 8 / 非アクティブ: 0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">総タグ数</div>
+                    <div class="stat-value">56</div>
+                    <div class="stat-detail">よくあるこだわり: 24タグ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">使用中のタグ</div>
+                    <div class="stat-value">48</div>
+                    <div class="stat-detail">85.7%の使用率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">平均タグ数/事例</div>
+                    <div class="stat-value">4.2</div>
+                    <div class="stat-detail">1事例あたりの平均</div>
+                </div>
+            </div>
+
+            <!-- タブナビゲーション -->
+            <div class="tab-nav">
+                <div class="tab-item active" onclick="switchTab('all')">すべてのタグ</div>
+                <div class="tab-item" onclick="switchTab('common')">よくあるこだわり</div>
+                <div class="tab-item" onclick="switchTab('unused')">未使用タグ</div>
+            </div>
+
+            <!-- カテゴリ: 間取り・空間 -->
+            <div class="category-section">
+                <div class="category-header">
+                    <div>
+                        <div class="category-title">
+                            <div class="category-icon">
+                                <i data-lucide="layout" style="width: 16px; height: 16px;"></i>
+                            </div>
+                            間取り・空間
+                        </div>
+                        <div class="category-description">間取りや空間設計に関する特徴タグ</div>
+                    </div>
+                    <button class="btn btn-add-tag" onclick="openTagModal('間取り・空間')">
+                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                        タグ追加
+                    </button>
+                </div>
+                <div class="tags-grid">
+                    <div class="tag-item common">
+                        <div class="tag-info">
+                            <div class="tag-name">
+                                吹き抜け
+                                <span class="common-badge">よくある</span>
+                            </div>
+                            <div class="tag-count">使用: 125件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(1)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(1)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item common">
+                        <div class="tag-info">
+                            <div class="tag-name">
+                                リビング階段
+                                <span class="common-badge">よくある</span>
+                            </div>
+                            <div class="tag-count">使用: 98件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(2)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(2)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item">
+                        <div class="tag-info">
+                            <div class="tag-name">ウォークインクローゼット</div>
+                            <div class="tag-count">使用: 76件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(3)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(3)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item">
+                        <div class="tag-info">
+                            <div class="tag-name">パントリー</div>
+                            <div class="tag-count">使用: 54件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(4)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(4)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item common">
+                        <div class="tag-info">
+                            <div class="tag-name">
+                                和室
+                                <span class="common-badge">よくある</span>
+                            </div>
+                            <div class="tag-count">使用: 89件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(5)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(5)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item">
+                        <div class="tag-info">
+                            <div class="tag-name">土間収納</div>
+                            <div class="tag-count">使用: 42件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(6)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(6)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- カテゴリ: デザイン・外観 -->
+            <div class="category-section">
+                <div class="category-header">
+                    <div>
+                        <div class="category-title">
+                            <div class="category-icon">
+                                <i data-lucide="palette" style="width: 16px; height: 16px;"></i>
+                            </div>
+                            デザイン・外観
+                        </div>
+                        <div class="category-description">住宅のデザインや外観に関する特徴タグ</div>
+                    </div>
+                    <button class="btn btn-add-tag" onclick="openTagModal('デザイン・外観')">
+                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                        タグ追加
+                    </button>
+                </div>
+                <div class="tags-grid">
+                    <div class="tag-item common">
+                        <div class="tag-info">
+                            <div class="tag-name">
+                                モダンデザイン
+                                <span class="common-badge">よくある</span>
+                            </div>
+                            <div class="tag-count">使用: 156件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(7)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(7)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item">
+                        <div class="tag-info">
+                            <div class="tag-name">和モダン</div>
+                            <div class="tag-count">使用: 67件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(8)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(8)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item common">
+                        <div class="tag-info">
+                            <div class="tag-name">
+                                大開口窓
+                                <span class="common-badge">よくある</span>
+                            </div>
+                            <div class="tag-count">使用: 112件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(9)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(9)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item">
+                        <div class="tag-info">
+                            <div class="tag-name">片流れ屋根</div>
+                            <div class="tag-count">使用: 34件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(10)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(10)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- カテゴリ: 設備・仕様 -->
+            <div class="category-section">
+                <div class="category-header">
+                    <div>
+                        <div class="category-title">
+                            <div class="category-icon">
+                                <i data-lucide="settings" style="width: 16px; height: 16px;"></i>
+                            </div>
+                            設備・仕様
+                        </div>
+                        <div class="category-description">住宅設備や仕様に関する特徴タグ</div>
+                    </div>
+                    <button class="btn btn-add-tag" onclick="openTagModal('設備・仕様')">
+                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                        タグ追加
+                    </button>
+                </div>
+                <div class="tags-grid">
+                    <div class="tag-item common">
+                        <div class="tag-info">
+                            <div class="tag-name">
+                                オール電化
+                                <span class="common-badge">よくある</span>
+                            </div>
+                            <div class="tag-count">使用: 134件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(11)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(11)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item common">
+                        <div class="tag-info">
+                            <div class="tag-name">
+                                太陽光発電
+                                <span class="common-badge">よくある</span>
+                            </div>
+                            <div class="tag-count">使用: 98件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(12)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(12)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item">
+                        <div class="tag-info">
+                            <div class="tag-name">床暖房</div>
+                            <div class="tag-count">使用: 56件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(13)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(13)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item">
+                        <div class="tag-info">
+                            <div class="tag-name">浴室乾燥機</div>
+                            <div class="tag-count">使用: 78件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(14)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(14)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- カテゴリ: ライフスタイル -->
+            <div class="category-section">
+                <div class="category-header">
+                    <div>
+                        <div class="category-title">
+                            <div class="category-icon">
+                                <i data-lucide="heart" style="width: 16px; height: 16px;"></i>
+                            </div>
+                            ライフスタイル
+                        </div>
+                        <div class="category-description">暮らし方や生活スタイルに関する特徴タグ</div>
+                    </div>
+                    <button class="btn btn-add-tag" onclick="openTagModal('ライフスタイル')">
+                        <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+                        タグ追加
+                    </button>
+                </div>
+                <div class="tags-grid">
+                    <div class="tag-item common">
+                        <div class="tag-info">
+                            <div class="tag-name">
+                                子育て世帯向け
+                                <span class="common-badge">よくある</span>
+                            </div>
+                            <div class="tag-count">使用: 145件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(15)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(15)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item">
+                        <div class="tag-info">
+                            <div class="tag-name">ペット共生</div>
+                            <div class="tag-count">使用: 67件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(16)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(16)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item">
+                        <div class="tag-info">
+                            <div class="tag-name">二世帯住宅</div>
+                            <div class="tag-count">使用: 23件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(17)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(17)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tag-item">
+                        <div class="tag-info">
+                            <div class="tag-name">テレワーク対応</div>
+                            <div class="tag-count">使用: 89件</div>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="tag-action-btn" onclick="editTag(18)">
+                                <i data-lucide="edit-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                            <button class="tag-action-btn" onclick="deleteTag(18)">
+                                <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- タグ追加/編集モーダル -->
+    <div id="tagModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="tagModalTitle">新規タグ追加</h3>
+                <button class="close" onclick="closeTagModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="tagForm">
+                    <div class="form-group">
+                        <label class="form-label">カテゴリ</label>
+                        <select class="form-select" id="categorySelect" required>
+                            <option value="">カテゴリを選択してください</option>
+                            <option value="1">間取り・空間</option>
+                            <option value="2">デザイン・外観</option>
+                            <option value="3">設備・仕様</option>
+                            <option value="4">ライフスタイル</option>
+                            <option value="5">性能・構造</option>
+                            <option value="6">素材・材質</option>
+                            <option value="7">価格帯</option>
+                            <option value="8">その他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">タグ名</label>
+                        <input type="text" class="form-input" id="tagName" required placeholder="例：吹き抜け">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">説明</label>
+                        <textarea class="form-textarea" id="tagDescription" placeholder="このタグの説明を入力してください"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">表示順序</label>
+                        <input type="number" class="form-input" id="sortOrder" value="100" min="1">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="isCommon">
+                            <label for="isCommon">よくあるこだわりとして表示</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="isActive" checked>
+                            <label for="isActive">有効にする</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeTagModal()">キャンセル</button>
+                <button class="btn btn-primary" onclick="saveTag()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // タブ切り替え
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-item');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // タブに応じてフィルタリングを実行
+            filterTags(tabName);
+        }
+
+        // タグフィルタリング
+        function filterTags(filterType) {
+            const tagItems = document.querySelectorAll('.tag-item');
+            
+            tagItems.forEach(item => {
+                switch(filterType) {
+                    case 'common':
+                        // よくあるこだわりのみ表示
+                        item.style.display = item.classList.contains('common') ? '' : 'none';
+                        break;
+                    case 'unused':
+                        // 未使用タグのみ表示（実際は使用件数0のタグ）
+                        const countText = item.querySelector('.tag-count').textContent;
+                        const count = parseInt(countText.match(/\d+/)[0]);
+                        item.style.display = count === 0 ? '' : 'none';
+                        break;
+                    default:
+                        // すべて表示
+                        item.style.display = '';
+                }
+            });
+        }
+
+        // タグモーダルを開く
+        function openTagModal(category = null) {
+            document.getElementById('tagModal').classList.add('show');
+            document.getElementById('tagModalTitle').textContent = '新規タグ追加';
+            
+            // フォームをリセット
+            document.getElementById('tagForm').reset();
+            document.getElementById('isActive').checked = true;
+            
+            // カテゴリが指定されている場合は選択
+            if (category) {
+                const categorySelect = document.getElementById('categorySelect');
+                const options = categorySelect.options;
+                for (let i = 0; i < options.length; i++) {
+                    if (options[i].text === category) {
+                        categorySelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // タグモーダルを閉じる
+        function closeTagModal() {
+            document.getElementById('tagModal').classList.remove('show');
+        }
+
+        // タグを保存
+        function saveTag() {
+            const categorySelect = document.getElementById('categorySelect');
+            const tagName = document.getElementById('tagName').value;
+            
+            if (!categorySelect.value || !tagName) {
+                alert('カテゴリとタグ名は必須です。');
+                return;
+            }
+            
+            // 実際の実装ではAPIに送信
+            console.log('Saving tag:', {
+                category: categorySelect.value,
+                name: tagName,
+                description: document.getElementById('tagDescription').value,
+                sortOrder: document.getElementById('sortOrder').value,
+                isCommon: document.getElementById('isCommon').checked,
+                isActive: document.getElementById('isActive').checked
+            });
+            
+            alert('タグを保存しました。');
+            closeTagModal();
+            
+            // ページをリロードして更新を反映
+            location.reload();
+        }
+
+        // タグを編集
+        function editTag(tagId) {
+            document.getElementById('tagModal').classList.add('show');
+            document.getElementById('tagModalTitle').textContent = 'タグ編集';
+            
+            // 実際の実装ではAPIからデータを取得
+            console.log('Editing tag:', tagId);
+            
+            // サンプルデータをセット
+            document.getElementById('categorySelect').selectedIndex = 1;
+            document.getElementById('tagName').value = '吹き抜け';
+            document.getElementById('tagDescription').value = '開放的な縦の空間を演出する吹き抜け';
+            document.getElementById('sortOrder').value = '10';
+            document.getElementById('isCommon').checked = true;
+            document.getElementById('isActive').checked = true;
+        }
+
+        // タグを削除
+        function deleteTag(tagId) {
+            if (confirm('このタグを削除してもよろしいですか？\n※ 建築事例との関連付けも削除されます。')) {
+                console.log('Deleting tag:', tagId);
+                alert('タグを削除しました。');
+                location.reload();
+            }
+        }
+
+        // カテゴリ管理モーダル
+        function openCategoryModal() {
+            alert('カテゴリ管理画面を開きます');
+            // 実際の実装ではカテゴリ管理用のモーダルを表示
+        }
+
+        // Lucideアイコンを初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

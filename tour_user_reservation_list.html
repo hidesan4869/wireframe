@@ -202,6 +202,44 @@
             align-items: end;
         }
 
+        /* 企業検索オートコンプリート */
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #c0c0c0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .suggestion-item:hover {
+            background: #f5f5f5;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item[data-value=""] {
+            font-weight: 600;
+            color: #666;
+            background: #f8f8f8;
+        }
+
         /* テーブル */
         .data-table {
             background: white;
@@ -527,9 +565,28 @@
             <!-- フィルター -->
             <div class="filter-section">
                 <div class="filter-row">
-                    <div class="filter-group" style="grid-column: span 3;">
+                    <div class="filter-group">
+                        <label class="filter-label">企業名検索</label>
+                        <div style="position: relative;">
+                            <input type="text" class="filter-input" id="companySearch" 
+                                   placeholder="企業名で検索..." 
+                                   oninput="handleCompanySearch()" 
+                                   onfocus="showCompanySuggestions()" 
+                                   onblur="hideCompanySuggestions()"
+                                   onkeypress="handleEnterKey(event)">
+                            <div id="companySuggestions" class="suggestions-dropdown">
+                                <div class="suggestion-item" onmousedown="selectCompany('株式会社山田建設')">株式会社山田建設</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('田中不動産株式会社')">田中不動産株式会社</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('佐藤ハウジング')">佐藤ハウジング</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('中部建設株式会社')">中部建設株式会社</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('愛知住宅販売')">愛知住宅販売</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('すべての企業')" data-value="">すべての企業</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-group" style="grid-column: span 2;">
                         <label class="filter-label">キーワード検索</label>
-                        <input type="text" class="filter-input" id="searchBox" placeholder="顧客名、物件名、予約IDで検索..." onkeyup="searchReservations()">
+                        <input type="text" class="filter-input" id="searchBox" placeholder="顧客名、物件名、予約IDで検索..." onkeypress="handleEnterKey(event)">
                     </div>
                     <div class="search-controls">
                         <button class="btn btn-secondary" onclick="clearFilters()">フィルタークリア</button>
@@ -746,30 +803,98 @@
             document.getElementById('reservationModal').classList.remove('show');
         }
 
-        // 検索機能
-        function searchReservations() {
-            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+        // 企業検索関連
+        function showCompanySuggestions() {
+            document.getElementById('companySuggestions').style.display = 'block';
+        }
+
+        function hideCompanySuggestions() {
+            setTimeout(() => {
+                document.getElementById('companySuggestions').style.display = 'none';
+            }, 200);
+        }
+
+        function handleCompanySearch() {
+            const searchTerm = document.getElementById('companySearch').value.toLowerCase();
+            const suggestions = document.querySelectorAll('#companySuggestions .suggestion-item');
+            
+            suggestions.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm) || item.getAttribute('data-value') === '') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function selectCompany(companyName) {
+            const input = document.getElementById('companySearch');
+            if (companyName === 'すべての企業') {
+                input.value = '';
+            } else {
+                input.value = companyName;
+            }
+            document.getElementById('companySuggestions').style.display = 'none';
+        }
+
+        // Enterキーでの検索実行
+        function handleEnterKey(event) {
+            if (event.key === 'Enter') {
+                applyFilters();
+            }
+        }
+
+        // フィルター適用（企業名とキーワード検索を統合）
+        function applyFilters() {
+            const companyFilter = document.getElementById('companySearch').value.toLowerCase();
+            const keywordFilter = document.getElementById('searchBox').value.toLowerCase();
             const rows = document.querySelectorAll('#reservationTable tbody tr');
             
             rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
+                let showRow = true;
+                
+                // 企業名フィルタリング（5列目が企業名）
+                if (companyFilter) {
+                    const companyCell = row.cells[4];
+                    const companyText = companyCell ? companyCell.textContent.toLowerCase() : '';
+                    if (!companyText.includes(companyFilter)) {
+                        showRow = false;
+                    }
+                }
+                
+                // キーワードフィルタリング（顧客名、物件名、予約ID）
+                if (keywordFilter && showRow) {
+                    const idCell = row.cells[1]; // 予約ID
+                    const propertyCell = row.cells[2]; // 物件
+                    const modelHouseCell = row.cells[5]; // モデルハウス
+                    const customerCell = row.cells[6]; // 顧客情報
+                    
+                    const searchText = 
+                        (idCell ? idCell.textContent.toLowerCase() : '') +
+                        (propertyCell ? propertyCell.textContent.toLowerCase() : '') +
+                        (modelHouseCell ? modelHouseCell.textContent.toLowerCase() : '') +
+                        (customerCell ? customerCell.textContent.toLowerCase() : '');
+                    
+                    if (!searchText.includes(keywordFilter)) {
+                        showRow = false;
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
             });
         }
 
         // フィルタークリア
         function clearFilters() {
-            document.getElementById('statusFilter').value = '';
-            document.getElementById('propertyTypeFilter').value = '';
-            document.getElementById('periodFilter').value = '';
-            document.getElementById('staffFilter').value = '';
+            document.getElementById('companySearch').value = '';
             document.getElementById('searchBox').value = '';
-            filterTable();
-        }
-
-        // フィルター適用
-        function filterTable() {
-            console.log('Applying filters...');
+            
+            // すべての行を表示
+            const rows = document.querySelectorAll('#reservationTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = '';
+            });
         }
 
         // タブ切り替え
