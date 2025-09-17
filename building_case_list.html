@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>建築事例一覧 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 30px;
+            overflow-y: auto;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #4a4a4a;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #8a8a8a;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7a7a7a;
+        }
+
+        /* 統計カード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7a7a7a;
+            font-size: 14px;
+        }
+
+        /* フィルター */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #6a6a6a;
+            margin-bottom: 5px;
+        }
+
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #c0c0c0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        /* 企業検索オートコンプリート */
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #c0c0c0;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .suggestions-dropdown.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .suggestion-item:hover {
+            background: #f5f5f5;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item[data-value=""] {
+            font-weight: 600;
+            color: #666;
+            background: #f8f8f8;
+        }
+
+        /* データテーブル */
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .table-header {
+            padding: 20px 25px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #4a4a4a;
+            border-bottom: 2px solid #d0d0d0;
+            font-size: 14px;
+        }
+
+        tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        /* アクションメニュー */
+        .action-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-popover {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: white;
+            border: 1px solid #d0d0d0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .action-popover.show {
+            display: block;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #2c2c2c;
+            transition: background 0.2s ease;
+        }
+
+        .action-item:hover {
+            background: #f5f5f5;
+        }
+
+        .action-item-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .action-item.detail:hover {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .action-item.edit:hover {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .action-item.delete:hover {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        /* 建築事例情報 */
+        .case-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .case-title {
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 2px;
+        }
+
+        .case-description {
+            font-size: 12px;
+            color: #7a7a7a;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .price-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-main {
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 2px;
+        }
+
+        .area-text {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        .family-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .family-structure {
+            color: #2c2c2c;
+            margin-bottom: 2px;
+        }
+
+        .construction-method {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        .date-text {
+            font-size: 14px;
+            color: #2c2c2c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                不動産ポータル管理システム
+            </h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="#">物件管理</a> > 建築事例一覧
+            </div>
+
+            <div class="page-header">
+                <h2 class="page-title">
+                    <i data-lucide="building-2" style="width: 24px; height: 24px; margin-right: 8px;"></i>
+                    建築事例一覧
+                </h2>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" style="display: flex; align-items: center;" onclick="window.location.href='building_case_register.html'">
+                        <i data-lucide="plus" style="width: 16px; height: 16px; margin-right: 5px;"></i>
+                        新規事例登録
+                    </button>
+                </div>
+            </div>
+
+            <!-- フィルター -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">企業名検索</label>
+                        <div style="position: relative;">
+                            <input type="text" class="filter-input" id="companySearch" 
+                                   placeholder="企業名で検索..." 
+                                   oninput="handleCompanySearch()" 
+                                   onfocus="showCompanySuggestions()" 
+                                   onblur="hideCompanySuggestions()"
+                                   onkeypress="handleEnterKey(event)"
+                                   style="width: 100%;">
+                            <div id="companySuggestions" class="suggestions-dropdown">
+                                <div class="suggestion-item" onmousedown="selectCompany('テスト株式会社')">テスト株式会社</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('田中建設株式会社')">田中建設株式会社</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('佐藤ハウジング')">佐藤ハウジング</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('中部建設株式会社')">中部建設株式会社</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('愛知住宅販売')">愛知住宅販売</div>
+                                <div class="suggestion-item" onmousedown="selectCompany('すべての企業')" data-value="">すべての企業</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-group" style="grid-column: span 3;">
+                        <label class="filter-label">キーワード検索</label>
+                        <input type="text" class="filter-input" id="searchBox" placeholder="タイトル、説明文で検索..." onkeypress="handleEnterKey(event)">
+                    </div>
+                    <div class="search-controls">
+                        <button class="btn btn-secondary" style="display: flex; align-items: center;" onclick="clearFilters()">
+                            <i data-lucide="x" style="width: 16px; height: 16px; margin-right: 5px;"></i>
+                            フィルタークリア
+                        </button>
+                        <button class="btn btn-primary" style="display: flex; align-items: center;" onclick="applyFilters()">
+                            <i data-lucide="search" style="width: 16px; height: 16px; margin-right: 5px;"></i>
+                            検索
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- データテーブル -->
+            <div class="data-table">
+                <div class="table-header">
+                    <h3 class="table-title">建築事例一覧</h3>
+                </div>
+                
+                <table id="buildingCaseTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>企業名</th>
+                            <th>事例情報</th>
+                            <th>価格・面積</th>
+                            <th>家族構成・構法</th>
+                            <th>完成日</th>
+                            <th>作成日</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1000</td>
+                            <td>
+                                <a href="company_detail.html">テスト株式会社</a>
+                            </td>
+                            <td>
+                                <div class="case-info">
+                                    <div class="case-title">建築事例のタイトル</div>
+                                    <div class="case-description">建築事例の説明</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="price-info">
+                                    <div class="price-main">¥50,000,000</div>
+                                    <div class="area-text">94.40㎡</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="family-info">
+                                    <div class="family-structure">父・母</div>
+                                    <div class="construction-method">木造建築</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-text">2025-09-12</div>
+                            </td>
+                            <td>
+                                <div class="date-text">2025-09-10</div>
+                            </td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, '1000')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="window.location.href='building_case_detail.html?id=1000'">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                        <div class="action-item edit" onclick="window.location.href='building_case_register.html?id=1000'">
+                                            <i data-lucide="square-pen" class="action-item-icon"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item detail" onclick="previewCase('1000')">
+                                            <i data-lucide="external-link" class="action-item-icon"></i>
+                                            <span>プレビュー</span>
+                                        </div>
+                                        <div class="action-item delete" onclick="deleteCase('1000')">
+                                            <i data-lucide="trash-2" class="action-item-icon"></i>
+                                            <span>削除</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>1001</td>
+                            <td>
+                                <a href="company_detail.html">田中建設株式会社</a>
+                            </td>
+                            <td>
+                                <div class="case-info">
+                                    <div class="case-title">モダン住宅の建築実例</div>
+                                    <div class="case-description">都市部に建つスタイリッシュな住宅</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="price-info">
+                                    <div class="price-main">¥42,000,000</div>
+                                    <div class="area-text">85.20㎡</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="family-info">
+                                    <div class="family-structure">父・母・子2人</div>
+                                    <div class="construction-method">鉄骨造</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-text">2025-08-15</div>
+                            </td>
+                            <td>
+                                <div class="date-text">2025-08-10</div>
+                            </td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, '1001')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="window.location.href='building_case_detail.html?id=1001'">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                        <div class="action-item edit" onclick="window.location.href='building_case_register.html?id=1001'">
+                                            <i data-lucide="square-pen" class="action-item-icon"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item detail" onclick="previewCase('1001')">
+                                            <i data-lucide="external-link" class="action-item-icon"></i>
+                                            <span>プレビュー</span>
+                                        </div>
+                                        <div class="action-item delete" onclick="deleteCase('1001')">
+                                            <i data-lucide="trash-2" class="action-item-icon"></i>
+                                            <span>削除</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>1002</td>
+                            <td>
+                                <a href="company_detail.html">佐藤ハウジング</a>
+                            </td>
+                            <td>
+                                <div class="case-info">
+                                    <div class="case-title">自然素材を活かした家</div>
+                                    <div class="case-description">木の温もりを感じる自然派住宅</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="price-info">
+                                    <div class="price-main">¥38,500,000</div>
+                                    <div class="area-text">102.50㎡</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="family-info">
+                                    <div class="family-structure">父・母・子1人</div>
+                                    <div class="construction-method">木造建築</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-text">2025-07-20</div>
+                            </td>
+                            <td>
+                                <div class="date-text">2025-07-15</div>
+                            </td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, '1002')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="window.location.href='building_case_detail.html?id=1002'">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                        <div class="action-item edit" onclick="window.location.href='building_case_register.html?id=1002'">
+                                            <i data-lucide="square-pen" class="action-item-icon"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item detail" onclick="previewCase('1002')">
+                                            <i data-lucide="external-link" class="action-item-icon"></i>
+                                            <span>プレビュー</span>
+                                        </div>
+                                        <div class="action-item delete" onclick="deleteCase('1002')">
+                                            <i data-lucide="trash-2" class="action-item-icon"></i>
+                                            <span>削除</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>1003</td>
+                            <td>
+                                <a href="company_detail.html">中部建設株式会社</a>
+                            </td>
+                            <td>
+                                <div class="case-info">
+                                    <div class="case-title">エコハウスプロジェクト</div>
+                                    <div class="case-description">省エネ性能に優れた住宅</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="price-info">
+                                    <div class="price-main">¥55,000,000</div>
+                                    <div class="area-text">110.80㎡</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="family-info">
+                                    <div class="family-structure">父・母・子2人・祖父母</div>
+                                    <div class="construction-method">鉄筋コンクリート造</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-text">2025-06-30</div>
+                            </td>
+                            <td>
+                                <div class="date-text">2025-06-25</div>
+                            </td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, '1003')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="window.location.href='building_case_detail.html?id=1003'">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                        <div class="action-item edit" onclick="window.location.href='building_case_register.html?id=1003'">
+                                            <i data-lucide="square-pen" class="action-item-icon"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item detail" onclick="previewCase('1003')">
+                                            <i data-lucide="external-link" class="action-item-icon"></i>
+                                            <span>プレビュー</span>
+                                        </div>
+                                        <div class="action-item delete" onclick="deleteCase('1003')">
+                                            <i data-lucide="trash-2" class="action-item-icon"></i>
+                                            <span>削除</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>1004</td>
+                            <td>
+                                <a href="company_detail.html">愛知住宅販売</a>
+                            </td>
+                            <td>
+                                <div class="case-info">
+                                    <div class="case-title">コンパクト住宅の事例</div>
+                                    <div class="case-description">限られた敷地を有効活用した住宅</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="price-info">
+                                    <div class="price-main">¥32,000,000</div>
+                                    <div class="area-text">75.60㎡</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="family-info">
+                                    <div class="family-structure">父・母</div>
+                                    <div class="construction-method">木造建築</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-text">2025-05-25</div>
+                            </td>
+                            <td>
+                                <div class="date-text">2025-05-20</div>
+                            </td>
+                            <td>
+                                <div class="action-menu">
+                                    <div style="cursor: pointer;" onclick="toggleActionMenu(this, '1004')">
+                                        <i data-lucide="more-horizontal"></i>
+                                    </div>
+                                    <div class="action-popover">
+                                        <div class="action-item detail" onclick="window.location.href='building_case_detail.html?id=1004'">
+                                            <i data-lucide="eye" class="action-item-icon"></i>
+                                            <span>詳細</span>
+                                        </div>
+                                        <div class="action-item edit" onclick="window.location.href='building_case_register.html?id=1004'">
+                                            <i data-lucide="square-pen" class="action-item-icon"></i>
+                                            <span>編集</span>
+                                        </div>
+                                        <div class="action-item detail" onclick="previewCase('1004')">
+                                            <i data-lucide="external-link" class="action-item-icon"></i>
+                                            <span>プレビュー</span>
+                                        </div>
+                                        <div class="action-item delete" onclick="deleteCase('1004')">
+                                            <i data-lucide="trash-2" class="action-item-icon"></i>
+                                            <span>削除</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 企業検索のオートコンプリート機能
+        function showCompanySuggestions() {
+            const suggestions = document.getElementById('companySuggestions');
+            showAllSuggestions();
+            suggestions.classList.add('show');
+        }
+
+        function hideCompanySuggestions() {
+            setTimeout(() => {
+                document.getElementById('companySuggestions').classList.remove('show');
+            }, 200);
+        }
+
+        function handleCompanySearch() {
+            const searchTerm = document.getElementById('companySearch').value.toLowerCase();
+            const suggestions = document.querySelectorAll('#companySuggestions .suggestion-item');
+            
+            suggestions.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm) || item.getAttribute('data-value') === '') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function showAllSuggestions() {
+            const suggestions = document.querySelectorAll('#companySuggestions .suggestion-item');
+            suggestions.forEach(item => {
+                item.style.display = 'block';
+            });
+        }
+
+        function selectCompany(companyName) {
+            const input = document.getElementById('companySearch');
+            if (companyName === 'すべての企業') {
+                input.value = '';
+            } else {
+                input.value = companyName;
+            }
+            document.getElementById('companySuggestions').classList.remove('show');
+        }
+
+        // Enterキーでの検索実行
+        function handleEnterKey(event) {
+            if (event.key === 'Enter') {
+                applyFilters();
+            }
+        }
+
+        // アクションメニューの表示/非表示切り替え
+        function toggleActionMenu(button, caseId) {
+            const popover = button.nextElementSibling;
+            
+            // 他のポップオーバーを全て閉じる
+            document.querySelectorAll('.action-popover').forEach(p => {
+                if (p !== popover) {
+                    p.classList.remove('show');
+                }
+            });
+            
+            // 現在のポップオーバーの表示を切り替え
+            popover.classList.toggle('show');
+        }
+
+        // 事例プレビュー
+        function previewCase(caseId) {
+            console.log('Previewing case:', caseId);
+            alert(`建築事例 ${caseId} のプレビューを表示します`);
+        }
+
+        // 事例削除
+        function deleteCase(caseId) {
+            if (confirm('この建築事例を削除してもよろしいですか？')) {
+                console.log('Deleting case:', caseId);
+                alert(`建築事例 ${caseId} を削除しました`);
+                // 削除処理後、テーブル更新
+            }
+        }
+
+        // フィルター適用
+        function applyFilters() {
+            const companyTerm = document.getElementById('companySearch').value.toLowerCase();
+            const priceFilter = document.getElementById('priceFilter').value;
+            const constructionFilter = document.getElementById('constructionFilter').value;
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const rows = document.querySelectorAll('#buildingCaseTable tbody tr');
+            
+            rows.forEach(row => {
+                let showRow = true;
+                
+                // 企業名フィルタリング
+                if (companyTerm) {
+                    const companyCell = row.cells[1].textContent.toLowerCase();
+                    if (!companyCell.includes(companyTerm)) {
+                        showRow = false;
+                    }
+                }
+                
+                // 価格フィルタリング
+                if (priceFilter) {
+                    const priceCell = row.cells[3].textContent;
+                    const priceMatch = priceCell.match(/¥([\d,]+)/);
+                    if (priceMatch) {
+                        const price = parseInt(priceMatch[1].replace(/,/g, ''));
+                        switch (priceFilter) {
+                            case 'under-30':
+                                if (price >= 30000000) showRow = false;
+                                break;
+                            case '30-50':
+                                if (price < 30000000 || price >= 50000000) showRow = false;
+                                break;
+                            case '50-70':
+                                if (price < 50000000 || price >= 70000000) showRow = false;
+                                break;
+                            case 'over-70':
+                                if (price < 70000000) showRow = false;
+                                break;
+                        }
+                    }
+                }
+                
+                // 構法フィルタリング
+                if (constructionFilter) {
+                    const constructionCell = row.cells[4].textContent;
+                    const constructionMap = {
+                        'wooden': '木造建築',
+                        'steel': '鉄骨造',
+                        'concrete': '鉄筋コンクリート造'
+                    };
+                    if (!constructionCell.includes(constructionMap[constructionFilter])) {
+                        showRow = false;
+                    }
+                }
+                
+                // キーワード検索
+                if (searchTerm && showRow) {
+                    const rowText = row.textContent.toLowerCase();
+                    if (!rowText.includes(searchTerm)) {
+                        showRow = false;
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        // フィルタークリア
+        function clearFilters() {
+            document.getElementById('companySearch').value = '';
+            document.getElementById('priceFilter').value = '';
+            document.getElementById('constructionFilter').value = '';
+            document.getElementById('searchBox').value = '';
+            
+            // すべての行を表示
+            const rows = document.querySelectorAll('#buildingCaseTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
+
+        // ページのどこかをクリックしたときにポップオーバーを閉じる
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.action-menu')) {
+                document.querySelectorAll('.action-popover').forEach(popover => {
+                    popover.classList.remove('show');
+                });
+            }
+        });
+
+        // Lucideアイコンを初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

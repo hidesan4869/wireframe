@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>建築事例詳細 - 不動産ポータル管理画面</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #2c2c2c;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #2c2c2c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-top: 60px;
+            padding: 20px;
+            overflow-y: auto;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .breadcrumb a {
+            color: #6a6a6a;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #4a4a4a;
+        }
+
+        /* ヘッダー部分 */
+        .detail-header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .detail-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c2c2c;
+            margin-bottom: 10px;
+        }
+
+        .detail-meta {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #6a6a6a;
+        }
+
+        .company-link {
+            color: #4a4a4a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .company-link:hover {
+            color: #2c2c2c;
+        }
+
+        .price-display {
+            font-size: 28px;
+            font-weight: 700;
+            color: #d32f2f;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #4a4a4a;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        /* グリッドレイアウト */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* カード */
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* 基本情報テーブル */
+        .info-table {
+            width: 100%;
+        }
+
+        .info-table tr {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .info-table th {
+            padding: 12px 15px 12px 0;
+            font-weight: 600;
+            color: #4a4a4a;
+            text-align: left;
+            width: 120px;
+            vertical-align: top;
+        }
+
+        .info-table td {
+            padding: 12px 0;
+            color: #2c2c2c;
+        }
+
+        /* 説明文 */
+        .description-text {
+            line-height: 1.6;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+        }
+
+        /* タグ */
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag-item {
+            padding: 4px 12px;
+            background: #f0f0f0;
+            border-radius: 16px;
+            font-size: 12px;
+            color: #4a4a4a;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* 画像ギャラリー */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .gallery-item {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .gallery-caption {
+            padding: 10px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .gallery-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 2px;
+        }
+
+        .gallery-description {
+            font-size: 12px;
+            color: #7a7a7a;
+        }
+
+        /* お客様の声 */
+        .voice-item {
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4a4a4a;
+        }
+
+        .voice-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .voice-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .voice-type {
+            padding: 2px 8px;
+            background: #e0e0e0;
+            border-radius: 12px;
+            font-size: 10px;
+            color: #4a4a4a;
+            margin-left: auto;
+        }
+
+        .voice-content {
+            color: #2c2c2c;
+            line-height: 1.5;
+        }
+
+        .voice-nickname {
+            text-align: right;
+            font-size: 12px;
+            color: #7a7a7a;
+            margin-top: 10px;
+        }
+
+        /* ギャラリー分類 */
+        .classification-section {
+            margin-bottom: 30px;
+        }
+
+        .classification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .classification-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .classification-type {
+            padding: 4px 12px;
+            background: #4a4a4a;
+            color: white;
+            border-radius: 16px;
+            font-size: 12px;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 20px;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .modal-prev {
+            left: 20px;
+        }
+
+        .modal-next {
+            right: 20px;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 style="cursor: pointer;" onclick="window.location.href='index.html'">
+                <i data-lucide="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                不動産ポータル管理システム
+            </h1>
+            <div class="user-info">
+                <span>田中 太郎さん</span>
+                <button class="btn btn-secondary">ログアウト</button>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">ホーム</a> > 
+                <a href="#">物件管理</a> > 
+                <a href="building_case_list.html">建築事例一覧</a> > 
+                建築事例詳細
+            </div>
+
+            <!-- ヘッダー部分 -->
+            <div class="detail-header">
+                <h1 class="detail-title">建築事例のタイトル</h1>
+                
+                <div class="detail-meta">
+                    <div class="meta-item">
+                        <i data-lucide="building" style="width: 16px; height: 16px;"></i>
+                        <a href="company_detail.html" class="company-link">テスト株式会社</a>
+                    </div>
+                    <div class="meta-item">
+                        <i data-lucide="calendar" style="width: 16px; height: 16px;"></i>
+                        完成日: 2025-09-12
+                    </div>
+                    <div class="meta-item">
+                        <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
+                        作成日: 2025-09-10
+                    </div>
+                    <div class="price-display">¥50,000,000</div>
+                </div>
+
+                <div class="description-text">
+                    建築事例の説明がここに表示されます。この住宅の特徴や魅力について詳しく説明したテキストが入ります。お客様のご要望に合わせて設計された理想の住まいです。
+                </div>
+
+                <div class="tag-list">
+                    <span class="tag-item">モダン</span>
+                    <span class="tag-item">エコ住宅</span>
+                    <span class="tag-item">バリアフリー</span>
+                    <span class="tag-item">省エネ</span>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="window.location.href='building_case_register.html?id=1000'">
+                        <i data-lucide="square-pen" style="width: 16px; height: 16px;"></i>
+                        編集
+                    </button>
+                    <button class="btn btn-secondary" onclick="previewCase()">
+                        <i data-lucide="external-link" style="width: 16px; height: 16px;"></i>
+                        プレビュー
+                    </button>
+                    <button class="btn btn-success" onclick="publishCase()">
+                        <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                        公開
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteCase()">
+                        <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                        削除
+                    </button>
+                </div>
+            </div>
+
+            <!-- メインコンテンツグリッド -->
+            <div class="detail-grid">
+                <!-- 左カラム -->
+                <div>
+                    <!-- 基本情報 -->
+                    <div class="detail-card">
+                        <h2 class="card-title">基本情報</h2>
+                        <table class="info-table">
+                            <tr>
+                                <th>価格</th>
+                                <td>¥50,000,000</td>
+                            </tr>
+                            <tr>
+                                <th>延床面積</th>
+                                <td>94.40㎡</td>
+                            </tr>
+                            <tr>
+                                <th>家族構成</th>
+                                <td>父・母</td>
+                            </tr>
+                            <tr>
+                                <th>構法</th>
+                                <td>木造建築</td>
+                            </tr>
+                            <tr>
+                                <th>完成日</th>
+                                <td>2025年9月12日</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- お客様の声 -->
+                    <div class="detail-card">
+                        <h2 class="card-title">お客様の声</h2>
+                        
+                        <div class="voice-item">
+                            <div class="voice-header">
+                                <div class="voice-title">住み心地について</div>
+                                <div class="voice-type">感想</div>
+                            </div>
+                            <div class="voice-content">
+                                とても快適に住んでいます。設計士さんが私たちの要望をしっかり聞いてくれて、理想通りの家になりました。特に自然光の取り入れ方が素晴らしく、一年中明るい住まいです。
+                            </div>
+                            <div class="voice-nickname">- ニックネーム</div>
+                        </div>
+
+                        <div class="voice-item">
+                            <div class="voice-header">
+                                <div class="voice-title">省エネ性能について</div>
+                                <div class="voice-type">質問</div>
+                            </div>
+                            <div class="voice-content">
+                                断熱性能が高く、光熱費が大幅に削減されました。冬でも暖かく、夏は涼しく過ごせています。エコ住宅にして本当に良かったです。
+                            </div>
+                            <div class="voice-nickname">- ニックネーム</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右カラム -->
+                <div>
+                    <!-- 企業情報 -->
+                    <div class="detail-card">
+                        <h2 class="card-title">企業情報</h2>
+                        <table class="info-table">
+                            <tr>
+                                <th>企業名</th>
+                                <td><a href="company_detail.html" class="company-link">テスト株式会社</a></td>
+                            </tr>
+                            <tr>
+                                <th>サービス</th>
+                                <td>注文住宅</td>
+                            </tr>
+                            <tr>
+                                <th>代表者</th>
+                                <td>杉山 真綾</td>
+                            </tr>
+                            <tr>
+                                <th>所在地</th>
+                                <td>東京都佐藤市笹田町小泉9-7-7</td>
+                            </tr>
+                            <tr>
+                                <th>電話番号</th>
+                                <td>080-8408-7043</td>
+                            </tr>
+                            <tr>
+                                <th>メール</th>
+                                <td>youichi16@example.net</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- 画像一覧 -->
+                    <div class="detail-card">
+                        <h2 class="card-title">メイン画像</h2>
+                        <div class="gallery-grid">
+                            <div class="gallery-item" onclick="openModal(0)">
+                                <img src="https://via.placeholder.com/200x150/4a4a4a/ffffff?text=外観" alt="外観">
+                                <div class="gallery-caption">
+                                    <div class="gallery-title">メイン外観</div>
+                                    <div class="gallery-description">正面からの全景</div>
+                                </div>
+                            </div>
+                            <div class="gallery-item" onclick="openModal(1)">
+                                <img src="https://via.placeholder.com/200x150/6a6a6a/ffffff?text=内装" alt="内装">
+                                <div class="gallery-caption">
+                                    <div class="gallery-title">リビング</div>
+                                    <div class="gallery-description">広々としたリビング空間</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ギャラリー分類 -->
+            <div class="detail-card">
+                <h2 class="card-title">ギャラリー</h2>
+
+                <div class="classification-section">
+                    <div class="classification-header">
+                        <div class="classification-title">外観</div>
+                        <div class="classification-type">タイプ1</div>
+                    </div>
+                    <div class="gallery-grid">
+                        <div class="gallery-item" onclick="openModal(0)">
+                            <img src="https://via.placeholder.com/250x180/4a4a4a/ffffff?text=外観1" alt="外観1">
+                            <div class="gallery-caption">
+                                <div class="gallery-title">正面玄関</div>
+                                <div class="gallery-description">玄関周りのデザイン</div>
+                            </div>
+                        </div>
+                        <div class="gallery-item" onclick="openModal(1)">
+                            <img src="https://via.placeholder.com/250x180/5a5a5a/ffffff?text=外観2" alt="外観2">
+                            <div class="gallery-caption">
+                                <div class="gallery-title">側面外観</div>
+                                <div class="gallery-description">横からの外観</div>
+                            </div>
+                        </div>
+                        <div class="gallery-item" onclick="openModal(2)">
+                            <img src="https://via.placeholder.com/250x180/6a6a6a/ffffff?text=外観3" alt="外観3">
+                            <div class="gallery-caption">
+                                <div class="gallery-title">庭からの眺め</div>
+                                <div class="gallery-description">庭側からの全景</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="classification-section">
+                    <div class="classification-header">
+                        <div class="classification-title">内装</div>
+                        <div class="classification-type">タイプ2</div>
+                    </div>
+                    <div class="gallery-grid">
+                        <div class="gallery-item" onclick="openModal(3)">
+                            <img src="https://via.placeholder.com/250x180/7a7a7a/ffffff?text=リビング" alt="リビング">
+                            <div class="gallery-caption">
+                                <div class="gallery-title">メインリビング</div>
+                                <div class="gallery-description">家族が集まるメイン空間</div>
+                            </div>
+                        </div>
+                        <div class="gallery-item" onclick="openModal(4)">
+                            <img src="https://via.placeholder.com/250x180/8a8a8a/ffffff?text=キッチン" alt="キッチン">
+                            <div class="gallery-caption">
+                                <div class="gallery-title">システムキッチン</div>
+                                <div class="gallery-description">機能性を重視した設計</div>
+                            </div>
+                        </div>
+                        <div class="gallery-item" onclick="openModal(5)">
+                            <img src="https://via.placeholder.com/250x180/9a9a9a/ffffff?text=寝室" alt="寝室">
+                            <div class="gallery-caption">
+                                <div class="gallery-title">主寝室</div>
+                                <div class="gallery-description">落ち着いた雰囲気の寝室</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 画像モーダル -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <button class="modal-nav modal-prev" onclick="previousImage()">&#8249;</button>
+            <img id="modalImage" class="modal-image" src="" alt="">
+            <button class="modal-nav modal-next" onclick="nextImage()">&#8250;</button>
+        </div>
+    </div>
+
+    <script>
+        // 画像データ
+        const images = [
+            { src: 'https://via.placeholder.com/800x600/4a4a4a/ffffff?text=外観1', alt: '正面玄関' },
+            { src: 'https://via.placeholder.com/800x600/5a5a5a/ffffff?text=外観2', alt: '側面外観' },
+            { src: 'https://via.placeholder.com/800x600/6a6a6a/ffffff?text=外観3', alt: '庭からの眺め' },
+            { src: 'https://via.placeholder.com/800x600/7a7a7a/ffffff?text=リビング', alt: 'メインリビング' },
+            { src: 'https://via.placeholder.com/800x600/8a8a8a/ffffff?text=キッチン', alt: 'システムキッチン' },
+            { src: 'https://via.placeholder.com/800x600/9a9a9a/ffffff?text=寝室', alt: '主寝室' }
+        ];
+
+        let currentImageIndex = 0;
+
+        // モーダル表示
+        function openModal(index) {
+            currentImageIndex = index;
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            
+            modalImage.src = images[index].src;
+            modalImage.alt = images[index].alt;
+            modal.classList.add('show');
+        }
+
+        // モーダル非表示
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('show');
+        }
+
+        // 前の画像
+        function previousImage() {
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = images[currentImageIndex].src;
+            modalImage.alt = images[currentImageIndex].alt;
+        }
+
+        // 次の画像
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = images[currentImageIndex].src;
+            modalImage.alt = images[currentImageIndex].alt;
+        }
+
+        // プレビュー
+        function previewCase() {
+            alert('建築事例のプレビューを表示します');
+        }
+
+        // 公開
+        function publishCase() {
+            if (confirm('この建築事例を公開しますか？')) {
+                alert('建築事例を公開しました');
+            }
+        }
+
+        // 削除
+        function deleteCase() {
+            if (confirm('この建築事例を削除してもよろしいですか？\n削除すると復元できません。')) {
+                alert('建築事例を削除しました');
+                window.location.href = 'building_case_list.html';
+            }
+        }
+
+        // キーボードショートカット
+        document.addEventListener('keydown', function(event) {
+            const modal = document.getElementById('imageModal');
+            if (modal.classList.contains('show')) {
+                if (event.key === 'Escape') {
+                    closeModal();
+                } else if (event.key === 'ArrowLeft') {
+                    previousImage();
+                } else if (event.key === 'ArrowRight') {
+                    nextImage();
+                }
+            }
+        });
+
+        // モーダル背景クリックで閉じる
+        document.getElementById('imageModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal();
+            }
+        });
+
+        // Lucideアイコンを初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
